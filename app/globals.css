@@ -1,26 +1,116 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------------------------
+   Design tokens — mirrors the client's Figma design-system export 1:1.
+   Palette step names (light / normal / dark / darker, each with :hover and
+   :active) match the Figma naming so "orange normal hover" is `orange-hover`.
+--------------------------------------------------------------------------- */
+
+@theme {
+  /* Drop Tailwind's stock blue/orange ramps so the only blue and orange in the
+     project are the brand ones. Without this, `bg-orange-500` silently renders
+     Tailwind's orange instead of failing as an unknown class. */
+  --color-orange-*: initial;
+  --color-blue-*: initial;
+
+  /* ---- Orange — brand accent ---- */
+  --color-orange-light: #fdf2e8;
+  --color-orange-light-hover: #fdebdc;
+  --color-orange-light-active: #fad5b6;
+  --color-orange: #ef7914;
+  --color-orange-hover: #d76d12;
+  --color-orange-active: #bf6110;
+  --color-orange-dark: #b35b0f;
+  --color-orange-dark-hover: #8f490c;
+  --color-orange-dark-active: #6c3609;
+  --color-orange-darker: #542a07;
+
+  /* ---- Blue — surfaces ---- */
+  --color-blue-light: #e8ebee;
+  --color-blue-light-hover: #dce0e6;
+  --color-blue-light-active: #b7c0cb;
+  --color-blue: #163356;
+  --color-blue-hover: #142e4d;
+  --color-blue-active: #122945;
+  --color-blue-dark: #112641;
+  --color-blue-dark-hover: #0d1f34;
+  --color-blue-dark-active: #0a1727;
+  --color-blue-darker: #08121e;
+
+  /* ---- Semantic aliases — name the intent, not the hue ---- */
+  --color-surface: var(--color-blue-darker);
+  --color-surface-raised: var(--color-blue-dark-active);
+  --color-surface-card: var(--color-blue-dark);
+  --color-surface-border: var(--color-blue);
+
+  /* ---- Display scale — tracking -2% per the design system ---- */
+  --text-display-2xl: 4.5rem; /* 72px */
+  --text-display-2xl--line-height: 5.5rem; /* 88px */
+  --text-display-2xl--letter-spacing: -0.02em;
+
+  --text-display-xl: 3.75rem; /* 60px */
+  --text-display-xl--line-height: 4.5rem; /* 72px */
+  --text-display-xl--letter-spacing: -0.02em;
+
+  --text-display-lg: 3rem; /* 48px */
+  --text-display-lg--line-height: 3.75rem; /* 60px */
+  --text-display-lg--letter-spacing: -0.02em;
+
+  --text-display-md: 2.25rem; /* 36px */
+  --text-display-md--line-height: 2.75rem; /* 44px */
+  --text-display-md--letter-spacing: -0.02em;
+
+  --text-display-sm: 1.875rem; /* 30px */
+  --text-display-sm--line-height: 2.25rem; /* 36px */
+
+  --text-display-xs: 1.5rem; /* 24px */
+  --text-display-xs--line-height: 2rem; /* 32px */
 }
 
+/* `inline` so the utility resolves straight to the next/font variable set on
+   <html>, rather than emitting a var pointing at another var. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+@layer base {
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-blue-light);
+  }
+
+  ::selection {
+    background-color: var(--color-orange);
+    color: #fff;
+  }
+
+  /* Keyboard focus only — pointer users don't get a ring. */
+  :focus-visible {
+    outline: 2px solid var(--color-orange);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---------------------------------------------------------------------------
+   Reduced motion — third layer of the strategy.
+
+   Motion is handled by <MotionConfig reducedMotion="user">, GSAP by
+   gsap.matchMedia(). This catches plain CSS animations/transitions so nothing
+   slips through. Durations are near-zero rather than `none` so that
+   animation/transition end events still fire and don't strand JS waiting.
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
