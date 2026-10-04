@@ -21,7 +21,7 @@ export const nav = {
   left: [
     { label: "Services", href: "/services" },
     { label: "Case Studies", href: "/#projects" },
-    { label: "Blog", href: "/#blog" },
+    { label: "Blog", href: "/blog" },
   ],
   /** Shown to the right of the wordmark on desktop. */
   right: [
@@ -303,6 +303,127 @@ export const blog = {
       to: "#4c0519",
     },
   ],
+} as const;
+
+export type BlogPost = {
+  /** Unique — the design repeats titles, so keys and future routes use this. */
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  category: string;
+  /** Which "More to read" filters this post answers to. */
+  filters: readonly string[];
+  /** Gradient stand-in until real art lands in `public/assets/images/`. */
+  from: string;
+  to: string;
+};
+
+/**
+ * The /blog index. Separate from `blog` above, which is the teaser strip on the
+ * home page.
+ *
+ * Copy and the repeated titles are lifted straight from the design — the client
+ * supplied dummy articles, so expect these to be replaced wholesale once real
+ * posts exist.
+ */
+export const blogPage = {
+  eyebrow: "Latest news updates",
+  title: "Check our company inside story",
+  subtitle:
+    "We deliver data-driven, end-to-end marketing strategies that build hype, drive community engagement, and secure lasting momentum",
+  cta: { label: "Find out more", href: "#more-to-read" },
+
+  featured: {
+    slug: "sustain-hype-after-launch",
+    title: "How Do I Sustain Hype After",
+    excerpt:
+      "Launching a meme coin is exciting and overwhelming, but keeping it alive and hype after the launch is a big",
+    date: "August 15, 2025",
+    category: "Community Building",
+    filters: ["Featured", "Crypto"],
+    from: "#0ea5e9",
+    to: "#082f49",
+  },
+
+  /** The pair sitting directly under the featured post. */
+  secondary: [
+    {
+      slug: "best-telegram-groups",
+      title: "What Are The Best Telegram",
+      excerpt:
+        "If you want your meme coin to grow, Telegram and Discord are not optional, in fact they are the heart",
+      date: "August 10, 2025",
+      category: "Community Building",
+      filters: ["Crypto"],
+      from: "#16a34a",
+      to: "#052e16",
+    },
+    {
+      slug: "landing-page-mobile-friendly",
+      title: "Is Your Landing Page Mobile-Friendly?",
+      excerpt:
+        "Find out why a great mobile experience is super important and how to make your page look awesome",
+      date: "August 5, 2025",
+      category: "Content creation",
+      filters: ["Content creation"],
+      from: "#f59e0b",
+      to: "#44270b",
+    },
+  ] satisfies BlogPost[],
+
+  more: {
+    title: "More to read",
+    /** First entry is the default and shows everything. */
+    filters: ["All articles", "Featured", "Content creation", "Crypto"],
+    cta: { label: "Find out more", href: "/#contact" },
+    posts: [
+      {
+        slug: "best-telegram-groups-growth",
+        title: "What Are The Best Telegram",
+        excerpt:
+          "If you want your meme coin to grow, Telegram and Discord are not optional, in fact they are the heart",
+        date: "August 10, 2025",
+        category: "Community Building",
+        filters: ["Featured", "Crypto"],
+        from: "#d9820a",
+        to: "#3a1d02",
+      },
+      {
+        slug: "landing-page-mobile-experience",
+        title: "Is Your Landing Page Mobile-Friendly?",
+        excerpt:
+          "Find out why a great mobile experience is super important and how to make your page look awesome",
+        date: "August 5, 2025",
+        category: "Content creation",
+        filters: ["Content creation"],
+        from: "#16a34a",
+        to: "#05291a",
+      },
+      {
+        slug: "best-telegram-groups-moderation",
+        title: "What Are The Best Telegram",
+        excerpt:
+          "If you want your meme coin to grow, Telegram and Discord are not optional, in fact they are the heart",
+        date: "August 10, 2025",
+        category: "Crypto",
+        filters: ["Crypto"],
+        from: "#6b7280",
+        to: "#1f2937",
+      },
+      {
+        slug: "landing-page-conversion",
+        title: "Is Your Landing Page Mobile-Friendly?",
+        excerpt:
+          "Find out why a great mobile experience is super important and how to make your page look awesome",
+        date: "August 5, 2025",
+        category: "Content creation",
+        filters: ["Content creation", "Featured"],
+        from: "#eab308",
+        to: "#0b3a22",
+      },
+    ] satisfies BlogPost[],
+  },
 } as const;
 
 export const awards = {

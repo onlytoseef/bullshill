@@ -34,3 +34,42 @@ export function TagGlyph() {
     </svg>
   );
 }
+
+/** Paper plane, used on the blog page's call-to-action buttons. */
+export function SendIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 16 16"
+      fill="none"
+      className={`shrink-0 ${className}`}
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M14.5 1.5 7 9" />
+      <path d="M14.5 1.5 10 14.5 7 9l-5.5-3z" />
+    </svg>
+  );
+}
+
+/** Circular arrow, marking the "latest updates" badge on the blog index. */
+export function UpdatesIcon() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 14 14"
+      fill="none"
+      className="size-3.5 shrink-0"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12.2 7a5.2 5.2 0 1 1-1.6-3.75" />
+      <path d="M12.4 1.4v2.6H9.8" />
+    </svg>
+  );
+}
+
