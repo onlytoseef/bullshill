@@ -20,7 +20,7 @@ export const nav = {
   /** Shown to the left of the wordmark on desktop. */
   left: [
     { label: "Services", href: "/services" },
-    { label: "Case Studies", href: "/#projects" },
+    { label: "Case Studies", href: "/case-studies" },
     { label: "Blog", href: "/blog" },
   ],
   /** Shown to the right of the wordmark on desktop. */
@@ -424,6 +424,79 @@ export const blogPage = {
       },
     ] satisfies BlogPost[],
   },
+} as const;
+
+export type CaseStudy = {
+  slug: string;
+  client: string;
+  /** Opening clause — rendered brighter than the rest of the summary. */
+  summaryLead: string;
+  summaryRest: string;
+  /** Headline number, shown in its own bordered chip. */
+  metric: string;
+  result: string;
+  tags: readonly string[];
+  /** Gradient stand-in until real art lands in `public/assets/images/`. */
+  visual: { from: string; to: string };
+};
+
+/**
+ * The /case-studies index.
+ *
+ * The mockup repeats one dummy row three times, so every entry below carries
+ * the same summary, metric and result. Those three fields are the ones to
+ * replace first once real client numbers are signed off.
+ */
+export const caseStudiesPage = {
+  eyebrow: "Client Results & Case Studies",
+  title: "Crypto Marketing Case Studies",
+  subtitle:
+    "BullShill is a crypto marketing agency based in Dubai, founded in 2020. Trusted by Binance, Bybit, Algorand, Canton, OKX, and Polymarket.",
+  cta: { label: "View case studies", href: "#case-studies" },
+  /** Per-row link. Detail routes don't exist yet. */
+  readCta: { label: "Read full case study", href: "#" },
+  moreCta: { label: "Find out more", href: "/#contact" },
+  items: [
+    {
+      slug: "algorand-foundation",
+      client: "Algorand Foundation",
+      summaryLead:
+        "Crypto hive connects ambitious projects with a global community of backers,",
+      summaryRest:
+        " providing a platform to raise funds, track growth, and thrive in the decentralized ecosystem",
+      metric: "25M+ Impressions",
+      result:
+        "Driving 620K Crypto-Native Site Users to Polkadot's Ecosystem",
+      tags: ["Featured", "Content creation"],
+      visual: { from: "#eab308", to: "#0b3a22" },
+    },
+    {
+      slug: "crypto-hive",
+      client: "Crypto Hive",
+      summaryLead:
+        "Crypto hive connects ambitious projects with a global community of backers,",
+      summaryRest:
+        " providing a platform to raise funds, track growth, and thrive in the decentralized ecosystem",
+      metric: "25M+ Impressions",
+      result:
+        "Driving 620K Crypto-Native Site Users to Polkadot's Ecosystem",
+      tags: ["Featured", "Content creation"],
+      visual: { from: "#16a34a", to: "#05291a" },
+    },
+    {
+      slug: "polymarket",
+      client: "Polymarket",
+      summaryLead:
+        "Crypto hive connects ambitious projects with a global community of backers,",
+      summaryRest:
+        " providing a platform to raise funds, track growth, and thrive in the decentralized ecosystem",
+      metric: "25M+ Impressions",
+      result:
+        "Driving 620K Crypto-Native Site Users to Polkadot's Ecosystem",
+      tags: ["Featured", "Content creation"],
+      visual: { from: "#22c55e", to: "#052e16" },
+    },
+  ] satisfies CaseStudy[],
 } as const;
 
 export const awards = {

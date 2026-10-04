@@ -35,7 +35,7 @@ export function TagGlyph() {
   );
 }
 
-/** Paper plane, used on the blog page's call-to-action buttons. */
+/** Paper plane, as the design puts on every call-to-action button. */
 export function SendIcon({ className = "size-4" }: { className?: string }) {
   return (
     <svg
@@ -51,6 +51,21 @@ export function SendIcon({ className = "size-4" }: { className?: string }) {
       <path d="M14.5 1.5 7 9" />
       <path d="M14.5 1.5 10 14.5 7 9l-5.5-3z" />
     </svg>
+  );
+}
+
+/**
+ * The paper plane in a dark disc, which is how the design finishes every light
+ * pill button. Pass as the last child of <Button variant="light">.
+ */
+export function SendBadge() {
+  return (
+    <span
+      aria-hidden
+      className="grid size-5 place-items-center rounded-full bg-blue-darker text-white"
+    >
+      <SendIcon className="size-3" />
+    </span>
   );
 }
 

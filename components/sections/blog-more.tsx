@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Stagger } from "@/components/motion/stagger";
 import { Button } from "@/components/ui/button";
-import { SendIcon } from "@/components/ui/icons";
+import { SendBadge } from "@/components/ui/icons";
 import { PostCard } from "@/components/ui/post-card";
 import { Container } from "@/components/ui/section";
 import { blogPage } from "@/lib/content";
@@ -86,7 +86,7 @@ export function BlogMore() {
         <Reveal className="mt-14 flex justify-center">
           <Button href={more.cta.href} variant="light" size="md">
             {more.cta.label}
-            <SendIcon />
+            <SendBadge />
           </Button>
         </Reveal>
       </Container>
