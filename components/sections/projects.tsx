@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import Image from "next/image";
 import { useId, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { Container, Section } from "@/components/ui/section";
 import { projects } from "@/lib/content";
 import { cn } from "@/lib/utils";
+import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
 /**
  * Filterable work showcase.
@@ -22,18 +24,18 @@ export function Projects() {
   const current = projects.items[active];
 
   return (
-    <Section id="projects">
+    <Section id="projects" className="projects-section">
       <Container>
         <SectionHeading
           eyebrow={projects.eyebrow}
           title={projects.title}
-          className="mb-12"
+          className="projects-heading mb-12"
         />
 
         <div
           role="tablist"
           aria-label="Project categories"
-          className="flex flex-wrap justify-center gap-2"
+          className="project-tabs flex flex-wrap justify-center"
         >
           {projects.items.map((item, index) => {
             const selected = index === active;
@@ -48,8 +50,8 @@ export function Projects() {
                 aria-controls={`${baseId}-panel-${index}`}
                 onClick={() => setActive(index)}
                 className={cn(
-                  "relative rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
-                  selected ? "text-white" : "text-blue-light-active hover:text-white",
+                  "project-tab relative text-sm font-medium transition-colors",
+                  selected ? "project-tab-active text-blue-darker" : "text-blue-light-active hover:text-white",
                 )}
               >
                 {selected ? (
@@ -57,7 +59,7 @@ export function Projects() {
                   // popping it in and out.
                   <motion.span
                     layoutId="project-filter-pill"
-                    className="absolute inset-0 rounded-full bg-orange"
+                    className="project-tab-active-fill absolute inset-0 rounded-full"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 ) : null}
@@ -78,20 +80,18 @@ export function Projects() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="grid gap-8 rounded-3xl border border-surface-border bg-surface-card p-6 sm:p-10 lg:grid-cols-2 lg:items-center lg:gap-14"
+              className="project-panel grid gap-8 p-6 sm:p-10 lg:grid-cols-2 lg:items-center lg:gap-14"
             >
               <div>
-                <p className="text-sm font-medium text-orange">
-                  {current.category}
-                </p>
-                <h3 className="mt-3 text-display-xs font-semibold text-white sm:text-display-sm">
+                <h3 className="project-title">
                   {current.title}
                 </h3>
-                <p className="mt-4 text-base text-blue-light-active">
+                <p className="project-body mt-4">
                   {current.body}
                 </p>
-                <Button href="#contact" variant="secondary" size="sm" className="mt-8">
-                  Read more
+                <Button href="#contact" variant="light" size="sm" className="project-study-button mt-8">
+                  Study More
+                  <Image src={findMoreIcon} alt="" width={20} height={20} />
                 </Button>
               </div>
 
@@ -99,7 +99,7 @@ export function Projects() {
                 label={current.visual.label}
                 from={current.visual.from}
                 to={current.visual.to}
-                className="aspect-[4/3] w-full"
+                className="project-image w-full"
               />
             </motion.div>
           </AnimatePresence>

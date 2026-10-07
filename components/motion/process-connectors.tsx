@@ -6,28 +6,38 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { process } from "@/lib/content";
 
 /**
- * Card footprint as a percentage of the flow container. Kept in sync with the
- * `lg:w-[42%]` / `lg:h-[22%]` classes on the cards in `sections/process.tsx` —
- * both read the same step coordinates from `lib/content`, so the curves always
- * land on the cards.
+ * Convert a viewport coordinate into the SVG's normalized viewBox space.
  */
-const CARD_W = 42;
-const CARD_H = 22;
+function toSvgPoint(
+  point: { x: number; y: number },
+  bounds: DOMRect,
+) {
+  return {
+    x: ((point.x - bounds.left) / bounds.width) * 100,
+    y: ((point.y - bounds.top) / bounds.height) * 100,
+  };
+}
 
-/**
- * Cubic bezier from the bottom of one card to the top of the next, flattened
- * out horizontally.
- *
- * Anchoring to the edges rather than the centres means a card that grows taller
- * than CARD_H only ever swallows the end of a line — the cards paint above the
- * SVG, so any overshoot is hidden instead of crossing the text.
- */
-function connector(a: { x: number; y: number }, b: { x: number; y: number }) {
-  const from = { x: a.x + CARD_W / 2, y: a.y + CARD_H };
-  const to = { x: b.x + CARD_W / 2, y: b.y };
-  const bend = (to.x - from.x) * 0.5;
+function connector(first: DOMRect, second: DOMRect, svgBounds: DOMRect) {
+  const movesRight = second.left >= first.left;
+  const from = toSvgPoint(
+    {
+      x: movesRight ? first.right : first.left,
+      y: first.top + first.height * 0.56,
+    },
+    svgBounds,
+  );
+  const to = toSvgPoint(
+    {
+      x: movesRight ? second.left : second.right,
+      y: second.top + second.height * 0.44,
+    },
+    svgBounds,
+  );
+  const bend = Math.max(Math.abs(to.x - from.x) * 0.55, 8);
+  const direction = movesRight ? 1 : -1;
 
-  return `M ${from.x} ${from.y} C ${from.x + bend} ${from.y}, ${to.x - bend} ${to.y}, ${to.x} ${to.y}`;
+  return `M ${from.x} ${from.y} C ${from.x + bend * direction} ${from.y}, ${to.x - bend * direction} ${to.y}, ${to.x} ${to.y}`;
 }
 
 /**
@@ -47,13 +57,37 @@ export function ProcessConnectors() {
   useGSAP(
     () => {
       const paths = gsap.utils.toArray<SVGPathElement>("[data-connector]");
-      if (paths.length === 0) return;
+      const cards = gsap.utils.toArray<HTMLElement>("[data-process-card]");
+      if (paths.length === 0 || cards.length === 0) return;
 
       const mm = gsap.matchMedia();
 
       mm.add(
         "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
         () => {
+          const rotations = [-15, 5.85, -5.39, 5.67, -6.58];
+          const svgBounds = svgRef.current?.getBoundingClientRect();
+
+          if (!svgBounds) return;
+
+          cards.slice(0, -1).forEach((card, index) => {
+            const nextCard = cards[index + 1];
+            paths[index].setAttribute(
+              "d",
+              connector(card.getBoundingClientRect(), nextCard.getBoundingClientRect(), svgBounds),
+            );
+          });
+
+          cards.forEach((card, index) => {
+            gsap.set(card, {
+              opacity: index === 0 ? 1 : 0,
+              rotation: rotations[index] ?? 0,
+              scale: index === 0 ? 1 : 0.92,
+              y: index === 0 ? 0 : 24,
+            });
+          });
+          gsap.set(tracks, { opacity: 0 });
+
           const timeline = gsap.timeline({
             scrollTrigger: {
               trigger: svgRef.current,
@@ -63,14 +97,24 @@ export function ProcessConnectors() {
             },
           });
 
-          paths.forEach((path) => {
+          paths.forEach((path, index) => {
             const length = path.getTotalLength();
             gsap.set(path, {
               strokeDasharray: length,
               strokeDashoffset: length,
             });
-            // Slight overlap so one line starts before the last finishes.
-            timeline.to(path, { strokeDashoffset: 0, ease: "none" }, ">-0.15");
+            timeline.to(path, { strokeDashoffset: 0, ease: "none" });
+            timeline.to(
+              cards[index + 1],
+              {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 0.45,
+                ease: "power2.out",
+              },
+              ">-0.08",
+            );
           });
         },
       );
@@ -86,19 +130,17 @@ export function ProcessConnectors() {
       aria-hidden
       viewBox="0 0 100 100"
       preserveAspectRatio="none"
-      className="pointer-events-none absolute inset-0 hidden size-full lg:block"
+      className="connector-layer pointer-events-none absolute inset-0 z-[1] hidden size-full lg:block"
     >
       {process.steps.slice(0, -1).map((step, index) => (
         <path
           key={step.title}
           data-connector
-          d={connector(step, process.steps[index + 1])}
           fill="none"
-          stroke="var(--color-orange)"
-          strokeWidth="2"
+          stroke="#E8750A"
+          strokeWidth="1"
           strokeLinecap="round"
-          strokeDasharray="4 4"
-          opacity="0.45"
+          opacity="0.72"
           vectorEffect="non-scaling-stroke"
         />
       ))}

@@ -37,8 +37,8 @@ export const hero = {
     [{ text: "Launch Without Limits" }],
   ] satisfies HeadlineSegment[][],
   subcopy:
-    "We deliver data-driven, end-to-end marketing strategies that build hype, drive community engagement, and secure lasting conversions.",
-  cta: { label: "Get Started", href: "#contact" },
+    "We deliver data-driven, end-to-end marketing strategies that build hype, drive community,\nengagement, and secure lasting momentum",
+  cta: { label: "Book free consultation", href: "#contact" },
 } as const;
 
 /**
@@ -56,12 +56,14 @@ export const heroCoins = [
 ] as const;
 
 export const intro = {
-  eyebrow: "Who we are",
-  body: "From website development and content creation to social media management and community building, we offer everything you need to achieve your marketing goals.",
+  eyebrow: "About BullShill",
+  bodyLead:
+    "From website development and content creation to social media management and community building,",
+  bodyAccent: "we offer everything you need to achieve your marketing goals",
 } as const;
 
 export const stats = [
-  { value: 100, suffix: "%", label: "Retention Clients" },
+  { value: 100, suffix: "%", label: "Satisfied Clients" },
   { value: 3000, suffix: "+", label: "Digital Marketing Projects" },
   { value: 300, suffix: "+", label: "Web3 Marketing Projects" },
   { value: 10, prefix: "$", suffix: "M", label: "Client Revenue Generated" },
@@ -141,32 +143,32 @@ export const process = {
   title: "From first call to compounding growth",
   steps: [
     {
-      title: "Onboarding",
-      body: "We learn your token, your market and your community before we write a single post.",
+      title: "Discovery Call",
+      body: "We start with a live call to understand your goals, target audience, and project scope. This is where we align on expectations, timelines, and what success looks like for your brand or project.",
       x: 0,
       y: 0,
     },
     {
       title: "Strategy & Planning",
-      body: "A channel-by-channel plan with named owners, budgets and the metrics each one answers to.",
+      body: "Based on the discovery call, we develop a tailored execution plan — covering content direction, platform strategy, milestones, and deliverables. You review and approve the plan before we move forward, so there are no surprises later.",
       x: 54,
       y: 19,
     },
     {
       title: "Execution & Implementation",
-      body: "Content, campaigns and community management run by the same team that wrote the plan.",
+      body: "Our team gets to work — content creation, campaign management, community engagement, or whatever the project calls for. We follow the approved plan closely while staying flexible to real-time market or platform shifts.",
       x: 4,
       y: 38,
     },
     {
-      title: "Reporting & Optimisation",
-      body: "Weekly numbers against the plan, with the next sprint's changes already proposed.",
+      title: "Weekly Reporting & Optimization",
+      body: "Every week, you get a clear report on progress, performance, and next steps. We use this checkpoint to fine-tune the strategy based on what’s working, keeping the project on track toward your goals.",
       x: 54,
       y: 57,
     },
     {
       title: "Ongoing Communication",
-      body: "A shared channel with your strategist — no ticket queues, no account-manager relay.",
+      body: "Beyond weekly reports, we stay reachable for quick calls or check-ins whenever needed — so you’re never left wondering where things stand.",
       x: 8,
       y: 76,
     },
@@ -175,7 +177,7 @@ export const process = {
 
 export const partners = {
   title: "Our partners",
-  subtitle: "Trusted by teams at over 1,000 of the world's leading organisations",
+  subtitle: "Trusted by teams at over 1,000 of the world's leading organizations",
   logos: [
     "DELL",
     "zendesk",
@@ -191,7 +193,7 @@ export const testimonials = {
   eyebrow: "Testimonials",
   title: "What Our Clients Say About Us",
   subtitle:
-    "Hear from the founders and marketing leads who've shipped launches with us.",
+    "Real stories from real clients. See why 250+ brands trust NinjaPromo to move their KPIs.",
   items: [
     {
       quote:
@@ -229,8 +231,8 @@ export const projects = {
   items: [
     {
       category: "Crypto / ICO / DEX",
-      title: "Liquidity from day one",
-      body: "Token launch strategy covering exchange relationships, market-maker introductions and the investor narrative that carried the raise.",
+      title: "Crypto / ICO / DEX",
+      body: "From crafting a strategic marketing plan for a successful launch to assisting in community building, we specialize in full-scale marketing for any Web3 or crypto project.",
       visual: { label: "DEX launch", from: "#f7a21a", to: "#4a2a04" },
     },
     {
@@ -591,12 +593,14 @@ export const footer = {
 export const services = {
   eyebrow: "Our services",
   title: "What We Do",
+  caption:
+    "End-to-end launch strategies designed to build massive hype, drive presales, and secure token momentum",
   cta: { label: "View all services", href: "/services" },
   items: [
     {
       title: "Complete Token Marketing",
       body: "From crafting a strategy marketing plan for a successful token launch, through to exchange listings and sustained community growth — we run the whole campaign.",
-      tags: ["Token Launch", "NFT Marketing", "Metaverse Hype"],
+      tags: ["Token Launch", "NFT Promotion", "Memecoin Hype", "ICO Strategy"],
       href: "#contact",
       visual: {
         label: "Token launch campaign",

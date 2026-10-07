@@ -8,7 +8,6 @@ import { Partners } from "@/components/sections/partners";
 import { Process } from "@/components/sections/process";
 import { Projects } from "@/components/sections/projects";
 import { Services } from "@/components/sections/services";
-import { Stats } from "@/components/sections/stats";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Worried } from "@/components/sections/worried";
 
@@ -17,7 +16,6 @@ export default function Page() {
     <>
       <Hero />
       <Intro />
-      <Stats />
       <Services />
       <Worried />
       <Process />
@@ -25,6 +23,7 @@ export default function Page() {
       <Testimonials />
       <Projects />
       <Blog />
+      
       <Awards />
       <Faqs />
       <FinalCta />

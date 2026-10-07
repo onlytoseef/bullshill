@@ -1,7 +1,23 @@
 import { Reveal } from "@/components/motion/reveal";
-import { Stagger } from "@/components/motion/stagger";
+import { PartnerLogoMotion } from "@/components/motion/partner-logo-motion";
+import Image from "next/image";
 import { Container, Section } from "@/components/ui/section";
 import { partners } from "@/lib/content";
+import partnerOne from "../../app/assets/partner-logos/1.png";
+import partnerTwo from "../../app/assets/partner-logos/2.png";
+import partnerThree from "../../app/assets/partner-logos/3.png";
+import partnerFour from "../../app/assets/partner-logos/4.png";
+import partnerFive from "../../app/assets/partner-logos/5.png";
+import partnerSix from "../../app/assets/partner-logos/6.png";
+
+const partnerImages = [
+  partnerOne,
+  partnerTwo,
+  partnerThree,
+  partnerFour,
+  partnerFive,
+  partnerSix,
+] as const;
 
 type Props = {
   /**
@@ -13,34 +29,37 @@ type Props = {
 
 export function Partners({ showHeading = true }: Props) {
   return (
-    <Section className="py-16 sm:py-20">
+    <Section className="partners-section py-16 sm:py-20">
       <Container>
-        <Reveal className="text-center">
+        <Reveal className="partners-heading text-center">
           {showHeading ? (
-            <h2 className="text-display-xs font-semibold text-white">
+            <h2>
               {partners.title}
             </h2>
           ) : null}
-          <p className="mt-3 text-sm text-blue-light-active">
+          <p>
             {partners.subtitle}
           </p>
         </Reveal>
 
-        <Stagger
-          className="mt-12 grid grid-cols-2 items-center gap-x-8 gap-y-10 sm:grid-cols-4 lg:grid-cols-7"
-          stagger={0.06}
+        <PartnerLogoMotion
+          className="partner-logo-row"
         >
-          {partners.logos.map((logo) => (
+          {partnerImages.map((logo, index) => (
             <span
-              key={logo}
-              /* Text stand-ins until real logo SVGs land in
-                 public/assets/brand/ — swap for <Image> then. */
-              className="block text-center text-base font-semibold whitespace-nowrap text-blue-light-active/50 transition-colors duration-300 hover:text-white"
+              key={partners.logos[index]}
+              data-partner-logo
+              className="partner-logo"
             >
-              {logo}
+              <Image
+                src={logo}
+                alt={partners.logos[index]}
+                fill
+                sizes="151px"
+              />
             </span>
           ))}
-        </Stagger>
+        </PartnerLogoMotion>
       </Container>
     </Section>
   );

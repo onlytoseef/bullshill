@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { ContactBubble } from "@/components/layout/contact-bubble";
+import { PageLoader } from "@/components/layout/page-loader";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MotionProviders } from "@/components/motion/providers";
@@ -35,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-dvh font-sans">
         <MotionProviders>
-          <AnnouncementBar />
+          <PageLoader />
           <SiteHeader />
           <main>{children}</main>
           <SiteFooter />

@@ -1,7 +1,16 @@
 import { Stagger } from "@/components/motion/stagger";
-import { SectionHeading } from "@/components/ui/section-heading";
+import Image from "next/image";
 import { Container, Section } from "@/components/ui/section";
 import { testimonials } from "@/lib/content";
+import tokenMarketingImage from "../../app/assets/services-section/token-marketing.png";
+import socialMediaMarketingImage from "../../app/assets/services-section/social-media-marketing.png";
+import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.png";
+
+const testimonialImages = [
+  tokenMarketingImage,
+  socialMediaMarketingImage,
+  aiProductLaunchImage,
+] as const;
 
 function Stars() {
   return (
@@ -23,21 +32,29 @@ function Stars() {
 
 export function Testimonials() {
   return (
-    <Section id="testimonials">
+    <Section id="testimonials" className="testimonials-section">
       <Container>
-        <SectionHeading
-          eyebrow={testimonials.eyebrow}
-          title={testimonials.title}
-          subtitle={testimonials.subtitle}
-          className="mb-16"
-        />
+        <div className="testimonials-heading mb-16">
+          <span className="testimonials-eyebrow">{testimonials.eyebrow}</span>
+          <h2>{testimonials.title}</h2>
+          <p>{testimonials.subtitle}</p>
+        </div>
 
-        <Stagger className="grid gap-6 lg:grid-cols-3" stagger={0.1}>
-          {testimonials.items.map((item) => (
+        <Stagger className="testimonials-grid" stagger={0.1}>
+          {testimonials.items.map((item, index) => (
             <figure
               key={item.name}
-              className="flex h-full flex-col rounded-3xl border border-surface-border bg-surface-card p-8"
+              className="testimonial-card flex h-full flex-col"
             >
+              <div className="testimonial-image">
+                <Image
+                  src={testimonialImages[index]}
+                  alt=""
+                  fill
+                  sizes="335px"
+                  className="object-cover"
+                />
+              </div>
               <Stars />
 
               <blockquote className="mt-6 flex-1 text-base leading-relaxed text-blue-light">

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -22,13 +22,15 @@ export function Section({
   id,
   children,
   className,
+  style,
 }: {
   id?: string;
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
 }) {
   return (
-    <section id={id} className={cn("py-20 sm:py-28", className)}>
+    <section id={id} className={cn("py-20 sm:py-28", className)} style={style}>
       {children}
     </section>
   );

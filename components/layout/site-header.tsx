@@ -6,16 +6,17 @@ import {
   useMotionValueEvent,
   useScroll,
 } from "motion/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Wordmark } from "@/components/ui/wordmark";
-import { nav } from "@/lib/content";
+import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
+import logo from "../../app/assets/images/logo.png";
 
 const linkClass =
-  "text-sm text-blue-light-active transition-colors hover:text-white";
+  "text-[13px] font-medium text-blue-darker transition-colors hover:text-blue";
 
 /**
  * Sticky navigation. Transparent over the hero, then picks up a blurred
@@ -35,19 +36,15 @@ export function SiteHeader() {
   const close = () => setMenuOpen(false);
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 border-b transition-colors duration-300",
-        scrolled || menuOpen
-          ? "border-surface-border/60 bg-surface/80 backdrop-blur-md"
-          : "border-transparent",
-      )}
-    >
+    <header className="sticky top-0 z-50 px-4 pt-5 md:px-7">
       <nav
         aria-label="Main"
-        className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-6"
+        className={cn(
+          "relative mx-auto flex h-[68px] max-w-[1140px] items-center rounded-full bg-blue-light px-5 text-blue-darker shadow-[0_10px_30px_rgba(8,18,30,0.14)] transition-shadow duration-300 md:px-6",
+          scrolled && "shadow-[0_12px_34px_rgba(8,18,30,0.24)]",
+        )}
       >
-        <ul className="hidden flex-1 items-center gap-8 lg:flex">
+        <ul className="hidden flex-1 items-center gap-7 lg:flex">
           {nav.left.map((link) => (
             <li key={link.href}>
               <Link href={link.href} className={linkClass}>
@@ -57,12 +54,28 @@ export function SiteHeader() {
           ))}
         </ul>
 
-        <Link href="/" className="mr-auto lg:mr-0" aria-label="BullShill home">
-          <Wordmark className="text-white" />
+        <Link
+          href="/"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          aria-label="BullShill home"
+        >
+          <span className="flex items-center gap-2">
+            <Image
+              src={logo}
+              alt=""
+              width={29}
+              height={29}
+              priority
+              className="size-7 object-contain"
+            />
+            <span className="text-xl font-semibold tracking-tight">
+              {site.name}
+            </span>
+          </span>
         </Link>
 
-        <div className="hidden flex-1 items-center justify-end gap-8 lg:flex">
-          <ul className="flex items-center gap-8">
+        <div className="hidden flex-1 items-center justify-end gap-7 lg:flex">
+          <ul className="flex items-center gap-7">
             {nav.right.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className={linkClass}>
@@ -71,8 +84,16 @@ export function SiteHeader() {
               </li>
             ))}
           </ul>
-          <Button href={nav.cta.href} size="sm">
+          <Button
+            href={nav.cta.href}
+            variant="inverse"
+            size="sm"
+            className="h-11 gap-4 px-5 text-sm font-normal text-blue-light hover:bg-blue-dark"
+          >
             {nav.cta.label}
+            <svg aria-hidden viewBox="0 0 20 20" className="size-4 fill-current">
+              <path d="M4.5 4.75A2.75 2.75 0 0 1 7.25 2h5.5a2.75 2.75 0 0 1 2.75 2.75v3.5A2.75 2.75 0 0 1 12.75 11H10l-3.35 2.5V11h-.4A2.75 2.75 0 0 1 3.5 8.25v-3.5h1Zm1.5 1.5v1h6v-1H6Zm0 2v1h4v-1H6Z" />
+            </svg>
           </Button>
         </div>
 
@@ -82,7 +103,7 @@ export function SiteHeader() {
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="-mr-2 grid size-10 shrink-0 place-items-center rounded-full text-white lg:hidden"
+          className="ml-auto -mr-2 grid size-10 shrink-0 place-items-center rounded-full text-blue-darker lg:hidden"
         >
           <span className="relative block h-4 w-5">
             <motion.span
@@ -110,15 +131,15 @@ export function SiteHeader() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden lg:hidden"
+            className="mx-4 overflow-hidden rounded-b-3xl bg-blue-light lg:hidden"
           >
-            <ul className="flex flex-col gap-1 px-6 pb-6">
+            <ul className="flex flex-col gap-1 px-6 pb-6 text-blue-darker">
               {[...nav.left, ...nav.right].map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
                     onClick={close}
-                    className="block py-2.5 text-base text-blue-light-active transition-colors hover:text-white"
+                    className="block py-2.5 text-base text-blue-darker transition-colors hover:text-blue"
                   >
                     {link.label}
                   </Link>
