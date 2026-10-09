@@ -86,7 +86,6 @@ export function ProcessConnectors() {
               y: index === 0 ? 0 : 24,
             });
           });
-          gsap.set(tracks, { opacity: 0 });
 
           const timeline = gsap.timeline({
             scrollTrigger: {
