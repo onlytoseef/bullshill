@@ -257,10 +257,10 @@ export const projects = {
 } as const;
 
 export const blog = {
-  eyebrow: "Blog & insights",
+  eyebrow: "Blog section",
   title: "Check Our Company Inside Story",
   subtitle:
-    "Playbooks, post-mortems and the occasional strong opinion about this industry.",
+    "Exchange Your Products With Founders and In Return Use Their Products For FREE!",
   posts: [
     {
       title: "How to price a token launch campaign",
@@ -502,34 +502,35 @@ export const caseStudiesPage = {
 } as const;
 
 export const awards = {
+  eyebrow: "Our team",
   title: "Award Winning",
   subtitle:
-    "Recognised for the work, not the pitch deck — by the people who had to live with the results.",
+    "Backed by a collective 20 years in Web3 and a globally distributed team of over 15, we work with Crypto's top brands.",
   people: [
     {
-      name: "Zain Haider",
-      role: "Founder & Strategy Lead",
-      from: "#ef7914",
-      to: "#2a1402",
+      name: "Jawad Ahmad",
+      role: "CEO / Founder",
+      from: "#1e3a5f",
+      to: "#0a1727",
     },
     {
-      name: "Marcus Hale",
-      role: "Head of Community",
-      from: "#2563eb",
-      to: "#0a1a3d",
+      name: "Zeeshan",
+      role: "Team Lead | Business Manager",
+      from: "#1e3a5f",
+      to: "#0a1727",
     },
     {
-      name: "Imran Qureshi",
-      role: "Creative Director",
-      from: "#7c3aed",
-      to: "#1f0f3d",
+      name: "Bilal",
+      role: "Organic Growth Expert",
+      from: "#1e3a5f",
+      to: "#0a1727",
     },
   ],
 } as const;
 
 export const faqs = {
   title: "Digital Marketing FAQs",
-  body: "An everyday digital marketing agency, we are dedicated to providing something extraordinary and valuable to our clients. If your question isn't here, ask us directly.",
+  body: "As a leading digital marketing agency, we are dedicated to providing comprehensive educational resources and answering frequently asked questions to help our clients.",
   ctas: [
     { label: "More questions", href: "#contact", variant: "primary" },
     { label: "Contact us", href: "#contact", variant: "secondary" },

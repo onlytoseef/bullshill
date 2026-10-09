@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import logo from "../../app/assets/images/logo.png";
+import heroBackground from "../../app/assets/images/hero-bg.svg";
 
 const linkClass =
   "text-[13px] font-medium text-blue-darker transition-colors hover:text-blue";
@@ -36,7 +37,12 @@ export function SiteHeader() {
   const close = () => setMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 px-4 pt-5 md:px-7">
+    <header
+      className="site-header sticky top-0 z-50 px-4 pt-5 md:px-7"
+      style={{
+        backgroundImage: scrolled ? "none" : `url(${heroBackground.src})`,
+      }}
+    >
       <nav
         aria-label="Main"
         className={cn(

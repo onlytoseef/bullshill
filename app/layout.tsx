@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist, Inter } from "next/font/google";
 
 import { ContactBubble } from "@/components/layout/contact-bubble";
 import { PageLoader } from "@/components/layout/page-loader";
@@ -15,6 +15,11 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "BullShill — Marketing Built for Web3 Success",
@@ -28,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} antialiased`}
+      className={`${inter.variable} ${geist.variable} antialiased`}
       // Next 16 no longer forces scroll-behavior during navigation; this opts
       // back into the old smooth behaviour for route changes.
       data-scroll-behavior="smooth"

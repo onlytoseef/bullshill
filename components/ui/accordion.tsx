@@ -46,11 +46,11 @@ export function Accordion({ items }: { items: readonly Item[] }) {
                 aria-expanded={open}
                 aria-controls={panelId}
                 onClick={() => setOpenIndex(open ? null : index)}
-                className="flex w-full items-center justify-between gap-6 py-5 text-left"
+                className="faq-question flex w-full items-center justify-between gap-6 py-5 text-left"
               >
                 <span
                   className={cn(
-                    "text-base font-medium transition-colors",
+                    "faq-question-text transition-colors",
                     open ? "text-white" : "text-blue-light",
                   )}
                 >
@@ -87,7 +87,7 @@ export function Accordion({ items }: { items: readonly Item[] }) {
               transition={{ duration: 0.28, ease: EASE_OUT }}
               className="overflow-hidden"
             >
-              <p className="pb-6 text-sm leading-relaxed text-blue-light-active">
+              <p className="faq-answer pb-6 text-blue-light-active">
                 {item.answer}
               </p>
             </motion.div>

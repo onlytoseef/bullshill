@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, type Variants } from "motion/react";
-import { Children, type ReactNode } from "react";
+import { motion, useInView, type Variants } from "motion/react";
+import { Children, useRef, type ReactNode } from "react";
 
 const EASE_OUT = [0.22, 1, 0.36, 1] as const;
 
@@ -42,14 +42,17 @@ export function Stagger({
   className,
   itemClassName,
 }: StaggerProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { margin: "-10% 0px" });
+
   return (
     <motion.div
+      ref={ref}
       className={className}
       custom={stagger}
       variants={container}
       initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-10% 0px" }}
+      animate={isInView ? "show" : "hidden"}
     >
       {Children.map(children, (child) => (
         <motion.div className={itemClassName} variants={item}>
