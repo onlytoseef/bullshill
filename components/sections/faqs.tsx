@@ -15,14 +15,18 @@ export function Faqs() {
               <p>{faqs.body}</p>
             </div>
 
-            <div className="faq-actions mt-8 flex flex-wrap gap-3">
+            <div className="faq-actions mt-8 flex items-center gap-3">
               {faqs.ctas.map((cta) => (
                 <Button
                   key={cta.label}
                   href={cta.href}
                   variant={cta.variant}
                   size="md"
-                  className={cta.label === "More questions" ? "faq-more-button" : undefined}
+                  className={
+                    cta.label === "More questions"
+                      ? "faq-more-button"
+                      : "faq-contact-button"
+                  }
                 >
                   {cta.label}
                 </Button>

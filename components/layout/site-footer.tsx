@@ -9,22 +9,22 @@ import { footer } from "@/lib/content";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-blue-light pt-8 text-blue-darker">
+    <footer className="site-footer bg-blue-light text-blue-darker">
       <Container>
         <div className="flex flex-col items-center text-center">
-          <Wordmark className="text-2xl text-blue-darker" />
+          <Wordmark className="footer-wordmark text-blue-darker" />
 
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-blue-dark/70">
+          <p className="footer-description mt-5 max-w-2xl">
             {footer.description}
           </p>
 
-          <ul className="mt-7 flex items-center gap-3">
+          <ul className="footer-socials mt-7 flex items-center">
             {footer.socials.map((social) => (
               <li key={social.label}>
                 <Link
                   href={social.href}
                   aria-label={social.label}
-                  className="grid size-9 place-items-center rounded-full bg-blue-darker text-white transition-colors hover:bg-blue"
+                  className="footer-social-link grid place-items-center rounded-full bg-white text-blue-darker transition-colors hover:bg-[#e8750a] hover:text-white"
                 >
                   <SocialIcon name={social.label} />
                 </Link>
@@ -34,8 +34,8 @@ export function SiteFooter() {
 
           {/* TODO: no submit handler yet — point this at a mailing-list
               endpoint or a Server Action before launch. */}
-          <form className="mt-8 w-full max-w-xl">
-            <div className="flex flex-col gap-2 rounded-3xl bg-blue-darker p-2 sm:flex-row sm:items-center sm:rounded-full">
+          <form className="footer-newsletter mt-8 w-full">
+            <div className="footer-newsletter-row flex flex-col gap-2 sm:flex-row sm:items-center">
               <label htmlFor="footer-name" className="sr-only">
                 {footer.newsletter.name.label}
               </label>
@@ -44,12 +44,12 @@ export function SiteFooter() {
                 name="name"
                 type="text"
                 placeholder={footer.newsletter.name.placeholder}
-                className="h-11 min-w-0 flex-1 rounded-full bg-transparent px-5 text-sm text-white placeholder:text-blue-light-active/70 focus:outline-none"
+                className="footer-newsletter-input h-11 min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-blue-light-active/70 focus:outline-none"
               />
 
               <span
                 aria-hidden
-                className="hidden h-6 w-px shrink-0 bg-white/15 sm:block"
+                className="footer-newsletter-divider hidden h-6 w-px shrink-0 sm:block"
               />
 
               <label htmlFor="footer-email" className="sr-only">
@@ -61,12 +61,12 @@ export function SiteFooter() {
                 type="email"
                 required
                 placeholder={footer.newsletter.email.placeholder}
-                className="h-11 min-w-0 flex-1 rounded-full bg-transparent px-5 text-sm text-white placeholder:text-blue-light-active/70 focus:outline-none"
+                className="footer-newsletter-input h-11 min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-blue-light-active/70 focus:outline-none"
               />
 
               <button
                 type="submit"
-                className="h-11 shrink-0 rounded-full bg-blue px-6 text-sm font-medium text-white transition-colors hover:bg-blue-hover"
+                className="footer-newsletter-button shrink-0 transition-colors"
               >
                 {footer.newsletter.button}
               </button>
@@ -80,7 +80,7 @@ export function SiteFooter() {
       <Reveal y={40} duration={0.9} className="mt-14">
         <Parallax amount={6}>
           <div aria-hidden className="overflow-hidden px-6">
-            <p className="text-center text-[17vw] leading-[0.8] font-bold tracking-tighter text-blue-light-active/60 select-none">
+            <p className="footer-oversized-wordmark text-center select-none">
               BULLSHILL<span className="text-blue-light-active">.</span>
             </p>
           </div>

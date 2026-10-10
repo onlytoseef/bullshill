@@ -1,7 +1,11 @@
+import Image from "next/image";
+
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Container, Section } from "@/components/ui/section";
 import { finalCta } from "@/lib/content";
+import contactBackground from "../../app/assets/contact -us/contact-us.png";
+import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
 /**
  * Closing call to action: a dark card sitting on the page's light bottom
@@ -12,25 +16,25 @@ export function FinalCta() {
     <Section id="contact" className="bg-blue-light pb-12 sm:pb-16">
       <Container>
         <Reveal>
-          <div className="relative isolate overflow-hidden rounded-[2rem] bg-blue-darker px-8 py-16 text-center sm:px-16 sm:py-20">
+          <div
+            className="final-cta-card relative isolate overflow-hidden text-center"
+          >
             <div
               aria-hidden
-              className="pointer-events-none absolute -top-40 left-1/2 size-[32rem] -translate-x-1/2 rounded-full opacity-30 blur-[120px]"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle, var(--color-blue) 0%, transparent 70%)",
-              }}
+              className="final-cta-card-image pointer-events-none absolute inset-0"
+              style={{ backgroundImage: `url(${contactBackground.src})` }}
             />
-            <h2 className="relative text-display-sm font-semibold text-balance text-white sm:text-display-md">
+            <h2 className="final-cta-heading relative text-balance text-white">
               {finalCta.title}
             </h2>
             <Button
               href={finalCta.cta.href}
               variant="light"
               size="lg"
-              className="relative mt-8"
+              className="final-cta-button relative mt-8"
             >
               {finalCta.cta.label}
+              <Image src={findMoreIcon} alt="" width={24} height={24} />
             </Button>
           </div>
         </Reveal>

@@ -1,4 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
+
+import contactIcon from "../../app/assets/contact -us/contact-icon.svg";
 
 /**
  * Floating contact affordance, bottom-right on every page.
@@ -10,24 +13,15 @@ export function ContactBubble() {
   return (
     <Link
       href="/#contact"
-      className="fixed right-5 bottom-5 z-40 flex items-center gap-2 rounded-full bg-blue-darker/90 py-2.5 pr-5 pl-2.5 text-sm font-medium text-white shadow-xl ring-1 ring-white/10 backdrop-blur-sm transition-colors hover:bg-blue-dark"
+      className="contact-bubble fixed right-5 bottom-5 z-40 flex items-center justify-center"
     >
-      <span
-        aria-hidden
-        className="grid size-7 place-items-center rounded-full bg-orange"
-      >
-        <svg
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="size-3.5"
-        >
-          <path d="M14 7.5c0 2.8-2.7 5-6 5-.7 0-1.4-.1-2-.3L3 13.5l.8-2.3A4.7 4.7 0 012 7.5c0-2.8 2.7-5 6-5s6 2.2 6 5z" />
-        </svg>
-      </span>
+      <Image
+        src={contactIcon}
+        alt=""
+        width={42}
+        height={42}
+        className="contact-bubble-icon"
+      />
       Contact us
     </Link>
   );

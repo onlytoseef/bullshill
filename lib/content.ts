@@ -571,7 +571,7 @@ export const finalCta = {
 
 export const footer = {
   description:
-    "We offer a comprehensive suite of digital marketing services that cover all aspects of your online presence. From SEO and social media marketing to content creation and PPC advertising, we have the expertise and resources to handle your diverse marketing needs.",
+    "We offers a comprehensive suite of digital marketing services that cover all aspects of our online presence. From SEO and social media marketing to content creation and PPC advertising, they have the expertise and resources to handle our diverse marketing needs.",
   newsletter: {
     name: { label: "Your name", placeholder: "Your name" },
     email: { label: "Email address", placeholder: "Enter your email" },
