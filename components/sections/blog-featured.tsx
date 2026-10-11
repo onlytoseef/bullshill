@@ -1,45 +1,37 @@
+import Link from "next/link";
+
 import { Reveal } from "@/components/motion/reveal";
 import { Stagger } from "@/components/motion/stagger";
 import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { PostCard } from "@/components/ui/post-card";
 import { Container } from "@/components/ui/section";
-import { TagPill } from "@/components/ui/tag-pill";
 import { blogPage } from "@/lib/content";
 
 const { featured, secondary } = blogPage;
 
 export function BlogFeatured() {
   return (
-    <section className="pb-12 sm:pb-16">
+    <section className="blog-featured">
       <Container>
-        <Reveal className="grid gap-6 lg:grid-cols-[1.45fr_1fr]">
-          <div className="rounded-3xl border border-surface-border bg-surface-card p-3">
+        <Reveal>
+          <Link href={`/blog/${featured.slug}`} className="blog-feature-card">
             <PlaceholderVisual
               from={featured.from}
               to={featured.to}
-              className="h-full min-h-64 w-full"
+              className="blog-feature-image"
             />
-          </div>
 
-          <div className="flex flex-col justify-center rounded-3xl border border-surface-border bg-surface-card p-7">
-            <TagPill className="self-start">{featured.category}</TagPill>
-
-            <h2 className="mt-5 text-display-xs font-semibold text-balance text-white">
-              {featured.title}
-            </h2>
-
-            <p className="mt-4 text-sm leading-relaxed text-blue-light-active">
-              {featured.excerpt}
-            </p>
-
-            <time className="mt-6 text-xs text-blue-light-active/70">
-              {featured.date}
-            </time>
-          </div>
+            <div className="blog-feature-copy">
+              <span className="blog-feature-tag">{featured.category}</span>
+              <h2>{featured.title}</h2>
+              <p>{featured.excerpt}</p>
+              <time>{featured.date}</time>
+            </div>
+          </Link>
         </Reveal>
 
         <Stagger
-          className="mt-6 grid gap-6 sm:grid-cols-2"
+          className="blog-post-grid"
           itemClassName="h-full"
           stagger={0.08}
         >

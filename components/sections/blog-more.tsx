@@ -1,15 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 import { Reveal } from "@/components/motion/reveal";
 import { Stagger } from "@/components/motion/stagger";
 import { Button } from "@/components/ui/button";
-import { SendBadge } from "@/components/ui/icons";
 import { PostCard } from "@/components/ui/post-card";
 import { Container } from "@/components/ui/section";
 import { blogPage } from "@/lib/content";
 import { cn } from "@/lib/utils";
+import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
 const { more } = blogPage;
 const [ALL] = more.filters;
@@ -59,7 +60,7 @@ export function BlogMore() {
         {posts.length > 0 ? (
           <Stagger
             key={active}
-            className="mt-10 grid gap-6 sm:grid-cols-2"
+            className="blog-post-grid blog-post-grid--more"
             itemClassName="h-full"
             stagger={0.08}
           >
@@ -74,9 +75,13 @@ export function BlogMore() {
         )}
 
         <Reveal className="mt-14 flex justify-center">
-          <Button href={more.cta.href} variant="light" size="md">
+          <Button
+            href={more.cta.href}
+            variant="light"
+            className="case-row-button"
+          >
             {more.cta.label}
-            <SendBadge />
+            <Image src={findMoreIcon} alt="" width={24} height={24} />
           </Button>
         </Reveal>
       </Container>
