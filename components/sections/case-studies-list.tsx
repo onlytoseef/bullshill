@@ -1,15 +1,17 @@
+import Image from "next/image";
+
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { CaseStudyRow } from "@/components/ui/case-study-row";
-import { SendBadge } from "@/components/ui/icons";
 import { Container } from "@/components/ui/section";
 import { caseStudiesPage } from "@/lib/content";
+import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
 export function CaseStudiesList() {
   return (
     <section id="case-studies" className="scroll-mt-24 pb-12 sm:pb-16">
       <Container>
-        <ul className="divide-y divide-surface-border">
+        <ul className="case-rows">
           {caseStudiesPage.items.map((study) => (
             <CaseStudyRow
               key={study.slug}
@@ -22,14 +24,14 @@ export function CaseStudiesList() {
           ))}
         </ul>
 
-        <Reveal className="mt-12 flex justify-center">
+        <Reveal className="mt-20 flex justify-center">
           <Button
             href={caseStudiesPage.moreCta.href}
             variant="light"
-            size="md"
+            className="case-row-button case-rows-more"
           >
             {caseStudiesPage.moreCta.label}
-            <SendBadge />
+            <Image src={findMoreIcon} alt="" width={24} height={24} />
           </Button>
         </Reveal>
       </Container>

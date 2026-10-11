@@ -1,18 +1,16 @@
 import { Reveal } from "@/components/motion/reveal";
-import { SendIcon, TagGlyph, UpdatesIcon } from "@/components/ui/icons";
+import { WandIcon } from "@/components/ui/icons";
 import { Container } from "@/components/ui/section";
 import { caseStudyDetail } from "@/lib/content";
-
-const glyphs = [<UpdatesIcon key="0" />, <TagGlyph key="1" />, <SendIcon key="2" />];
 
 export function CaseStudyDetailStory() {
   return (
     <section className="case-detail-story">
       <Container>
-        {caseStudyDetail.blocks.map((block, index) => (
+        {caseStudyDetail.blocks.map((block) => (
           <Reveal key={block.eyebrow} className="case-detail-block">
             <span className="case-detail-eyebrow">
-              {glyphs[index]}
+              <WandIcon />
               {block.eyebrow}
             </span>
             <h2>{block.title}</h2>

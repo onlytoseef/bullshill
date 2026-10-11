@@ -23,7 +23,7 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
         <Reveal trigger="mount" delay={0.15} className="case-detail-intro">
           <h1>{study.client}</h1>
           <p>
-            {study.summaryLead}
+            <span>{study.summaryLead}</span>
             {study.summaryRest}
           </p>
 
