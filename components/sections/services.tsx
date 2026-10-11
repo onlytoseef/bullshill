@@ -35,8 +35,6 @@ export function Services() {
           {services.items.map((service, index) => (
             <li key={service.title}>
               <div className="services-row grid gap-10 lg:grid-cols-[minmax(0,653px)_minmax(0,471px)] lg:items-start lg:gap-14">
-                {/* Copy and artwork enter from opposite sides, so the eye is
-                    pulled across the row rather than straight down the page. */}
                 <Reveal x={-32} y={0}>
                   <div className="services-copy flex items-start gap-5">
                     <span

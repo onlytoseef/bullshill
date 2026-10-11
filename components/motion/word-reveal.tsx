@@ -18,19 +18,10 @@ const word: Variants = {
 };
 
 type Props = {
-  /** One array per visual line; each line is a list of styled segments. */
   lines: readonly (readonly HeadlineSegment[])[];
   className?: string;
 };
 
-/**
- * Headline that animates in word by word on mount.
- *
- * Takes plain serializable data rather than children, so a Server Component can
- * hand it the copy straight from `lib/content`. Every word is present in the
- * server-rendered HTML — only opacity and transform are animated, so crawlers
- * still read the full heading.
- */
 export function WordReveal({ lines, className }: Props) {
   return (
     <motion.h1
@@ -51,8 +42,6 @@ export function WordReveal({ lines, className }: Props) {
                   variants={word}
                   className={cn(
                     "inline-block",
-                    // Trailing gap instead of a space character, so the inline
-                    // blocks still wrap naturally at narrow widths.
                     "mr-[0.25em]",
                     segment.accent && "text-orange",
                   )}

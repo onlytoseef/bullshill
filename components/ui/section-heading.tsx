@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  /** Small label above the heading, e.g. "Our services". */
   eyebrow?: string;
   title: ReactNode;
   subtitle?: string;
@@ -11,9 +10,6 @@ type Props = {
   className?: string;
 };
 
-/**
- * The eyebrow / title / subtitle stack that opens most sections.
- */
 export function SectionHeading({
   eyebrow,
   title,

@@ -7,10 +7,6 @@ import { finalCta } from "@/lib/content";
 import contactBackground from "../../app/assets/contact -us/contact-us.png";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
-/**
- * Closing call to action: a dark card sitting on the page's light bottom
- * region, which continues into the footer.
- */
 export function FinalCta() {
   return (
     <Section id="contact" className="bg-blue-light pb-12 sm:pb-16">

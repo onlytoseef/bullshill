@@ -62,8 +62,6 @@ export function Testimonials() {
               </blockquote>
 
               <figcaption className="mt-8 flex items-center gap-4">
-                {/* Gradient monogram until headshots land in
-                    public/assets/images/ */}
                 <span
                   aria-hidden
                   className="grid size-11 shrink-0 place-items-center rounded-full text-sm font-semibold text-white"

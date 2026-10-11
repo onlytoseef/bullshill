@@ -6,11 +6,6 @@ import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import coinsImage from "../../app/assets/images/coins.png";
 
-/**
- * The supplied composite crypto coin artwork under the hero headline.
- *
- * Decorative: hidden from assistive tech.
- */
 export function CoinArc() {
   const container = useRef<HTMLDivElement>(null);
 

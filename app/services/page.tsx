@@ -14,7 +14,7 @@ export default function ServicesPage() {
   return (
     <>
       <ServicesList />
-      <Partners showHeading={false} />
+      <Partners variant="strip" />
       <FinalCta />
     </>
   );

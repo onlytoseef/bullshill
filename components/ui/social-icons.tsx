@@ -1,10 +1,3 @@
-/**
- * Social glyphs, inline so there's no icon-library dependency.
- *
- * All drawn on a 24×24 grid. The Instagram mark is built from primitives rather
- * than a single path — easier to verify by eye than a long path string.
- */
-
 const common = {
   viewBox: "0 0 24 24",
   "aria-hidden": true,
@@ -51,7 +44,16 @@ function Telegram() {
   );
 }
 
+function Facebook() {
+  return (
+    <svg {...common} fill="currentColor">
+      <path d="M22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h11.02v-9.294H9.692v-3.622h3.099V8.413c0-3.066 1.873-4.735 4.608-4.735 1.31 0 2.436.097 2.764.141v3.206l-1.897.001c-1.488 0-1.776.707-1.776 1.744v2.288h3.552l-.463 3.622h-3.089V24h6.735C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
+    </svg>
+  );
+}
+
 const icons = {
+  Facebook,
   X,
   LinkedIn,
   Instagram,
@@ -62,7 +64,6 @@ export type SocialName = keyof typeof icons;
 
 export function SocialIcon({ name }: { name: string }) {
   const Icon = icons[name as SocialName];
-  // Unknown label — render the initial so a content change can't crash the page.
   if (!Icon) {
     return <span className="text-xs font-semibold">{name.charAt(0)}</span>;
   }

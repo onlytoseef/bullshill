@@ -2,7 +2,6 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-/** Horizontal gutter and max width, shared by every section. */
 export function Container({
   children,
   className,
@@ -17,7 +16,6 @@ export function Container({
   );
 }
 
-/** Section shell carrying the page's vertical rhythm. */
 export function Section({
   id,
   children,

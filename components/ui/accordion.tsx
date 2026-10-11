@@ -12,20 +12,6 @@ type Item = {
   answer: string;
 };
 
-/**
- * Single-open accordion.
- *
- * Takes plain strings, so a Server Component can hand it content straight from
- * `lib/content` without anything unserializable crossing the boundary.
- *
- * Every panel stays mounted and is collapsed with height rather than being
- * unmounted. Mounting on open would leave the closed answers out of the
- * rendered HTML entirely — they'd appear only inside the RSC payload, which is
- * JSON in a script tag and not indexable as page content. FAQ copy is worth too
- * much in search to hide that way. `inert` then keeps the collapsed text out of
- * the tab order and the accessibility tree, so screen readers don't read
- * answers the user hasn't opened.
- */
 export function Accordion({ items }: { items: readonly Item[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const baseId = useId();

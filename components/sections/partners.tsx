@@ -19,24 +19,56 @@ const partnerImages = [
   partnerSix,
 ] as const;
 
+const stripLogos = [
+  { name: "DELL", width: 81, size: 34, weight: 800, tracking: "-0.01em" },
+  { name: "zendesk", width: 113, size: 30, weight: 400, tracking: "-0.02em" },
+  { name: "Rakuten", width: 88, size: 24, weight: 600, tracking: "-0.01em" },
+  { name: "PACIFIC FUNDS", width: 187, size: 21, weight: 600, tracking: "0.04em" },
+  { name: "NCR", width: 103, size: 34, weight: 700, tracking: "0.02em" },
+  { name: "Lattice", width: 158, size: 34, weight: 500, tracking: "0" },
+  { name: "TED", width: 71, size: 35, weight: 900, tracking: "-0.03em" },
+] as const;
+
 type Props = {
-  /**
-   * The /services page shows only the trusted-by line and the logos; the home
-   * page carries the full heading above them.
-   */
-  showHeading?: boolean;
+  variant?: "home" | "strip";
 };
 
-export function Partners({ showHeading = true }: Props) {
+export function Partners({ variant = "home" }: Props) {
+  if (variant === "strip") {
+    return (
+      <section className="partners-strip">
+        <Container>
+          <Reveal>
+            <p>{partners.subtitle}</p>
+
+            <ul>
+              {stripLogos.map((logo) => (
+                <li key={logo.name} style={{ width: logo.width }}>
+                  <span
+                    style={{
+                      fontSize: logo.size,
+                      fontWeight: logo.weight,
+                      letterSpacing: logo.tracking,
+                    }}
+                  >
+                    {logo.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </Container>
+      </section>
+    );
+  }
+
   return (
     <Section className="partners-section py-16 sm:py-20">
       <Container>
         <Reveal className="partners-heading text-center">
-          {showHeading ? (
-            <h2>
-              {partners.title}
-            </h2>
-          ) : null}
+          <h2>
+            {partners.title}
+          </h2>
           <p>
             {partners.subtitle}
           </p>

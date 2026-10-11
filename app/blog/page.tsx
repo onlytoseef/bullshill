@@ -18,7 +18,7 @@ export default function BlogPage() {
       <BlogHero />
       <BlogFeatured />
       <BlogMore />
-      <Partners showHeading={false} />
+      <Partners variant="strip" />
       <FinalCta />
     </>
   );

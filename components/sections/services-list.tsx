@@ -3,12 +3,6 @@ import { ServiceRow } from "@/components/ui/service-row";
 import { Container, Section } from "@/components/ui/section";
 import { servicesPage } from "@/lib/content";
 
-/**
- * The full service list on /services.
- *
- * The page heading is built here rather than with <SectionHeading> because the
- * design puts the eyebrow on the opposite end of the title's row, not above it.
- */
 export function ServicesList() {
   return (
     <Section className="pt-12 sm:pt-16">
@@ -36,7 +30,10 @@ export function ServicesList() {
               body={service.body}
               tags={servicesPage.tags}
               caption={servicesPage.caption}
-              cta={servicesPage.cta}
+              cta={{
+                label: servicesPage.cta.label,
+                href: `/services/${service.slug}`,
+              }}
               visual={service.visual}
             />
           ))}

@@ -8,10 +8,6 @@ import { blogPage } from "@/lib/content";
 
 const { featured, secondary } = blogPage;
 
-/**
- * The lead story — artwork and meta side by side — with the two runners-up
- * beneath it.
- */
 export function BlogFeatured() {
   return (
     <section className="pb-12 sm:pb-16">
@@ -42,8 +38,6 @@ export function BlogFeatured() {
           </div>
         </Reveal>
 
-        {/* `itemClassName` passes the full height through Stagger's generated
-            wrappers, which are the real grid items. */}
         <Stagger
           className="mt-6 grid gap-6 sm:grid-cols-2"
           itemClassName="h-full"

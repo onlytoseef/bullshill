@@ -1,6 +1,5 @@
 import { site } from "@/lib/content";
 
-/** Thin strip above the nav. */
 export function AnnouncementBar() {
   return (
     <div className="border-b border-surface-border/50 bg-surface-raised">

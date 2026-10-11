@@ -5,17 +5,6 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { Container, Section } from "@/components/ui/section";
 import { process } from "@/lib/content";
 
-/**
- * The process flow.
- *
- * Stays a Server Component — only <ProcessConnectors> crosses to the client,
- * so the card copy never enters the client bundle.
- *
- * Below `lg` the steps are a plain vertical list. At `lg` and up they switch to
- * absolute positions driven by the same `x`/`y` percentages the connectors use,
- * fed in as CSS custom properties so Tailwind can apply them at one breakpoint
- * only (inline `left`/`top` would otherwise leak into the mobile layout).
- */
 export function Process() {
   return (
     <Section className="process-section">

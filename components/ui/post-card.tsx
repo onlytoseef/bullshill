@@ -6,21 +6,15 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   post: BlogPost;
-  /**
-   * Detail routes don't exist yet, so cards point at a placeholder. Swap for
-   * `/blog/${post.slug}` once `app/blog/[slug]/page.tsx` lands.
-   */
   href?: string;
   className?: string;
 };
 
-/**
- * Article card: inset artwork above title, excerpt and date.
- *
- * The whole card is one link, with the heading as its accessible name — the
- * date and excerpt sit inside and don't need separate tab stops.
- */
-export function PostCard({ post, href = "#", className }: Props) {
+export function PostCard({
+  post,
+  href = `/blog/${post.slug}`,
+  className,
+}: Props) {
   return (
     <article className={cn("h-full", className)}>
       <Link
@@ -42,8 +36,6 @@ export function PostCard({ post, href = "#", className }: Props) {
             {post.excerpt}
           </p>
 
-          {/* `mt-auto` pins the date to the bottom so it lines up across a row
-              of cards with differently sized titles. */}
           <time className="mt-auto pt-5 text-xs text-blue-light-active/70">
             {post.date}
           </time>

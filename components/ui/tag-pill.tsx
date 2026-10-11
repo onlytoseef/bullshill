@@ -4,12 +4,10 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   children: ReactNode;
-  /** Optional leading glyph or icon. */
   icon?: ReactNode;
   className?: string;
 };
 
-/** Small capability tag, as used under each service in "What We Do". */
 export function TagPill({ children, icon, className }: Props) {
   return (
     <span

@@ -12,23 +12,15 @@ import { blogPage } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 const { more } = blogPage;
-/** First filter is the catch-all, so it needs no membership test. */
 const [ALL] = more.filters;
 
-/**
- * The filterable archive below the featured stories.
- *
- * Client-side because the whole archive is already in the bundle — filtering it
- * over the network would be slower and no more correct.
- */
 export function BlogMore() {
   const [active, setActive] = useState<string>(ALL);
 
   const posts =
     active === ALL
       ? more.posts
-      : // `as const` on the content makes these literal tuples; widen so the
-        // runtime string from state is an acceptable argument.
+      :
         more.posts.filter((post) =>
           (post.filters as readonly string[]).includes(active),
         );
@@ -65,8 +57,6 @@ export function BlogMore() {
         </Reveal>
 
         {posts.length > 0 ? (
-          // Keyed by filter so the stagger replays on each change instead of
-          // swapping the cards in silently.
           <Stagger
             key={active}
             className="mt-10 grid gap-6 sm:grid-cols-2"

@@ -5,9 +5,6 @@ import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { process } from "@/lib/content";
 
-/**
- * Convert a viewport coordinate into the SVG's normalized viewBox space.
- */
 function toSvgPoint(
   point: { x: number; y: number },
   bounds: DOMRect,
@@ -40,17 +37,6 @@ function connector(first: DOMRect, second: DOMRect, svgBounds: DOMRect) {
   return `M ${from.x} ${from.y} C ${from.x + bend * direction} ${from.y}, ${to.x - bend * direction} ${to.y}, ${to.x} ${to.y}`;
 }
 
-/**
- * The curved lines joining the process cards, drawn as you scroll.
- *
- * Sits as an absolute overlay behind the cards. The viewBox is a flat 0–100
- * grid with `preserveAspectRatio="none"` so the geometry tracks the container
- * at any width; `vector-effect="non-scaling-stroke"` keeps the stroke an even
- * weight despite that non-uniform scaling.
- *
- * Hidden below `lg`, where the cards stack vertically and connectors would only
- * add noise.
- */
 export function ProcessConnectors() {
   const svgRef = useRef<SVGSVGElement>(null);
 

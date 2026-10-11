@@ -12,16 +12,11 @@ const base =
   "disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
-  // The hero / nav call to action.
   primary: "bg-orange text-white hover:bg-orange-hover active:bg-orange-active",
-  // Outlined, for secondary actions on dark surfaces.
   secondary:
     "border border-surface-border text-blue-light hover:border-orange hover:text-orange",
   ghost: "text-blue-light-active hover:text-white",
-  // For use on the light cream CTA panel, where the page's dark navy is the
-  // high-contrast choice.
   inverse: "bg-blue-darker text-white hover:bg-blue-dark",
-  // The inverse of `inverse`: a light pill on a dark surface.
   light: "bg-white text-blue-darker hover:bg-blue-light",
 };
 
@@ -48,12 +43,6 @@ type ButtonAsButton = BaseProps & {
 
 type ButtonProps = ButtonAsLink | ButtonAsButton;
 
-/**
- * Renders a `<Link>` when given an `href`, otherwise a `<button>`.
- *
- * Server Component — no interactivity of its own. Hover and focus states are
- * plain CSS, so this never needs to ship to the client.
- */
 export function Button({
   children,
   variant = "primary",

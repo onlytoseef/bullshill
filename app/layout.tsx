@@ -8,8 +8,6 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { MotionProviders } from "@/components/motion/providers";
 import "./globals.css";
 
-// Variable font, so no `weight` — the whole 400–700 range the design system
-// uses comes from one file.
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -34,8 +32,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${inter.variable} ${geist.variable} antialiased`}
-      // Next 16 no longer forces scroll-behavior during navigation; this opts
-      // back into the old smooth behaviour for route changes.
       data-scroll-behavior="smooth"
     >
       <body className="min-h-dvh font-sans">

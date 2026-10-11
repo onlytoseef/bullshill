@@ -28,7 +28,28 @@ export const nav = {
     { label: "Team", href: "/#about" },
     { label: "Testimonials", href: "/#testimonials" },
   ],
-  cta: { label: "Contact Us", href: "/#contact" },
+  cta: { label: "Contact Us", href: "/contact" },
+} as const;
+
+export const contactPage = {
+  title: "Contact us",
+  subtitle: "Submit your query below",
+  fields: [
+    { name: "name", label: "Name", type: "text", placeholder: "John", autoComplete: "name" },
+    { name: "phone", label: "Phone Number", type: "tel", placeholder: "+92 21", autoComplete: "tel" },
+    { name: "email", label: "Email", type: "email", placeholder: "submit.com@gmail.com", autoComplete: "email" },
+  ],
+  message: { name: "message", label: "Message", placeholder: "Write your message here" },
+  submit: "Submit",
+  schedule: {
+    title: "Let's Talk About Your Project",
+    subtitle: "Need help with UI/UX, Advertising Design, or AI Creative Campaigns?",
+    label: "Schedule a Google Meet Call",
+    button: "Google Meet",
+    note: "Click to schedule a free 30 min call.",
+    /** Placeholder — swap for the real booking link. */
+    href: "https://meet.google.com/",
+  },
 } as const;
 
 export const hero = {
@@ -86,39 +107,48 @@ export const servicesPage = {
   caption: SERVICE_CAPTION,
   /** The design shows the same four capability tags on every service. */
   tags: ["Token Launch", "NFT Promotion", "Memecoin Hype", "ICO Strategy"],
+  /** On /services each row points at `/services/${slug}`; the detail page
+   *  itself uses this href. */
   cta: { label: "Find out more", href: "/#contact" },
   items: [
     {
+      slug: "meme-coins",
       title: "Meme Coins",
-      body: "From crafting a strategic marketing plan for a successful launch to assisting in community building, we specialise in memecoin marketing for any Web3 or crypto project. Whether you're launching an NFT, ICO, memecoin, DEX, DAO or crypto gaming platform, we're here to support every aspect of your marketing journey.",
+      body: "From crafting a strategic marketing plan for a successful launch to assisting in community building, we specialize in full-scale marketing for any Web3 or crypto project. Whether you're launching an NFT, ICO, Memecoin, DEX, DAO, or Crypto Gaming platform, we're here to support every aspect of your marketing journey",
       visual: { label: "Memecoin launch", from: "#1b1033", to: "#05030c" },
     },
     {
+      slug: "social-media-marketing",
       title: "Social Media Marketing",
       body: "Grow your brand with our social media marketing services. We create engaging posts, manage your accounts and run targeted ads to help you reach more people. Straightforward strategies that connect you with your audience and move the numbers you care about.",
       visual: { label: "Social channels", from: "#2f7cf6", to: "#0b2a63" },
     },
     {
+      slug: "ai-product-launch",
       title: "AI Product Launch",
       body: "Positioning, narrative and go-to-market for AI products. We help you launch something that reads as a category definition rather than another model announcement — landing pages, launch content and the press angle to carry it.",
       visual: { label: "AI go-to-market", from: "#2a2a30", to: "#0a0a0d" },
     },
     {
+      slug: "nft-marketing",
       title: "NFT Marketing / Promotion",
       body: "We create high-quality content that tells your story — articles, blogs, social posts and more. The focus is engaging, useful content that connects with collectors and gives your drop a reason to be shared.",
       visual: { label: "NFT collection", from: "#3b5bdb", to: "#141a4d" },
     },
     {
+      slug: "community-growth",
       title: "Community Growth & Management",
       body: "We help you build and grow your online community. Our growth and management services focus on engaging your audience, answering their questions and creating a positive space for discussion — attracting new members while keeping the existing ones active.",
       visual: { label: "Community channels", from: "#0f2b4a", to: "#04101c" },
     },
     {
+      slug: "x-marketing",
       title: "X Marketing",
       body: "Daily posting, thread strategy and reply-guy coverage on the platform where crypto actually argues. We run the account, seed conversations with the right people, and turn impressions into followers who stay.",
       visual: { label: "X / Twitter", from: "#f4f4f5", to: "#b8babf" },
     },
     {
+      slug: "reddit-marketing",
       title: "Reddit Marketing",
       body: "Subreddit-native campaigns that survive moderation. We find the communities your buyers are already in, post in a way that earns upvotes rather than removals, and handle the AMAs and launch threads that follow.",
       visual: { label: "Reddit campaigns", from: "#f2501f", to: "#8a2708" },
@@ -428,6 +458,82 @@ export const blogPage = {
   },
 } as const;
 
+/** Every slug the /blog index links to — drives the static detail routes. */
+export const blogSlugs: readonly string[] = [
+  blogPage.featured,
+  ...blogPage.secondary,
+  ...blogPage.more.posts,
+].map((post) => post.slug);
+
+/**
+ * The /blog/[slug] detail page.
+ *
+ * The design ships one dummy article, so every slug renders this same copy
+ * until real posts exist. Only the opening section has body copy in the
+ * mockup; later sections appear once they are given `paragraphs`.
+ */
+export const blogArticle = {
+  title:
+    "Mastering ChatGPT Blog Creation: Dos and Don'ts for SaaS Marketing Managers",
+  date: "Oct 19",
+  readTime: "10 min read",
+  /** Gradient stand-in until real art lands in `public/assets/images/`. */
+  visual: { from: "#0ea5e9", to: "#082f49" },
+  author: {
+    name: "Jawad",
+    role: "Founder/CEO",
+    bio: "With 11 years in SaaS, I've built MillionVerifier and SAAS First. Passionate about SaaS, data, and AI. Let's connect if you share the same drive for success!",
+    linkedin: "#",
+  },
+  share: {
+    title: "Share with your community!",
+    networks: ["Facebook", "X", "LinkedIn"],
+  },
+  tocTitle: "In this article",
+  sections: [
+    {
+      id: "exploring-generative-ai",
+      title: "Exploring Generative AI in Content Creation",
+      paragraphs: [
+        "Hello there! As a marketing manager in the SaaS industry, you might be looking for innovative ways to engage your audience. I bet generative AI has crossed your mind as an option for creating content. Well, let me share from my firsthand experience.",
+        "Google encourages high-quality blogs regardless of whether they're written by humans or created using artificial intelligence like ChatGPT. Here's what matters: producing original material with expertise and trustworthiness based on Google E-E-A-T principles.",
+        "This means focusing more on people-first writing rather than primarily employing AI tools to manipulate search rankings. There comes a time when many experienced professionals want to communicate their insights but get stuck due to limited writing skills – that's where Generative AI can step in.",
+        "So, together, we're going explore how this technology could help us deliver valuable content without sounding robotic or defaulting into mere regurgitations of existing materials (spoiler alert – common pitfalls!). Hang tight – it'll be a fun learning journey!",
+      ],
+    },
+    {
+      id: "common-ai-writing-pitfalls",
+      title: "Steering Clear of Common AI Writing Pitfalls",
+      paragraphs: [],
+    },
+    {
+      id: "chatgpt-capabilities",
+      title: "Understanding ChatGPT Capabilities – Define Your Style",
+      paragraphs: [],
+    },
+    {
+      id: "understand-your-readers",
+      title: "Understand Your Readers",
+      paragraphs: [],
+    },
+    {
+      id: "quality-ai-powered-blogs",
+      title: "Creating Quality AI-powered Blogs that Stand Out",
+      paragraphs: [],
+    },
+    {
+      id: "conclusion",
+      title: "Conclusion: Embracing AI in Blog Creation",
+      paragraphs: [],
+    },
+    {
+      id: "afterword",
+      title: "Afterword: The AI Behind This Article",
+      paragraphs: [],
+    },
+  ] as { id: string; title: string; paragraphs: string[] }[],
+} as const;
+
 export type CaseStudy = {
   slug: string;
   client: string;
@@ -455,8 +561,8 @@ export const caseStudiesPage = {
   subtitle:
     "BullShill is a crypto marketing agency based in Dubai, founded in 2020. Trusted by Binance, Bybit, Algorand, Canton, OKX, and Polymarket.",
   cta: { label: "View case studies", href: "#case-studies" },
-  /** Per-row link. Detail routes don't exist yet. */
-  readCta: { label: "Read full case study", href: "#" },
+  /** Per-row link label — each row points at `/case-studies/${slug}`. */
+  readCta: { label: "Read full case study" },
   moreCta: { label: "Find out more", href: "/#contact" },
   items: [
     {
@@ -499,6 +605,68 @@ export const caseStudiesPage = {
       visual: { from: "#22c55e", to: "#052e16" },
     },
   ] satisfies CaseStudy[],
+} as const;
+
+/**
+ * The /case-studies/[slug] detail page.
+ *
+ * Title, summary and artwork come from the matching `caseStudiesPage` item;
+ * everything below is the one dummy story the design ships, shared by every
+ * slug until real write-ups exist. Body paragraphs are placeholder copy — the
+ * mockup's are too small to transcribe.
+ */
+export const caseStudyDetail = {
+  metrics: ["25M+ Impressions", "10K+ New users", "$250K+ Affiliate Revenue"],
+  blocks: [
+    {
+      eyebrow: "The Challenge",
+      title: "Turning a Regulatory Milestone Into Real European Growth",
+      paragraphs: [
+        "The client had just secured its licence to operate across the European Union, but approval alone doesn't move users. They needed to turn a compliance win into awareness, sign-ups and a sustainable base of crypto-native European customers.",
+      ],
+    },
+    {
+      eyebrow: "Why BullShill",
+      title: "The Right Partner for a Compliance-First, Creator-Led Launch",
+      paragraphs: [
+        "Regulated markets leave no room for hype that can't be backed up. BullShill pairs a vetted creator network with messaging built to clear legal review, so campaigns launch on time without losing their edge.",
+        "Every asset, creator brief and media placement was signed off against the client's compliance guidelines before it went live.",
+      ],
+    },
+    {
+      eyebrow: "The Delivery",
+      title: "A Three-Track Campaign Built for Trust and Conversion",
+      paragraphs: [
+        "We ran three coordinated workstreams in parallel, each owning a different stage of the funnel, from first impression to funded account.",
+      ],
+    },
+  ],
+  tracks: [
+    {
+      title: "KOL Marketing & Creator Activation",
+      body: "We activated a targeted selection of crypto-native creators across X, YouTube and Telegram, chosen for audience quality over follower count. Each creator received a tailored brief and tracked links, so every post could be tied back to sign-ups and funded accounts.",
+    },
+    {
+      title: "Narrative & Campaign Structuring",
+      body: "Before any content went live, we developed the overarching campaign narrative and sequenced it into phases: announce, educate and convert. That gave creators, media and the client's own channels one consistent story to tell.",
+    },
+    {
+      title: "PR & Communications Support",
+      body: "We coordinated media coverage and PR alignment to ensure consistent messaging across press and owned channels, reinforcing the campaign narrative with third-party credibility.",
+    },
+  ],
+  results: {
+    eyebrow: "Campaign Results",
+    title: "Numbers That Speak for Themselves",
+    subtitle: "Numbers That Speak for Themselves",
+    stats: [
+      { value: "2.5M+", label: "Total Impressions" },
+      { value: "10K+", label: "New EU Users" },
+      { value: "8.25%", label: "Click-Through Rate" },
+      { value: "$9.8", label: "CPM" },
+      { value: "$250K+", label: "Affiliate Revenue" },
+    ],
+  },
 } as const;
 
 export const awards = {

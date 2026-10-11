@@ -8,6 +8,7 @@ import {
 } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,18 +20,12 @@ import heroBackground from "../../app/assets/images/hero-bg.svg";
 const linkClass =
   "text-[13px] font-medium text-blue-darker transition-colors hover:text-blue";
 
-/**
- * Sticky navigation. Transparent over the hero, then picks up a blurred
- * background and hairline border once the page scrolls.
- *
- * Sticky works here because Lenis runs in `root` mode — it scrolls the document
- * rather than transforming a wrapper, which would otherwise break the
- * containing block.
- */
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
+  const pathname = usePathname();
+  const ownBackdrop = pathname === "/";
 
   useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 24));
 
@@ -40,7 +35,8 @@ export function SiteHeader() {
     <header
       className="site-header sticky top-0 z-50 px-4 pt-5 md:px-7"
       style={{
-        backgroundImage: scrolled ? "none" : `url(${heroBackground.src})`,
+        backgroundImage:
+          scrolled || !ownBackdrop ? "none" : `url(${heroBackground.src})`,
       }}
     >
       <nav

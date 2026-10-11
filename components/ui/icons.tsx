@@ -1,4 +1,3 @@
-/** Small right arrow used on buttons and links. */
 export function ArrowIcon({ className = "size-4" }: { className?: string }) {
   return (
     <svg
@@ -16,7 +15,6 @@ export function ArrowIcon({ className = "size-4" }: { className?: string }) {
   );
 }
 
-/** Rounded-square tick, used as the glyph on capability tags. */
 export function TagGlyph() {
   return (
     <svg
@@ -35,7 +33,6 @@ export function TagGlyph() {
   );
 }
 
-/** Paper plane, as the design puts on every call-to-action button. */
 export function SendIcon({ className = "size-4" }: { className?: string }) {
   return (
     <svg
@@ -54,10 +51,6 @@ export function SendIcon({ className = "size-4" }: { className?: string }) {
   );
 }
 
-/**
- * The paper plane in a dark disc, which is how the design finishes every light
- * pill button. Pass as the last child of <Button variant="light">.
- */
 export function SendBadge() {
   return (
     <span
@@ -69,7 +62,27 @@ export function SendBadge() {
   );
 }
 
-/** Circular arrow, marking the "latest updates" badge on the blog index. */
+export function CoinCycleIcon() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      className="size-6 shrink-0"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3.5 12a8.5 8.5 0 0 1 14.6-5.9" />
+      <path d="M18.4 2.6v3.6h-3.6" />
+      <path d="M20.5 12a8.5 8.5 0 0 1-14.6 5.9" />
+      <path d="M5.6 21.4v-3.6h3.6" />
+      <path d="M14.3 9.6c-.5-.6-1.3-.9-2.2-.9-1.3 0-2.2.6-2.2 1.6 0 2.2 4.5 1 4.5 3.2 0 1-.9 1.6-2.2 1.6-1 0-1.8-.3-2.4-.9M12 7.2v9.6" />
+    </svg>
+  );
+}
+
 export function UpdatesIcon() {
   return (
     <svg
@@ -87,4 +100,3 @@ export function UpdatesIcon() {
     </svg>
   );
 }
-

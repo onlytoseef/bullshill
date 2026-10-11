@@ -22,7 +22,6 @@ export function Awards() {
 
         <Stagger className="awards-grid" stagger={0.12}>
           {awards.people.map((person, index) => (
-            // Alternating drift so the three portraits don't move as one block.
             <Parallax key={person.name} amount={index % 2 === 0 ? 6 : 12}>
               <figure
                 className="awards-card relative isolate overflow-hidden"

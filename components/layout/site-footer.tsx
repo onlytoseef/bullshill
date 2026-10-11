@@ -32,8 +32,6 @@ export function SiteFooter() {
             ))}
           </ul>
 
-          {/* TODO: no submit handler yet — point this at a mailing-list
-              endpoint or a Server Action before launch. */}
           <form className="footer-newsletter mt-8 w-full">
             <div className="footer-newsletter-row flex flex-col gap-2 sm:flex-row sm:items-center">
               <label htmlFor="footer-name" className="sr-only">
@@ -75,8 +73,6 @@ export function SiteFooter() {
         </div>
       </Container>
 
-      {/* Oversized wordmark. Decorative — the real one is at the top of the
-          footer, so this is hidden from assistive tech. */}
       <Reveal y={40} duration={0.9} className="mt-14">
         <Parallax amount={6}>
           <div aria-hidden className="overflow-hidden px-6">

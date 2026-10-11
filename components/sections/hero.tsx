@@ -6,7 +6,6 @@ import { ArrowIcon } from "@/components/ui/icons";
 import { hero, site } from "@/lib/content";
 import heroBackground from "../../app/assets/images/hero-bg.svg";
 
-/** Grid wash and brand glow behind the hero. Purely decorative. */
 function Backdrop() {
   return (
     <div
@@ -44,8 +43,6 @@ export function Hero() {
             className="hero-heading-gradient whitespace-nowrap"
           />
 
-          {/* `mount` rather than `inView`: this sits above the fold, where
-              waiting on an intersection callback shows a blank gap. */}
           <Reveal trigger="mount" delay={0.55} className="mt-6">
             <p className="mx-auto max-w-2xl whitespace-pre text-base text-[#F1FBE8] sm:text-lg">
               {hero.subcopy}

@@ -12,12 +12,6 @@ import { projects } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
-/**
- * Filterable work showcase.
- *
- * Client Component — it owns the selected-tab state. Implemented as a real
- * tablist so arrow-key semantics and screen-reader announcements come for free.
- */
 export function Projects() {
   const [active, setActive] = useState(0);
   const baseId = useId();
@@ -55,8 +49,6 @@ export function Projects() {
                 )}
               >
                 {selected ? (
-                  // Shared layoutId slides the pill between tabs rather than
-                  // popping it in and out.
                   <motion.span
                     layoutId="project-filter-pill"
                     className="project-tab-active-fill absolute inset-0 rounded-full"

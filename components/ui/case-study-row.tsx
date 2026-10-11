@@ -10,18 +10,9 @@ type Props = {
   cta: { label: string; href: string };
 };
 
-/**
- * One case study on /case-studies: the whole story on the left, artwork on the
- * right.
- *
- * Server Component — the two <Reveal> wrappers are the only client code, and
- * everything here reaches them as children.
- */
 export function CaseStudyRow({ study, cta }: Props) {
   return (
     <li className="grid gap-8 py-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
-      {/* Copy and artwork enter from opposite sides, matching /services — the
-          eye is pulled across the row rather than straight down the page. */}
       <Reveal x={-24} y={0}>
         <h2 className="text-display-sm font-semibold text-balance text-white sm:text-display-md">
           {study.client}
@@ -55,7 +46,6 @@ export function CaseStudyRow({ study, cta }: Props) {
       </Reveal>
 
       <Reveal x={24} y={0} delay={0.1}>
-        {/* Thin light frame around the artwork, as the design has it. */}
         <div className="rounded-[1.25rem] border border-white/15 p-1.5">
           <PlaceholderVisual
             from={study.visual.from}

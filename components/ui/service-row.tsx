@@ -5,24 +5,15 @@ import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { TagPill } from "@/components/ui/tag-pill";
 
 type Props = {
-  /** 1-based position, rendered as the numbered chip. */
   index: number;
   title: string;
   body: string;
   tags: readonly string[];
-  /** Supporting line under the artwork. */
   caption: string;
   cta: { label: string; href: string };
   visual: { label: string; from: string; to: string };
 };
 
-/**
- * One service on the /services page: numbered copy on the left, artwork with a
- * caption and call to action on the right.
- *
- * Server Component — the two <Reveal> wrappers are the only client code, and
- * everything here reaches them as children.
- */
 export function ServiceRow({
   index,
   title,
@@ -34,8 +25,6 @@ export function ServiceRow({
 }: Props) {
   return (
     <li className="grid gap-8 py-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
-      {/* Copy and artwork enter from opposite sides, so the eye is pulled
-          across the row rather than straight down the page. */}
       <Reveal x={-24} y={0}>
         <div className="flex gap-4 sm:gap-5">
           <span

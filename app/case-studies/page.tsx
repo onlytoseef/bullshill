@@ -17,7 +17,7 @@ export default function CaseStudiesPage() {
     <>
       <CaseStudiesHero />
       <CaseStudiesList />
-      <Partners showHeading={false} />
+      <Partners variant="strip" />
       <Faqs />
       <FinalCta />
     </>
