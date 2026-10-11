@@ -83,6 +83,24 @@ export function CoinCycleIcon() {
   );
 }
 
+export function WandIcon() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 20 20"
+      fill="none"
+      className="size-5 shrink-0"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m3 17 9.5-9.5M10.6 5.6l1.9-1.9 3.8 3.8-1.9 1.9z" />
+      <path d="M5.5 2.5v3M4 4h3M15.5 12.5v3M14 14h3M8.5 1.8v1.4M16.8 2.5v1.4" />
+    </svg>
+  );
+}
+
 export function UpdatesIcon() {
   return (
     <svg
