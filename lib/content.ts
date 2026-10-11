@@ -693,6 +693,17 @@ export const awards = {
       from: "#1e3a5f",
       to: "#0a1727",
     },
+    { name: "Adnan Hussain", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Faisal Noor", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Junaid Muneer", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "M. Saad Akhtar", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Muhammad Faisal", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Muhammad Rehan", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Muhammad Rizwan", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Sadaqat", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Saqib Ijaz", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Usama Abid", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Zaigham", role: "", from: "#1e3a5f", to: "#0a1727" },
   ],
 } as const;
 
