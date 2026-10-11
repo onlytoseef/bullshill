@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Container, Section } from "@/components/ui/section";
 import { finalCta } from "@/lib/content";
 import { cn } from "@/lib/utils";
-import contactBackground from "../../app/assets/contact -us/contact-us.png";
+import contactBackground from "../../app/assets/contact -us/contact-us.webp";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
 type Props = {
