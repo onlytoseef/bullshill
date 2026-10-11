@@ -28,7 +28,7 @@ export const nav = {
     { label: "Team", href: "/#about" },
     { label: "Testimonials", href: "/#testimonials" },
   ],
-  cta: { label: "Contact Us", href: "/contact" },
+  cta: { label: "Contact us", href: "/contact" },
 } as const;
 
 export const contactPage = {
@@ -612,8 +612,8 @@ export const caseStudiesPage = {
  *
  * Title, summary and artwork come from the matching `caseStudiesPage` item;
  * everything below is the one dummy story the design ships, shared by every
- * slug until real write-ups exist. Body paragraphs are placeholder copy — the
- * mockup's are too small to transcribe.
+ * slug until real write-ups exist. A `\n` inside a paragraph is a deliberate
+ * line break from the design.
  */
 export const caseStudyDetail = {
   metrics: ["25M+ Impressions", "10K+ New users", "$250K+ Affiliate Revenue"],
@@ -622,22 +622,22 @@ export const caseStudyDetail = {
       eyebrow: "The Challenge",
       title: "Turning a Regulatory Milestone Into Real European Growth",
       paragraphs: [
-        "The client had just secured its licence to operate across the European Union, but approval alone doesn't move users. They needed to turn a compliance win into awareness, sign-ups and a sustainable base of crypto-native European customers.",
+        "Algorand Foundation had just secured its MiCA license.\nThe EU market brought a distinct set of obstacles: trust-sensitive consumers, heavy regulatory scrutiny, and a competitive field running near-identical messaging.",
       ],
     },
     {
       eyebrow: "Why BullShill",
       title: "The Right Partner for a Compliance-First, Creator-Led Launch",
       paragraphs: [
-        "Regulated markets leave no room for hype that can't be backed up. BullShill pairs a vetted creator network with messaging built to clear legal review, so campaigns launch on time without losing their edge.",
-        "Every asset, creator brief and media placement was signed off against the client's compliance guidelines before it went live.",
+        "Bybit needed a partner with deep roots in the European crypto creator ecosystem and the strategic capability to balance compliance-first messaging with authentic, high-converting content.",
+        "BullShill's KOL network, narrative expertise, and EU market experience made it the right fit.",
       ],
     },
     {
-      eyebrow: "The Delivery",
+      eyebrow: "The Solution",
       title: "A Three-Track Campaign Built for Trust and Conversion",
       paragraphs: [
-        "We ran three coordinated workstreams in parallel, each owning a different stage of the funnel, from first impression to funded account.",
+        "BullShill acted as Bybit's strategic marketing and communications partner for the full EU rollout, executing across three integrated workstreams that reinforced each other at every touchpoint.",
       ],
     },
   ],
