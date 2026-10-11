@@ -17,7 +17,7 @@ export default function ContactPage() {
       <ContactHero />
       <ContactSchedule />
       <Partners variant="strip" />
-      <FinalCta />
+      <FinalCta variant="page" />
     </>
   );
 }
