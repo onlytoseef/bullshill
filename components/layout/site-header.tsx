@@ -6,6 +6,7 @@ import {
   useMotionValueEvent,
   useScroll,
 } from "motion/react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,6 +17,17 @@ import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import logo from "../../app/assets/images/logo.png";
 import heroBackground from "../../app/assets/images/hero-bg.svg";
+
+const loadMobileMenu = () => import("./mobile-menu");
+
+const MobileMenu = dynamic(
+  () => loadMobileMenu().then((module) => module.MobileMenu),
+  { ssr: false },
+);
+
+const preloadMobileMenu = () => {
+  void loadMobileMenu();
+};
 
 const linkClass =
   "text-[13px] font-medium text-blue-darker transition-colors hover:text-blue";
@@ -111,6 +123,9 @@ export function SiteHeader() {
 
         <button
           type="button"
+          onPointerEnter={preloadMobileMenu}
+          onTouchStart={preloadMobileMenu}
+          onFocus={preloadMobileMenu}
           onClick={() => setMenuOpen((open) => !open)}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
@@ -135,41 +150,7 @@ export function SiteHeader() {
       </nav>
 
       <AnimatePresence initial={false}>
-        {menuOpen ? (
-          <motion.div
-            id="mobile-menu"
-            key="mobile-menu"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-4 overflow-hidden rounded-b-3xl bg-blue-light lg:hidden"
-          >
-            <ul className="flex flex-col gap-1 px-6 pb-6 text-blue-darker">
-              {[...nav.left, ...nav.right].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    onClick={close}
-                    className="block py-2.5 text-base text-blue-darker transition-colors hover:text-blue"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-              <li className="pt-3">
-                <Button
-                  href={nav.cta.href}
-                  onClick={close}
-                  className="w-full"
-                  size="md"
-                >
-                  {nav.cta.label}
-                </Button>
-              </li>
-            </ul>
-          </motion.div>
-        ) : null}
+        {menuOpen ? <MobileMenu key="mobile-menu" onClose={close} /> : null}
       </AnimatePresence>
     </header>
   );
