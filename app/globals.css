@@ -863,6 +863,52 @@
   margin: 0 auto;
 }
 
+.awards-scroller {
+  display: flex;
+  gap: 28px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 36px;
+  scroll-snap-type: x proximity;
+}
+
+/* A short, centred pill: the track's side margins pull it in from the edges
+   so it reads as a progress bar under the row, with the brand orange as the
+   handle. */
+.awards-scroller::-webkit-scrollbar {
+  height: 6px;
+}
+
+.awards-scroller::-webkit-scrollbar-track {
+  margin-inline: 30%;
+  border-radius: 999px;
+  background: rgba(232, 235, 238, 0.12);
+}
+
+.awards-scroller::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff5700 0%, #ef7914 100%);
+}
+
+.awards-scroller::-webkit-scrollbar-thumb:hover,
+.awards-scroller::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(90deg, #ff6a1a 0%, #ff8f2e 100%);
+}
+
+/* Firefox has no scrollbar pseudo-elements; give it the same colours. */
+@supports not selector(::-webkit-scrollbar) {
+  .awards-scroller {
+    scrollbar-color: #ef7914 rgba(232, 235, 238, 0.12);
+    scrollbar-width: thin;
+  }
+}
+
+.awards-scroller > li {
+  width: 460px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
 .awards-card {
   width: 100%;
   height: 460px;
@@ -1316,6 +1362,23 @@
 
   .awards-grid {
     grid-template-columns: minmax(0, 460px);
+  }
+
+  .awards-scroller {
+    gap: 16px;
+    padding-bottom: 28px;
+  }
+
+  .awards-scroller::-webkit-scrollbar-track {
+    margin-inline: 20%;
+  }
+
+  .awards-scroller > li {
+    width: 280px;
+  }
+
+  .awards-card {
+    height: 320px;
   }
 }
 
