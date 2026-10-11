@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { CaseStudyDetailHero } from "@/components/sections/case-study-detail-hero";
 import { CaseStudyDetailResults } from "@/components/sections/case-study-detail-results";
 import { CaseStudyDetailStory } from "@/components/sections/case-study-detail-story";
+import { FinalCta } from "@/components/sections/final-cta";
 import { Partners } from "@/components/sections/partners";
 import { caseStudiesPage } from "@/lib/content";
 
@@ -40,6 +41,7 @@ export default async function CaseStudyPage({ params }: Props) {
       <CaseStudyDetailStory />
       <CaseStudyDetailResults />
       <Partners variant="strip" />
+      <FinalCta variant="page" />
     </>
   );
 }

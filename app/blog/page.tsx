@@ -19,7 +19,7 @@ export default function BlogPage() {
       <BlogFeatured />
       <BlogMore />
       <Partners variant="strip" />
-      <FinalCta />
+      <FinalCta variant="page" />
     </>
   );
 }

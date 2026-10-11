@@ -18,8 +18,8 @@ export default function CaseStudiesPage() {
       <CaseStudiesHero />
       <CaseStudiesList />
       <Partners variant="strip" />
-      <Faqs />
-      <FinalCta />
+      <Faqs variant="page" />
+      <FinalCta variant="page" />
     </>
   );
 }

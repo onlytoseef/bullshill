@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { BlogDetailBody } from "@/components/sections/blog-detail-body";
 import { BlogDetailHero } from "@/components/sections/blog-detail-hero";
+import { FinalCta } from "@/components/sections/final-cta";
 import { Partners } from "@/components/sections/partners";
 import { blogArticle, blogSlugs } from "@/lib/content";
 
@@ -28,6 +29,7 @@ export default async function BlogPostPage({
       <BlogDetailHero />
       <BlogDetailBody />
       <Partners variant="strip" />
+      <FinalCta variant="page" />
     </>
   );
 }
