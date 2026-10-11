@@ -15,7 +15,7 @@ export default function ServicesPage() {
     <>
       <ServicesList />
       <Partners variant="strip" />
-      <FinalCta />
+      <FinalCta variant="page" />
     </>
   );
 }

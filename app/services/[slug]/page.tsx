@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { FinalCta } from "@/components/sections/final-cta";
 import { Partners } from "@/components/sections/partners";
 import { ServiceDetail } from "@/components/sections/service-detail";
 import { servicesPage } from "@/lib/content";
@@ -36,6 +37,7 @@ export default async function ServicePage({ params }: Props) {
     <>
       <ServiceDetail service={servicesPage.items[index]} index={index + 1} />
       <Partners variant="strip" />
+      <FinalCta variant="page" />
     </>
   );
 }
