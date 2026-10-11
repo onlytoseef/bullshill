@@ -20,13 +20,13 @@ const partnerImages = [
 ] as const;
 
 const stripLogos = [
-  { name: "DELL", width: 81, size: 34, weight: 800, tracking: "-0.01em" },
-  { name: "zendesk", width: 113, size: 30, weight: 400, tracking: "-0.02em" },
-  { name: "Rakuten", width: 88, size: 24, weight: 600, tracking: "-0.01em" },
-  { name: "PACIFIC FUNDS", width: 187, size: 21, weight: 600, tracking: "0.04em" },
-  { name: "NCR", width: 103, size: 34, weight: 700, tracking: "0.02em" },
-  { name: "Lattice", width: 158, size: 34, weight: 500, tracking: "0" },
-  { name: "TED", width: 71, size: 35, weight: 900, tracking: "-0.03em" },
+  { name: "Dell", file: "dell", width: 82, height: 27 },
+  { name: "Zendesk", file: "zendesk", width: 115, height: 23 },
+  { name: "Rakuten", file: "rakuten", width: 89, height: 28 },
+  { name: "Pacific Funds", file: "pacific_funds", width: 189, height: 18 },
+  { name: "NCR", file: "ncr", width: 106, height: 32 },
+  { name: "Lattice", file: "lattice", width: 159, height: 31 },
+  { name: "TED", file: "ted", width: 72, height: 27 },
 ] as const;
 
 type Props = {
@@ -43,16 +43,13 @@ export function Partners({ variant = "home" }: Props) {
 
             <ul>
               {stripLogos.map((logo) => (
-                <li key={logo.name} style={{ width: logo.width }}>
-                  <span
-                    style={{
-                      fontSize: logo.size,
-                      fontWeight: logo.weight,
-                      letterSpacing: logo.tracking,
-                    }}
-                  >
-                    {logo.name}
-                  </span>
+                <li key={logo.name}>
+                  <Image
+                    src={`/assets/icons/${logo.file}.png`}
+                    alt={logo.name}
+                    width={logo.width}
+                    height={logo.height}
+                  />
                 </li>
               ))}
             </ul>
