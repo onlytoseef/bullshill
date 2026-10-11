@@ -3,10 +3,10 @@ import Image from "next/image";
 import { Reveal } from "@/components/motion/reveal";
 import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { Container } from "@/components/ui/section";
-import { ShareLinks } from "@/components/ui/share-links";
+import { ShareLinksLazy } from "@/components/ui/share-links-lazy";
 import { SocialIcon } from "@/components/ui/social-icons";
 import { blogArticle } from "@/lib/content";
-import authorPhoto from "../../app/assets/team-section/1.png";
+import authorPhoto from "../../app/assets/team-section/Muhammad Jawad Nawaz.png";
 
 const { author, share, visual } = blogArticle;
 
@@ -61,7 +61,7 @@ export function BlogDetailHero() {
 
             <div className="blog-share-card">
               <p>{share.title}</p>
-              <ShareLinks networks={share.networks} />
+              <ShareLinksLazy networks={share.networks} />
             </div>
           </div>
         </Reveal>
