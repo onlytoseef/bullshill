@@ -15,6 +15,7 @@ import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import logo from "../../app/assets/images/logo.png";
 import heroBackground from "../../app/assets/images/hero-bg.svg";
+import headerContactIcon from "../../app/assets/contact -us/header-contact-icon.svg";
 
 const linkClass =
   "text-[13px] font-medium text-blue-darker transition-colors hover:text-blue";
@@ -74,7 +75,7 @@ export function SiteHeader() {
               priority
               className="size-7 object-contain"
             />
-            <span className="text-xl font-semibold tracking-tight">
+            <span className="header-wordmark">
               {site.name}
             </span>
           </span>
@@ -97,9 +98,7 @@ export function SiteHeader() {
             className="h-11 gap-4 px-5 text-sm font-normal text-blue-light hover:bg-blue-dark"
           >
             {nav.cta.label}
-            <svg aria-hidden viewBox="0 0 20 20" className="size-4 fill-current">
-              <path d="M4.5 4.75A2.75 2.75 0 0 1 7.25 2h5.5a2.75 2.75 0 0 1 2.75 2.75v3.5A2.75 2.75 0 0 1 12.75 11H10l-3.35 2.5V11h-.4A2.75 2.75 0 0 1 3.5 8.25v-3.5h1Zm1.5 1.5v1h6v-1H6Zm0 2v1h4v-1H6Z" />
-            </svg>
+            <Image src={headerContactIcon} alt="" width={18} height={18} />
           </Button>
         </div>
 

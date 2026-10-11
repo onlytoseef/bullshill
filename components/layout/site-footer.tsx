@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { Parallax } from "@/components/motion/parallax";
 import { Reveal } from "@/components/motion/reveal";
@@ -6,13 +7,17 @@ import { SocialIcon } from "@/components/ui/social-icons";
 import { Container } from "@/components/ui/section";
 import { Wordmark } from "@/components/ui/wordmark";
 import { footer } from "@/lib/content";
+import logo from "../../app/assets/images/logo.png";
 
 export function SiteFooter() {
   return (
     <footer className="site-footer bg-blue-light text-blue-darker">
       <Container>
         <div className="flex flex-col items-center text-center">
-          <Wordmark className="footer-wordmark text-blue-darker" />
+          <div className="footer-brand">
+            <Image src={logo} alt="" width={64} height={64} />
+            <Wordmark className="footer-wordmark text-blue-darker" />
+          </div>
 
           <p className="footer-description mt-5 max-w-2xl">
             {footer.description}

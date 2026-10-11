@@ -22,7 +22,7 @@ export function Hero() {
     <section className="relative overflow-hidden">
       <Backdrop />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-12 sm:pt-28">
+      <div className="hero-content relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-12 sm:pt-28">
         <div className="mx-auto max-w-3xl text-center">
           <div className="hero-announcement mx-auto mb-9 max-w-full">
             <svg
@@ -41,7 +41,7 @@ export function Hero() {
 
           <WordReveal
             lines={hero.headline}
-            className="hero-heading-gradient whitespace-nowrap"
+            className="hero-heading-gradient"
           />
 
           {/* `mount` rather than `inView`: this sits above the fold, where
@@ -65,7 +65,7 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="relative z-10 px-6 pb-20 sm:pb-28">
+      <div className="hero-coin-stage relative z-10 px-6 pb-20 sm:pb-28">
         <CoinArc />
       </div>
     </section>
