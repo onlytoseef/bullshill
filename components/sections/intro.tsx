@@ -3,7 +3,7 @@ import { Counter } from "@/components/motion/counter";
 import { Stagger } from "@/components/motion/stagger";
 import { Container, Section } from "@/components/ui/section";
 import { intro, stats } from "@/lib/content";
-import bgShine from "../../app/assets/images/bg-shine.png";
+import bgShine from "../../app/assets/images/bg-shine.webp";
 
 export function Intro() {
   return (
