@@ -3,10 +3,21 @@ import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Container, Section } from "@/components/ui/section";
 import { faqs } from "@/lib/content";
+import { cn } from "@/lib/utils";
 
-export function Faqs() {
+type Props = {
+  variant?: "home" | "page";
+};
+
+export function Faqs({ variant = "home" }: Props) {
   return (
-    <Section id="faqs" className="faqs-section">
+    <Section
+      id="faqs"
+      className={cn(
+        "faqs-section",
+        variant === "page" && "faqs-section--page",
+      )}
+    >
       <Container>
         <div className="faqs-layout grid gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal x={-24} y={0}>
