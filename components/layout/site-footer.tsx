@@ -27,6 +27,8 @@ export function SiteFooter() {
               <li key={social.label}>
                 <Link
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={social.label}
                   className="footer-social-link grid place-items-center rounded-full bg-white text-blue-darker transition-colors hover:bg-[#e8750a] hover:text-white"
                 >
