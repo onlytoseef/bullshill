@@ -13,7 +13,7 @@ export type HeadlineSegment = {
 
 export const site = {
   name: "BullShill",
-  announcement: "Marketing built for Web3 success",
+  announcement: "Hype is engineered, not hoped for",
 } as const;
 
 export const nav = {
@@ -54,12 +54,12 @@ export const contactPage = {
 
 export const hero = {
   headline: [
-    [{ text: "Dominate the " }, { text: "Crypto Market", accent: true }],
-    [{ text: "Launch Without Limits" }],
+    [{ text: "We Turn Zero Followers into" }],
+    [{ text: "Million-Dollar Communities.", accent: true }],
   ] satisfies HeadlineSegment[][],
   subcopy:
-    "We deliver data-driven, end-to-end marketing strategies that build hype, drive community,\nengagement, and secure lasting momentum",
-  cta: { label: "Book free consultation", href: "#contact" },
+    "End-to-end marketing for tokens, memecoins, AI projects and NFTs. We build the community, create the FOMO, and keep the momentum going after launch.",
+  cta: { label: "Book your free strategy call", href: "#contact" },
 } as const;
 
 /**
@@ -78,79 +78,97 @@ export const heroCoins = [
 
 export const intro = {
   eyebrow: "About BullShill",
-  bodyLead:
-    "From website development and content creation to social media management and community building,",
-  bodyAccent: "we offer everything you need to achieve your marketing goals",
+  bodyLead: "You build the product.",
+  bodyAccent: "We build the community that believes in it.",
 } as const;
 
 export const stats = [
-  { value: 100, suffix: "%", label: "Satisfied Clients" },
+  { value: 500, suffix: "+", label: "Web3 & AI Projects" },
   { value: 3000, suffix: "+", label: "Digital Marketing Projects" },
-  { value: 300, suffix: "+", label: "Web3 Marketing Projects" },
-  { value: 10, prefix: "$", suffix: "M", label: "Client Revenue Generated" },
+  { text: "Top Rated", label: "Upwork and Fiverr" },
+  { value: 10, prefix: "$", suffix: "M+", label: "Client Revenue Generated" },
 ] as const;
 
 /**
  * The standalone /services page.
  *
- * Longer list than the four highlighted on the home page. `caption` repeats the
- * same supporting line across every card in the design — kept as one constant
- * so it reads as deliberate and can be given per-service copy later by adding a
- * `caption` to any item.
+ * Each item carries its own tags, side caption and button label. `cta.href` is
+ * where the detail-page button points; the list page's cards link to the
+ * per-service route instead.
  */
-const SERVICE_CAPTION =
-  "End-to-end launch strategies designed to build massive hype, drive presales, and secure token momentum";
-
 export const servicesPage = {
   eyebrow: "Our services",
   title: "What We Do",
-  caption: SERVICE_CAPTION,
-  /** The design shows the same four capability tags on every service. */
-  tags: ["Token Launch", "NFT Promotion", "Memecoin Hype", "ICO Strategy"],
-  /** On /services each row points at `/services/${slug}`; the detail page
-   *  itself uses this href. */
-  cta: { label: "Find out more", href: "/#contact" },
+  cta: { href: "/#contact" },
   items: [
     {
-      slug: "meme-coins",
-      title: "Meme Coins",
-      body: "From crafting a strategic marketing plan for a successful launch to assisting in community building, we specialize in full-scale marketing for any Web3 or crypto project. Whether you're launching an NFT, ICO, Memecoin, DEX, DAO, or Crypto Gaming platform, we're here to support every aspect of your marketing journey",
-      visual: { label: "Memecoin launch", from: "#1b1033", to: "#05030c" },
+      slug: "ico-token-launches",
+      title: "ICO / Token Launches",
+      body: "From the first strategy session to post-launch growth, we run full-scale crypto marketing for tokens, ICOs and presales. We handle token promotion across X, Telegram, Discord and Reddit, build the community that fills your presale, and keep momentum going after you list. Whether you're launching a token, memecoin, DEX, DAO or Web3 game, we cover every step of your marketing.",
+      tags: ["Token Promotion", "ICO Marketing", "Token Presale", "Crypto Marketing"],
+      caption:
+        "We support your token at every stage: presale, launch day and everything after.",
+      button: "Launch your token",
+      visual: { label: "Token launch", from: "#1b1033", to: "#05030c" },
     },
     {
-      slug: "social-media-marketing",
-      title: "Social Media Marketing",
-      body: "Grow your brand with our social media marketing services. We create engaging posts, manage your accounts and run targeted ads to help you reach more people. Straightforward strategies that connect you with your audience and move the numbers you care about.",
-      visual: { label: "Social channels", from: "#2f7cf6", to: "#0b2a63" },
+      slug: "memecoin-marketing",
+      title: "Memecoin Marketing",
+      body: "We help create, launch and market memecoins that get noticed fast. From building the meme narrative and viral content to growing your X, Telegram and Discord community, our memecoin marketing is built to create FOMO, drive early holders and carry your coin toward multi-million market caps. Whether you're launching a new memecoin or growing an existing one, we handle every stage, from pre-launch hype to post-launch retention.",
+      tags: ["Memecoin Marketing", "Memecoin Launch", "Memecoin Promotion", "Memecoin Community"],
+      caption:
+        "Memecoin marketing that builds hype before launch and keeps holders engaged after listing.",
+      button: "Launch your memecoin",
+      visual: { label: "Memecoin launch", from: "#2f0f3a", to: "#0b0310" },
     },
     {
-      slug: "ai-product-launch",
-      title: "AI Product Launch",
-      body: "Positioning, narrative and go-to-market for AI products. We help you launch something that reads as a category definition rather than another model announcement — landing pages, launch content and the press angle to carry it.",
+      slug: "ai-product-marketing",
+      title: "AI Tools and Product Marketing",
+      body: "We help AI tools, automation products and AI-powered startups get discovered, adopted and talked about. From positioning your product and creating clear educational content to growing your presence on X, Reddit, Telegram and Discord, we build the brand awareness that turns curious visitors into active users. Already building on Web3? We also handle the tokenization of your AI product, with community and launch marketing to match.",
+      tags: ["AI Tool Marketing", "Product Launch", "Brand Awareness", "AI Tokenization"],
+      caption:
+        "AI product marketing built for visibility, adoption and long-term brand awareness.",
+      button: "Market your AI product",
       visual: { label: "AI go-to-market", from: "#2a2a30", to: "#0a0a0d" },
     },
     {
       slug: "nft-marketing",
-      title: "NFT Marketing / Promotion",
-      body: "We create high-quality content that tells your story — articles, blogs, social posts and more. The focus is engaging, useful content that connects with collectors and gives your drop a reason to be shared.",
+      title: "NFT Marketing and Promotion",
+      body: "We help NFT projects build hype, grow loyal communities and sell out their collections. From pre-mint buzz and whitelist campaigns to NFT promotion across X, Discord and Telegram, we handle the marketing that turns collectors into holders and holders into advocates. Whether you're preparing a new mint or reviving an existing collection, we support every stage, from launch to secondary market momentum.",
+      tags: ["NFT Marketing", "NFT Promotion", "NFT Community", "Mint Strategy"],
+      caption:
+        "From pre-mint hype to sold-out collections, we build the community your NFT project needs.",
+      button: "Promote your NFT project",
       visual: { label: "NFT collection", from: "#3b5bdb", to: "#141a4d" },
     },
     {
       slug: "community-growth",
-      title: "Community Growth & Management",
-      body: "We help you build and grow your online community. Our growth and management services focus on engaging your audience, answering their questions and creating a positive space for discussion — attracting new members while keeping the existing ones active.",
+      title: "Community Growth and Management",
+      body: "We grow and manage the Telegram and Discord communities behind trading projects, utility tokens and memecoins. From launching your group and attracting real members to moderating daily chat, running AMAs and keeping holders engaged, we build communities that stay active long after launch day. Whether you need your first thousand members or a team to manage an existing community, we handle growth, moderation and retention in one plan.",
+      tags: ["Telegram Growth", "Discord Growth", "Community Management", "Crypto Community"],
+      caption:
+        "Grow your Telegram and Discord with engaged members, active chats and strong moderation.",
+      button: "Grow your community",
       visual: { label: "Community channels", from: "#0f2b4a", to: "#04101c" },
     },
     {
       slug: "x-marketing",
-      title: "X Marketing",
-      body: "Daily posting, thread strategy and reply-guy coverage on the platform where crypto actually argues. We run the account, seed conversations with the right people, and turn impressions into followers who stay.",
+      title: "X Marketing (Twitter Manager)",
+      body: "We grow crypto projects on X (formerly Twitter) with a strategy built for Crypto Twitter. From managing your handle and posting daily to growing real X followers, running giveaways and meme campaigns, and engaging the right communities, our X marketing builds visibility, trust and a following that actually reads, shares and buys in. Whether you're launching a memecoin, a token or an NFT collection, or growing an existing account, we handle the content, engagement and growth for you.",
+      tags: ["X Marketing", "X Promotion", "Twitter Followers", "Crypto Twitter"],
+      caption:
+        "Grow your X followers with consistent content, smart engagement and campaigns that get your project noticed.",
+      button: "Grow your X account",
       visual: { label: "X / Twitter", from: "#f4f4f5", to: "#b8babf" },
     },
     {
       slug: "reddit-marketing",
       title: "Reddit Marketing",
-      body: "Subreddit-native campaigns that survive moderation. We find the communities your buyers are already in, post in a way that earns upvotes rather than removals, and handle the AMAs and launch threads that follow.",
+      body: "We grow your brand on Reddit the way Reddit actually rewards: with real participation, not spam. We find the right subreddits for your project, publish posts that earn upvotes, build karma and brand presence through genuine comments, and manage your account so your project shows up where your audience is already talking. Our Reddit marketing also supports GEO and AEO, helping your brand get cited and recommended by AI search tools like ChatGPT and Perplexity, since Reddit threads are a major source for their answers.",
+      tags: ["Reddit Marketing", "Subreddit Targeting", "Reddit Karma Growth", "GEO and AEO"],
+      caption:
+        "Reddit marketing that builds brand awareness through the right subreddits, real comments and posts that earn trust.",
+      button: "Grow on Reddit",
       visual: { label: "Reddit campaigns", from: "#f2501f", to: "#8a2708" },
     },
   ],
@@ -673,7 +691,7 @@ export const awards = {
   eyebrow: "Our team",
   title: "Award Winning",
   subtitle:
-    "Backed by a collective 20 years in Web3 and a globally distributed team of over 15, we work with Crypto's top brands.",
+    "Led by Web3 founders and backed by a 40-person team that runs your marketing from first post to post-launch growth.",
   people: [
     {
       name: "Jawad Ahmad",
@@ -750,23 +768,23 @@ export const finalCta = {
 
 export const footer = {
   description:
-    "We offers a comprehensive suite of digital marketing services that cover all aspects of our online presence. From SEO and social media marketing to content creation and PPC advertising, they have the expertise and resources to handle our diverse marketing needs.",
+    "BullShill is a Web3 marketing agency that helps token, memecoin, AI and NFT projects grow. We build communities on X, Telegram, Discord and Reddit, and run the content and launch campaigns behind them.",
   newsletter: {
     name: { label: "Your name", placeholder: "Your name" },
     email: { label: "Email address", placeholder: "Enter your email" },
-    button: "Get Fresh Leads",
+    button: "Get Your Free Strategy",
   },
   socials: [
-    { label: "X", href: "#" },
-    { label: "LinkedIn", href: "#" },
-    { label: "Instagram", href: "#" },
-    { label: "Telegram", href: "#" },
+    { label: "X", href: "https://x.com/bullshillweb3" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/bullshill" },
+    { label: "Instagram", href: "https://www.instagram.com/bullshillweb3/" },
+    { label: "Discord", href: "https://discord.gg/EvMRyCRF" },
   ],
   legal: "© 2026 BullShill. All Rights Reserved",
   legalLinks: [
     { label: "Contact us", href: "/#contact" },
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms & Conditions", href: "#" },
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Terms & Conditions", href: "/terms" },
   ],
 } as const;
 
