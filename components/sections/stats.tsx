@@ -13,12 +13,18 @@ export function Stats() {
               key={stat.label}
               className="h-full rounded-3xl border border-orange-darker bg-gradient-to-br from-orange-darker/60 to-surface-card px-8 py-10"
             >
-              <Counter
-                value={stat.value}
-                prefix={"prefix" in stat ? stat.prefix : ""}
-                suffix={stat.suffix}
-                className="block text-display-sm font-semibold text-orange tabular-nums sm:text-display-md"
-              />
+              {"text" in stat ? (
+                <span className="block text-display-sm font-semibold text-orange sm:text-display-md">
+                  {stat.text}
+                </span>
+              ) : (
+                <Counter
+                  value={stat.value}
+                  prefix={"prefix" in stat ? stat.prefix : ""}
+                  suffix={stat.suffix}
+                  className="block text-display-sm font-semibold text-orange tabular-nums sm:text-display-md"
+                />
+              )}
               <p className="mt-2 text-sm text-blue-light-active">
                 {stat.label}
               </p>
