@@ -108,12 +108,16 @@
 }
 
 .hero-heading-gradient {
+  width: max-content;
+  max-width: calc(100vw - 48px);
+  margin-left: 50%;
+  translate: -50%;
   font-family: Geist, sans-serif;
-  font-size: 60px;
+  font-size: clamp(34px, 5.6vw, 60px);
   font-style: normal;
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 72px;
+  line-height: 1.2;
   text-align: center;
 }
 
@@ -1249,9 +1253,10 @@
 }
 
 .footer-newsletter-button {
-  width: 182px;
+  width: auto;
+  min-width: 160px;
   height: 52px;
-  padding: 12px 24px;
+  padding: 12px 22px;
   border: 1px solid #dce0e6;
   border-top-left-radius: 10px;
   border-top-right-radius: 60px;
@@ -1308,8 +1313,9 @@
   }
 
   .footer-newsletter-button {
-    width: 150px;
-    padding-inline: 12px;
+    width: auto;
+    min-width: 0;
+    padding-inline: 16px;
     font-size: 15px;
   }
 
@@ -2265,19 +2271,23 @@
 }
 
 .service-detail-tags {
-  display: flex;
-  max-width: 470px;
-  flex-wrap: wrap;
-  gap: 28px 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  max-width: 564px;
+  gap: 20px 20px;
   margin-top: 36px;
 }
 
 .service-detail-tags li {
   display: inline-flex;
+  width: 100%;
+  min-width: 0;
   height: 52px;
   align-items: center;
-  gap: 16px;
-  padding: 0 24px;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 0 20px;
   border: 0.91px solid var(--color-blue-light);
   border-radius: 36px;
   color: var(--color-blue-light);
@@ -2313,6 +2323,8 @@
 }
 
 .service-detail-aside .services-image-cta {
+  width: auto;
+  gap: 16px;
   margin-top: 40px;
 }
 
@@ -2398,11 +2410,13 @@
   }
 
   .service-detail-tags {
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
     margin-top: 28px;
   }
 
   .service-detail-tags li {
+    width: fit-content;
     height: 48px;
     gap: 10px;
     padding: 0 18px;
@@ -2633,6 +2647,255 @@
     margin-top: 12px;
     font-size: 16px;
     line-height: 24px;
+  }
+}
+
+.legal-hero {
+  position: relative;
+  padding: 150px 0 0;
+}
+
+.legal-head {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.legal-head h1 {
+  color: var(--color-blue-light);
+  font-family: Geist, sans-serif;
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 48px;
+}
+
+.legal-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  color: var(--color-blue-light-active);
+  font-family: Geist, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+.legal-author {
+  color: var(--color-orange);
+}
+
+.legal-intro {
+  margin-top: 20px;
+  color: #c6ccd4;
+  font-family: Geist, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 29px;
+}
+
+.legal-note {
+  margin-top: 12px;
+  color: var(--color-blue-light-active);
+  font-family: Geist, sans-serif;
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+.legal-body {
+  position: relative;
+  z-index: 1;
+  padding: 64px 0 40px;
+}
+
+.legal-grid {
+  display: grid;
+  width: min(1140px, 100%);
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 56px;
+  margin: 0 auto;
+}
+
+.legal-article {
+  min-width: 0;
+}
+
+.legal-section + .legal-section {
+  margin-top: 44px;
+}
+
+.legal-section h2 {
+  color: #ffffff;
+  font-family: Geist, sans-serif;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 36px;
+  scroll-margin-top: 110px;
+}
+
+.legal-section {
+  scroll-margin-top: 110px;
+}
+
+.legal-subheading {
+  margin-top: 28px;
+  color: var(--color-blue-light);
+  font-family: Geist, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 26px;
+}
+
+.legal-p {
+  margin-top: 20px;
+  color: #8fa3bd;
+  font-family: Geist, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+}
+
+.legal-section h2 + .legal-p,
+.legal-section h2 + .legal-list,
+.legal-section h2 + .legal-defs {
+  margin-top: 20px;
+}
+
+.legal-list {
+  margin-top: 16px;
+}
+
+.legal-list li {
+  position: relative;
+  padding-left: 22px;
+  color: #8fa3bd;
+  font-family: Geist, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+}
+
+.legal-list li + li {
+  margin-top: 10px;
+}
+
+.legal-list li::before {
+  position: absolute;
+  top: 10px;
+  left: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-orange);
+  content: "";
+}
+
+.legal-list li b {
+  color: var(--color-blue-light);
+  font-weight: 600;
+}
+
+.legal-defs {
+  margin-top: 16px;
+}
+
+.legal-defs > div + div {
+  margin-top: 18px;
+}
+
+.legal-defs dt {
+  color: var(--color-blue-light);
+  font-family: Geist, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 26px;
+}
+
+.legal-defs dd {
+  margin-top: 4px;
+  color: #8fa3bd;
+  font-family: Geist, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+}
+
+.legal-token {
+  padding: 0 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-blue-light);
+  font-size: 0.92em;
+  white-space: nowrap;
+}
+
+.legal-contact {
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--color-surface-border);
+}
+
+.legal-contact p {
+  color: #8fa3bd;
+  font-family: Geist, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.legal-contact b {
+  color: var(--color-blue-light);
+  font-weight: 600;
+}
+
+.legal-contact a {
+  color: var(--color-orange);
+}
+
+.legal-contact a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1023px) {
+  .legal-hero {
+    padding-top: 112px;
+  }
+
+  .legal-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .legal-toc-rail {
+    order: -1;
+  }
+}
+
+@media (max-width: 767px) {
+  .legal-hero {
+    padding-top: 64px;
+  }
+
+  .legal-head h1 {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .legal-intro {
+    font-size: 17px;
+    line-height: 27px;
+  }
+
+  .legal-body {
+    padding: 48px 0 24px;
+  }
+
+  .legal-section h2 {
+    font-size: 24px;
+    line-height: 32px;
   }
 }
 
