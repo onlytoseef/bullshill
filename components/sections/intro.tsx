@@ -29,12 +29,16 @@ export function Intro() {
           <Stagger className="mt-9 grid gap-6 sm:grid-cols-2" stagger={0.1}>
             {stats.map((stat) => (
               <div key={stat.label} className="about-stat-card">
-                <Counter
-                  value={stat.value}
-                  prefix={"prefix" in stat ? stat.prefix : ""}
-                  suffix={stat.suffix}
-                  className="about-stat-value"
-                />
+                {"text" in stat ? (
+                  <span className="about-stat-value">{stat.text}</span>
+                ) : (
+                  <Counter
+                    value={stat.value}
+                    prefix={"prefix" in stat ? stat.prefix : ""}
+                    suffix={stat.suffix}
+                    className="about-stat-value"
+                  />
+                )}
                 <p className="about-stat-label">{stat.label}</p>
               </div>
             ))}
