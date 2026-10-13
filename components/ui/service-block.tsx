@@ -9,15 +9,13 @@ import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 import tickIcon from "../../app/assets/images/tick-icon.png";
 import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.png";
 import nftPromotionImage from "../../app/assets/services-section/nft-promotion.png";
-import socialMediaMarketingImage from "../../app/assets/services-section/social-media-marketing.png";
 import tokenMarketingImage from "../../app/assets/services-section/token-marketing.png";
 
 export type Service = (typeof servicesPage.items)[number];
 
 const serviceImages: Partial<Record<Service["slug"], StaticImageData>> = {
-  "meme-coins": tokenMarketingImage,
-  "social-media-marketing": socialMediaMarketingImage,
-  "ai-product-launch": aiProductLaunchImage,
+  "ico-token-launches": tokenMarketingImage,
+  "ai-product-marketing": aiProductLaunchImage,
   "nft-marketing": nftPromotionImage,
 };
 
@@ -52,7 +50,7 @@ export function ServiceBlock({
             <p>{service.body}</p>
 
             <ul className="service-detail-tags">
-              {servicesPage.tags.map((tag) => (
+              {service.tags.map((tag) => (
                 <li key={tag}>
                   <Image src={tickIcon} alt="" width={18} height={18} />
                   {tag}
@@ -89,9 +87,9 @@ export function ServiceBlock({
         </div>
 
         <div className="service-detail-aside">
-          <p>{servicesPage.caption}</p>
+          <p>{service.caption}</p>
           <Button href={href} variant="light" className="services-image-cta">
-            {servicesPage.cta.label}
+            {service.button}
             <Image src={findMoreIcon} alt="" width={20} height={20} />
           </Button>
         </div>
