@@ -40,11 +40,11 @@ export function Hero() {
 
           <WordReveal
             lines={hero.headline}
-            className="hero-heading-gradient whitespace-nowrap"
+            className="hero-heading-gradient"
           />
 
           <Reveal trigger="mount" delay={0.55} className="mt-6">
-            <p className="mx-auto max-w-2xl whitespace-pre text-base text-[#F1FBE8] sm:text-lg">
+            <p className="mx-auto max-w-2xl text-balance text-base text-[#F1FBE8] sm:text-lg">
               {hero.subcopy}
             </p>
           </Reveal>
@@ -53,7 +53,7 @@ export function Hero() {
             <Button
               href={hero.cta.href}
               size="lg"
-              className="hero-cta h-[54px] w-[338px] max-w-full gap-[10px] rounded-[50px] border px-12 py-3"
+              className="hero-cta h-[54px] w-[338px] max-w-full gap-[10px] rounded-[50px] border px-8 py-3"
             >
               {hero.cta.label}
               <ArrowIcon />
