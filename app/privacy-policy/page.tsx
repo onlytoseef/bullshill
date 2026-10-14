@@ -7,7 +7,7 @@ import { privacyPolicy } from "@/lib/legal";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "How BullShill collects, uses and protects your personal information, and the privacy choices you have.",
+    "How Bullshill collects, uses and protects your personal information, and the privacy choices you have.",
 };
 
 export default function PrivacyPolicyPage() {

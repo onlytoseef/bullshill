@@ -7,7 +7,7 @@ import { ServicesList } from "@/components/sections/services-list";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Memecoin launches, social media, AI product go-to-market, NFT promotion, community growth, X and Reddit marketing — the full BullShill service list.",
+    "Memecoin launches, social media, AI product go-to-market, NFT promotion, community growth, X and Reddit marketing — the full Bullshill service list.",
 };
 
 export default function ServicesPage() {

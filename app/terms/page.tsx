@@ -7,7 +7,7 @@ import { termsOfService } from "@/lib/legal";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "The terms that govern your use of the BullShill website and the marketing services we provide.",
+    "The terms that govern your use of the Bullshill website and the marketing services we provide.",
 };
 
 export default function TermsPage() {

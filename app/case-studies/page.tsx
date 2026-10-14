@@ -9,7 +9,7 @@ import { Partners } from "@/components/sections/partners";
 export const metadata: Metadata = {
   title: "Case Studies",
   description:
-    "Crypto marketing case studies from BullShill — impressions, crypto-native traffic and community growth for token launches and Web3 protocols.",
+    "Crypto marketing case studies from Bullshill — impressions, crypto-native traffic and community growth for token launches and Web3 protocols.",
 };
 
 export default function CaseStudiesPage() {

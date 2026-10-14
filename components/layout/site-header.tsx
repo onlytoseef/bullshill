@@ -71,7 +71,7 @@ export function SiteHeader() {
         <Link
           href="/"
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          aria-label="BullShill home"
+          aria-label="Bullshill home"
         >
           <span className="flex items-center gap-2">
             <Image

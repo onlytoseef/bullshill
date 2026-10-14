@@ -12,7 +12,7 @@ export type HeadlineSegment = {
 };
 
 export const site = {
-  name: "BullShill",
+  name: "Bullshill",
   announcement: "Hype is engineered, not hoped for",
 } as const;
 
@@ -77,7 +77,7 @@ export const heroCoins = [
 ] as const;
 
 export const intro = {
-  eyebrow: "About BullShill",
+  eyebrow: "About Bullshill",
   bodyLead: "You build the product.",
   bodyAccent: "We build the community that believes in it.",
 } as const;
@@ -263,7 +263,7 @@ export const testimonials = {
     },
     {
       quote:
-        "We'd burned through two agencies before this. BullShill shipped more in the first month than either managed in a quarter.",
+        "We'd burned through two agencies before this. Bullshill shipped more in the first month than either managed in a quarter.",
       name: "Daniel Osei",
       role: "Head of Growth, Arclight",
       initials: "DO",
@@ -577,7 +577,7 @@ export const caseStudiesPage = {
   eyebrow: "Client Results & Case Studies",
   title: "Crypto Marketing Case Studies",
   subtitle:
-    "BullShill is a crypto marketing agency based in Dubai, founded in 2020. Trusted by Binance, Bybit, Algorand, Canton, OKX, and Polymarket.",
+    "Bullshill is a crypto marketing agency based in Dubai, founded in 2020. Trusted by Binance, Bybit, Algorand, Canton, OKX, and Polymarket.",
   cta: { label: "View case studies", href: "#case-studies" },
   /** Per-row link label — each row points at `/case-studies/${slug}`. */
   readCta: { label: "Read full case study" },
@@ -644,18 +644,18 @@ export const caseStudyDetail = {
       ],
     },
     {
-      eyebrow: "Why BullShill",
+      eyebrow: "Why Bullshill",
       title: "The Right Partner for a Compliance-First, Creator-Led Launch",
       paragraphs: [
         "Bybit needed a partner with deep roots in the European crypto creator ecosystem and the strategic capability to balance compliance-first messaging with authentic, high-converting content.",
-        "BullShill's KOL network, narrative expertise, and EU market experience made it the right fit.",
+        "Bullshill's KOL network, narrative expertise, and EU market experience made it the right fit.",
       ],
     },
     {
       eyebrow: "The Solution",
       title: "A Three-Track Campaign Built for Trust and Conversion",
       paragraphs: [
-        "BullShill acted as Bybit's strategic marketing and communications partner for the full EU rollout, executing across three integrated workstreams that reinforced each other at every touchpoint.",
+        "Bullshill acted as Bybit's strategic marketing and communications partner for the full EU rollout, executing across three integrated workstreams that reinforced each other at every touchpoint.",
       ],
     },
   ],
@@ -768,7 +768,7 @@ export const finalCta = {
 
 export const footer = {
   description:
-    "BullShill is a Web3 marketing agency that helps token, memecoin, AI and NFT projects grow. We build communities on X, Telegram, Discord and Reddit, and run the content and launch campaigns behind them.",
+    "Bullshill is a Web3 marketing agency that helps token, memecoin, AI and NFT projects grow. We build communities on X, Telegram, Discord and Reddit, and run the content and launch campaigns behind them.",
   newsletter: {
     name: { label: "Your name", placeholder: "Your name" },
     email: { label: "Email address", placeholder: "Enter your email" },
@@ -780,7 +780,7 @@ export const footer = {
     { label: "Instagram", href: "https://www.instagram.com/bullshillweb3/" },
     { label: "Discord", href: "https://discord.gg/EvMRyCRF" },
   ],
-  legal: "© 2026 BullShill. All Rights Reserved",
+  legal: "© 2026 Bullshill. All Rights Reserved",
   legalLinks: [
     { label: "Contact us", href: "/#contact" },
     { label: "Privacy Policy", href: "/privacy-policy" },

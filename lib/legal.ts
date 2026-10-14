@@ -23,11 +23,11 @@ export type LegalDocument = {
 
 export const privacyPolicy: LegalDocument = {
   slug: "privacy-policy",
-  title: "BullShill Privacy Policy",
+  title: "Bullshill Privacy Policy",
   date: "Oct 12, 2026",
   author: "Jawad",
   intro:
-    "This Privacy Policy explains what personal information BullShill (\"we\", \"us\", \"our\") collects through our website and services, how we use it, and the choices you have.",
+    "This Privacy Policy explains what personal information Bullshill (\"we\", \"us\", \"our\") collects through our website and services, how we use it, and the choices you have.",
   editorNote: "Fill in the [bracketed] details before publishing.",
   sections: [
     {
@@ -169,11 +169,11 @@ export const privacyPolicy: LegalDocument = {
 
 export const termsOfService: LegalDocument = {
   slug: "terms",
-  title: "BullShill Terms of Service",
+  title: "Bullshill Terms of Service",
   date: "Oct 12, 2026",
   author: "Jawad",
   intro:
-    "These Terms of Service govern your use of the BullShill website and the marketing services we provide. By using our site or hiring us, you agree to them.",
+    "These Terms of Service govern your use of the Bullshill website and the marketing services we provide. By using our site or hiring us, you agree to them.",
   editorNote: "Fill in the [bracketed] details before publishing.",
   sections: [
     {
@@ -184,7 +184,7 @@ export const termsOfService: LegalDocument = {
           dl: [
             {
               term: "Who we are",
-              text: "BullShill is a Web3 marketing agency operated by [Legal business name] (\"we\", \"us\"). \"You\" means the person or business using our site or hiring us.",
+              text: "Bullshill is a Web3 marketing agency operated by [Legal business name] (\"we\", \"us\"). \"You\" means the person or business using our site or hiring us.",
             },
             {
               term: "Our services",
@@ -353,7 +353,7 @@ export const termsOfService: LegalDocument = {
             },
             {
               term: "Our website",
-              text: "The BullShill name, logo, website design and content belong to us or our licensors. You may not copy, scrape or reuse them without our written permission.",
+              text: "The Bullshill name, logo, website design and content belong to us or our licensors. You may not copy, scrape or reuse them without our written permission.",
             },
             {
               term: "Confidentiality",

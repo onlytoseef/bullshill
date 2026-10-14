@@ -20,8 +20,8 @@ const geist = Geist({
 
 export const metadata: Metadata = {
   title: {
-    default: "BullShill — Marketing Built for Web3 Success",
-    template: "%s | BullShill",
+    default: "Bullshill — Marketing Built for Web3 Success",
+    template: "%s | Bullshill",
   },
   description:
     "Data-driven, end-to-end marketing for crypto and Web3 projects. Token launches, community building, and campaigns that convert.",
