@@ -11,12 +11,12 @@ export function ContactBubble() {
     >
       <Image
         src={contactIcon}
-        alt=""
+        alt="Contact us"
         width={42}
         height={42}
         className="contact-bubble-icon"
       />
-      Contact us
+      <span className="contact-bubble-label">Contact us</span>
     </Link>
   );
 }

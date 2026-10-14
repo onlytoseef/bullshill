@@ -44,7 +44,7 @@ export function Services() {
                       {String(index + 1).padStart(2, "0")}
                     </span>
 
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <h3 className="services-title text-display-xs font-semibold text-white sm:text-display-sm">
                         {service.title}
                       </h3>
@@ -52,7 +52,7 @@ export function Services() {
                         {service.body}
                       </p>
 
-                      <ul className="services-tags mt-6 grid max-w-[410px] grid-cols-2 gap-4">
+                      <ul className="services-tags mt-6 grid max-w-[410px] grid-cols-1 gap-4 sm:grid-cols-2">
                         {service.tags.map((tag) => (
                           <li key={tag}>
                             <TagPill

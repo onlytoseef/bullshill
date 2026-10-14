@@ -81,6 +81,20 @@
   body {
     background-color: var(--color-surface);
     color: var(--color-blue-light);
+    /* Clip any element that sits a hair past the viewport (decorative glows,
+       animated transforms) so there is no horizontal scroll / empty band on
+       the right. `clip` — not `hidden` — keeps the sticky header and Lenis
+       smooth scroll working. Spacing is untouched. */
+    overflow-x: clip;
+  }
+
+  /* Lenis drives scrolling on <html>, which stops the body-level clip above
+     from reliably reaching the viewport. Clipping the content wrapper itself
+     kills any right-side empty band regardless: <main> auto-sizes to its
+     content height (no vertical scroll is created), and the sticky header and
+     fixed Contact bubble sit outside it, so neither is affected. */
+  main {
+    overflow-x: clip;
   }
 
   ::selection {
@@ -158,6 +172,21 @@
   font-weight: 400;
   line-height: 30px;
   white-space: nowrap;
+}
+
+/* The pill is a fixed one-line 464px on desktop; on phones that width and the
+   20px no-wrap line spill past the screen edge, so drop a type step and let it
+   wrap. Padding and gap (the design's spacing) are left as-is. */
+@media (max-width: 640px) {
+  .hero-announcement {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    font-size: 15px;
+    line-height: 22px;
+    white-space: normal;
+    text-align: center;
+  }
 }
 
 .blog-grid {
@@ -487,7 +516,7 @@
 
 .service-tag {
   width: 100%;
-  height: 56px;
+  min-height: 56px;
   justify-content: center;
   gap: 9.09px;
   padding: 14px 24px;
@@ -1225,6 +1254,26 @@
   transform: translateY(-2px);
 }
 
+/* Below sm the pill collapses to a round icon-only button; the icon centers
+   instead of poking above the top edge, and the label is dropped. */
+@media (max-width: 640px) {
+  .contact-bubble {
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  .contact-bubble-icon {
+    position: static;
+    transform: none;
+  }
+
+  .contact-bubble-label {
+    display: none;
+  }
+}
+
 .site-footer {
   padding-top: 48px;
 }
@@ -1365,23 +1414,38 @@
     line-height: 48px;
   }
 
+  /* On phones the single-line pill becomes a padded stacked card: each field
+     gets its own outline so "Your name" and "Enter your email" no longer sit
+     cramped on top of each other, and the button goes full width. */
   .footer-newsletter-row {
     height: auto;
-    min-height: 60px;
-    gap: 4px;
-    padding: 4px 4px 4px 18px;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .footer-newsletter-input {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid rgba(232, 235, 238, 0.18);
+    border-radius: 12px;
   }
 
   .footer-newsletter-button {
-    width: auto;
+    width: 100%;
     min-width: 0;
+    min-height: 48px;
+    margin-top: 4px;
     padding-inline: 16px;
+    border-radius: 12px;
     font-size: 15px;
   }
 
   .footer-oversized-wordmark {
+    width: 100%;
     height: auto;
-    font-size: 18vw;
+    font-size: 15vw;
     line-height: 1.1;
   }
 }
@@ -1562,6 +1626,25 @@
   font-weight: 400;
   letter-spacing: 0;
   line-height: 28px;
+}
+
+/* Projects heading and panel copy only had desktop sizes; scale the type down
+   on phones so it stays inside the gutter (layout/spacing unchanged). */
+@media (max-width: 767px) {
+  .projects-heading h2 {
+    font-size: 34px;
+    line-height: 42px;
+  }
+
+  .project-title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .project-body {
+    font-size: 16px;
+    line-height: 24px;
+  }
 }
 
 .project-study-button {

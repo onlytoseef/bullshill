@@ -93,7 +93,7 @@ export function SiteFooter() {
         <div className="flex flex-col items-center gap-4 border-t border-blue-light-active/50 py-6 text-xs text-blue-dark/70 sm:flex-row sm:justify-between">
           <p>{footer.legal}</p>
 
-          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          <ul className="flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:w-auto">
             {footer.legalLinks.map((link) => (
               <li key={link.label}>
                 <Link
