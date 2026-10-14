@@ -615,6 +615,29 @@
   display: none;
 }
 
+.worried-video-poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.worried-video-thumb,
+.worried-video-iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.worried-video-thumb {
+  object-fit: cover;
+}
+
 .worried-play-button {
   position: absolute;
   top: 50%;
@@ -631,7 +654,7 @@
   transition: transform 200ms ease, background 200ms ease;
 }
 
-.worried-play-button:hover {
+.worried-video-poster:hover .worried-play-button {
   transform: translate(-50%, -50%) scale(1.08);
   background: rgba(239, 82, 0, 0.85);
 }
