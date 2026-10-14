@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import Image from "next/image";
 
 import { Parallax } from "@/components/motion/parallax";
 import { Reveal } from "@/components/motion/reveal";
