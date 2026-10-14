@@ -24,7 +24,7 @@ const serviceImages = [
 export function Services() {
   return (
     <Section id="services" className="services-section">
-      <Container className="max-w-[1200px]">
+      <Container className="services-container max-w-[1200px]">
         <SectionHeading
           eyebrow={services.eyebrow}
           title={services.title}

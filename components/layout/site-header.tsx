@@ -17,6 +17,7 @@ import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import logo from "../../app/assets/images/logo.png";
 import heroBackground from "../../app/assets/images/hero-bg.svg";
+import headerContactIcon from "../../app/assets/contact -us/header-contact-icon.svg";
 
 const loadMobileMenu = () => import("./mobile-menu");
 
@@ -82,7 +83,7 @@ export function SiteHeader() {
               priority
               className="size-7 object-contain"
             />
-            <span className="text-xl font-semibold tracking-tight">
+            <span className="header-wordmark">
               {site.name}
             </span>
           </span>
@@ -105,19 +106,7 @@ export function SiteHeader() {
             className="nav-contact-button"
           >
             {nav.cta.label}
-            <svg aria-hidden viewBox="0 0 20 20" className="size-5 shrink-0">
-              <path
-                fill="currentColor"
-                d="M6.5 2.5h7A4.5 4.5 0 0 1 18 7v4.5a4.5 4.5 0 0 1-4.5 4.5H8.2l-3.1 2.3c-.5.4-1.1 0-1.1-.6V14.9A4.5 4.5 0 0 1 2 11.5V7a4.5 4.5 0 0 1 4.5-4.5Z"
-              />
-              <path
-                d="M7.5 9.25h5"
-                fill="none"
-                stroke="#08121e"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-              />
-            </svg>
+            <Image src={headerContactIcon} alt="" width={18} height={18} />
           </Button>
         </div>
 
