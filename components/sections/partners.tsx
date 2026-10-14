@@ -1,22 +1,35 @@
 import { Reveal } from "@/components/motion/reveal";
-import { PartnerLogoMotion } from "@/components/motion/partner-logo-motion";
 import Image from "next/image";
 import { Container, Section } from "@/components/ui/section";
 import { partners } from "@/lib/content";
-import partnerOne from "../../app/assets/partner-logos/1.png";
-import partnerTwo from "../../app/assets/partner-logos/2.png";
-import partnerThree from "../../app/assets/partner-logos/3.png";
-import partnerFour from "../../app/assets/partner-logos/4.png";
-import partnerFive from "../../app/assets/partner-logos/5.png";
-import partnerSix from "../../app/assets/partner-logos/6.png";
+import mintRewards from "../../app/assets/partner-logos/mintrewards.png";
+import electionEmpire from "../../app/assets/partner-logos/election empire.png";
+import forgate from "../../app/assets/partner-logos/forgate.png";
+import driftFinancial from "../../app/assets/partner-logos/drift financial.png";
+import avirvoxLabs from "../../app/assets/partner-logos/avirvoxlabs.png";
+import fatCatWen from "../../app/assets/partner-logos/fatcatwen.png";
+import steadefi from "../../app/assets/partner-logos/steadefi.png";
+import amalas from "../../app/assets/partner-logos/amalas.png";
+import playnet from "../../app/assets/partner-logos/playnet.png";
+import inky from "../../app/assets/partner-logos/inky.png";
+import ticketsoft from "../../app/assets/partner-logos/ticketsoft.png";
+import meanaRaptor from "../../app/assets/partner-logos/meana raptor.png";
+import escrowly from "../../app/assets/partner-logos/escrowly.png";
 
 const partnerImages = [
-  partnerOne,
-  partnerTwo,
-  partnerThree,
-  partnerFour,
-  partnerFive,
-  partnerSix,
+  { name: "Mint Rewards", src: mintRewards },
+  { name: "Election Empire", src: electionEmpire },
+  { name: "Forgate", src: forgate },
+  { name: "Drift Financial", src: driftFinancial },
+  { name: "AvirVox Labs", src: avirvoxLabs },
+  { name: "FatCatWen", src: fatCatWen },
+  { name: "Steadefi", src: steadefi },
+  { name: "Amalas", src: amalas },
+  { name: "Playnet", src: playnet },
+  { name: "Inky", src: inky },
+  { name: "TicketSoft", src: ticketsoft },
+  { name: "Meana Raptor", src: meanaRaptor },
+  { name: "Escrowly", src: escrowly },
 ] as const;
 
 const stripLogos = [
@@ -71,24 +84,24 @@ export function Partners({ variant = "home" }: Props) {
           </p>
         </Reveal>
 
-        <PartnerLogoMotion
-          className="partner-logo-row"
-        >
-          {partnerImages.map((logo, index) => (
-            <span
-              key={partners.logos[index]}
-              data-partner-logo
-              className="partner-logo"
-            >
-              <Image
-                src={logo}
-                alt={partners.logos[index]}
-                fill
-                sizes="151px"
-              />
-            </span>
-          ))}
-        </PartnerLogoMotion>
+        <div className="partner-marquee" aria-label={partners.title}>
+          <div className="partner-marquee-track">
+            {[...partnerImages, ...partnerImages].map((logo, index) => (
+              <span
+                key={`${logo.name}-${index}`}
+                className="partner-logo"
+                aria-hidden={index >= partnerImages.length}
+              >
+                <Image
+                  src={logo.src}
+                  alt={logo.name}
+                  fill
+                  sizes="120px"
+                />
+              </span>
+            ))}
+          </div>
+        </div>
       </Container>
     </Section>
   );
