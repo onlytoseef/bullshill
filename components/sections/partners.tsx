@@ -2,19 +2,19 @@ import { Reveal } from "@/components/motion/reveal";
 import Image from "next/image";
 import { Container, Section } from "@/components/ui/section";
 import { partners } from "@/lib/content";
-import mintRewards from "../../app/assets/partner-logos/mintrewards.png";
-import electionEmpire from "../../app/assets/partner-logos/election empire.png";
-import forgate from "../../app/assets/partner-logos/forgate.png";
-import driftFinancial from "../../app/assets/partner-logos/drift financial.png";
-import avirvoxLabs from "../../app/assets/partner-logos/avirvoxlabs.png";
-import fatCatWen from "../../app/assets/partner-logos/fatcatwen.png";
-import steadefi from "../../app/assets/partner-logos/steadefi.png";
-import amalas from "../../app/assets/partner-logos/amalas.png";
-import playnet from "../../app/assets/partner-logos/playnet.png";
-import inky from "../../app/assets/partner-logos/inky.png";
-import ticketsoft from "../../app/assets/partner-logos/ticketsoft.png";
-import meanaRaptor from "../../app/assets/partner-logos/meana raptor.png";
-import escrowly from "../../app/assets/partner-logos/escrowly.png";
+import mintRewards from "../../app/assets/partner-logos/mintrewards.webp";
+import electionEmpire from "../../app/assets/partner-logos/election empire.webp";
+import forgate from "../../app/assets/partner-logos/forgate.webp";
+import driftFinancial from "../../app/assets/partner-logos/drift financial.webp";
+import avirvoxLabs from "../../app/assets/partner-logos/avirvoxlabs.webp";
+import fatCatWen from "../../app/assets/partner-logos/fatcatwen.webp";
+import steadefi from "../../app/assets/partner-logos/steadefi.webp";
+import amalas from "../../app/assets/partner-logos/amalas.webp";
+import playnet from "../../app/assets/partner-logos/playnet.webp";
+import inky from "../../app/assets/partner-logos/inky.webp";
+import ticketsoft from "../../app/assets/partner-logos/ticketsoft.webp";
+import meanaRaptor from "../../app/assets/partner-logos/meana raptor.webp";
+import escrowly from "../../app/assets/partner-logos/escrowly.webp";
 
 const partnerImages = [
   { name: "Mint Rewards", src: mintRewards },
@@ -96,7 +96,7 @@ export function Partners({ variant = "home" }: Props) {
                   src={logo.src}
                   alt={logo.name}
                   fill
-                  sizes="120px"
+                  sizes="(max-width: 1023px) 88px, 120px"
                 />
               </span>
             ))}

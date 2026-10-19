@@ -1,4 +1,4 @@
-import { Reveal } from "@/components/motion/reveal";
+import { CaseHeroReveal } from "@/components/motion/case-study-reveal";
 import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { Container } from "@/components/ui/section";
 import { caseStudyDetail, type CaseStudy } from "@/lib/content";
@@ -12,27 +12,31 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
       />
 
       <Container className="relative z-10">
-        <Reveal trigger="mount" className="case-detail-cover">
-          <PlaceholderVisual
-            from={study.visual.from}
-            to={study.visual.to}
-            className="case-detail-cover-image"
-          />
-        </Reveal>
+        <CaseHeroReveal>
+          <div data-case-cover className="case-detail-cover">
+            <PlaceholderVisual
+              from={study.visual.from}
+              to={study.visual.to}
+              className="case-detail-cover-image"
+            />
+          </div>
 
-        <Reveal trigger="mount" delay={0.15} className="case-detail-intro">
-          <h1>{study.client}</h1>
-          <p>
-            <span>{study.summaryLead}</span>
-            {study.summaryRest}
-          </p>
+          <div className="case-detail-intro">
+            <h1 data-case-title>{study.client}</h1>
+            <p data-case-summary>
+              <span>{study.summaryLead}</span>
+              {study.summaryRest}
+            </p>
 
-          <ul>
-            {caseStudyDetail.metrics.map((metric) => (
-              <li key={metric}>{metric}</li>
-            ))}
-          </ul>
-        </Reveal>
+            <ul>
+              {caseStudyDetail.metrics.map((metric) => (
+                <li key={metric} data-case-metric>
+                  {metric}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </CaseHeroReveal>
       </Container>
     </section>
   );

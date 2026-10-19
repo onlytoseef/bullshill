@@ -26,7 +26,9 @@ export function Faqs({ variant = "home" }: Props) {
               <p>{faqs.body}</p>
             </div>
 
-            <div className="faq-actions mt-8 flex items-center gap-3">
+            {/* Wraps rather than overflowing: both buttons are nowrap, and at
+                320px the pair is ~46px wider than the column. */}
+            <div className="faq-actions mt-8 flex flex-wrap items-center gap-3">
               {faqs.ctas.map((cta) => (
                 <Button
                   key={cta.label}

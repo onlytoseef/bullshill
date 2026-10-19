@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { nav } from "@/lib/content";
 
 export function MobileMenu({ onClose }: { onClose: () => void }) {
+  // No horizontal margin: the header already applies `px-4`, so adding `mx-4`
+  // here made the panel 16px narrower per side than the nav pill it drops out
+  // of.
   return (
     <motion.div
       id="mobile-menu"
@@ -14,7 +17,7 @@ export function MobileMenu({ onClose }: { onClose: () => void }) {
       animate={{ height: "auto", opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-4 overflow-hidden rounded-b-3xl bg-blue-light lg:hidden"
+      className="overflow-hidden rounded-b-3xl bg-blue-light lg:hidden"
     >
       <ul className="flex flex-col gap-1 px-6 pb-6 text-blue-darker">
         {[...nav.left, ...nav.right].map((link) => (

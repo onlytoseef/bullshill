@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Stagger } from "@/components/motion/stagger";
+import { StaggerHeading } from "@/components/motion/stagger-heading";
 import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { Container, Section } from "@/components/ui/section";
 import { blog } from "@/lib/content";
@@ -9,11 +10,13 @@ export function Blog() {
   return (
     <Section id="blog">
       <Container>
-        <div className="testimonials-heading mb-16">
-          <span className="testimonials-eyebrow">{blog.eyebrow}</span>
-          <h2>{blog.title}</h2>
-          <p>{blog.subtitle}</p>
-        </div>
+        <StaggerHeading
+          eyebrow={blog.eyebrow}
+          title={blog.title}
+          subtitle={blog.subtitle}
+          className="blog-heading mb-16"
+          eyebrowClassName="blog-eyebrow"
+        />
 
         <Stagger
           className="blog-grid"

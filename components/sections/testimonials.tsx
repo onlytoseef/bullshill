@@ -1,10 +1,11 @@
 import { Stagger } from "@/components/motion/stagger";
+import { StaggerHeading } from "@/components/motion/stagger-heading";
 import Image from "next/image";
 import { Container, Section } from "@/components/ui/section";
 import { testimonials } from "@/lib/content";
-import tokenMarketingImage from "../../app/assets/services-section/token-marketing.png";
-import socialMediaMarketingImage from "../../app/assets/services-section/social-media-marketing.png";
-import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.png";
+import tokenMarketingImage from "../../app/assets/services-section/token-marketing.webp";
+import socialMediaMarketingImage from "../../app/assets/services-section/social-media-marketing.webp";
+import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.webp";
 
 const testimonialImages = [
   tokenMarketingImage,
@@ -34,11 +35,13 @@ export function Testimonials() {
   return (
     <Section id="testimonials" className="testimonials-section">
       <Container>
-        <div className="testimonials-heading mb-16">
-          <span className="testimonials-eyebrow">{testimonials.eyebrow}</span>
-          <h2>{testimonials.title}</h2>
-          <p>{testimonials.subtitle}</p>
-        </div>
+        <StaggerHeading
+          eyebrow={testimonials.eyebrow}
+          title={testimonials.title}
+          subtitle={testimonials.subtitle}
+          className="testimonials-heading mb-16"
+          eyebrowClassName="testimonials-eyebrow"
+        />
 
         <Stagger className="testimonials-grid" stagger={0.1}>
           {testimonials.items.map((item, index) => (
@@ -51,7 +54,7 @@ export function Testimonials() {
                   src={testimonialImages[index]}
                   alt=""
                   fill
-                  sizes="335px"
+                  sizes="(max-width: 767px) 312px, 366px"
                   className="object-cover"
                 />
               </div>
@@ -72,10 +75,13 @@ export function Testimonials() {
                   {item.initials}
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium text-white">
+                  {/* No `truncate`: at 390px the avatar leaves ~250px, so a
+                      longer role silently lost its ending. Wrapping is the
+                      honest failure mode here. */}
+                  <span className="block break-words text-sm font-medium text-white">
                     {item.name}
                   </span>
-                  <span className="block truncate text-sm text-blue-light-active">
+                  <span className="block break-words text-sm text-blue-light-active">
                     {item.role}
                   </span>
                 </span>

@@ -1,6 +1,6 @@
 import { CoinArc } from "@/components/motion/coin-arc";
 import { Reveal } from "@/components/motion/reveal";
-import { WordReveal } from "@/components/motion/word-reveal";
+import { SplitHeadline } from "@/components/motion/split-headline";
 import { Button } from "@/components/ui/button";
 import { ArrowIcon } from "@/components/ui/icons";
 import { hero, site } from "@/lib/content";
@@ -38,7 +38,7 @@ export function Hero() {
             <span>{site.announcement}</span>
           </div>
 
-          <WordReveal
+          <SplitHeadline
             lines={hero.headline}
             className="hero-heading-gradient"
           />
@@ -53,7 +53,7 @@ export function Hero() {
             <Button
               href={hero.cta.href}
               size="lg"
-              className="hero-cta h-[54px] w-[338px] max-w-full gap-[10px] rounded-[50px] border px-8 py-3"
+              className="hero-cta cta-hover h-[54px] w-[338px] max-w-full gap-[10px] rounded-[50px] border px-8 py-3"
             >
               {hero.cta.label}
               <ArrowIcon />

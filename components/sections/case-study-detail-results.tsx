@@ -1,4 +1,4 @@
-import { Reveal } from "@/components/motion/reveal";
+import { CaseResultsReveal } from "@/components/motion/case-study-reveal";
 import { Container } from "@/components/ui/section";
 import { caseStudyDetail } from "@/lib/content";
 
@@ -8,22 +8,24 @@ export function CaseStudyDetailResults() {
   return (
     <section className="case-detail-results">
       <Container>
-        <Reveal className="case-detail-results-heading">
-          <span className="case-detail-eyebrow">{results.eyebrow}</span>
-          <h2>{results.title}</h2>
-          <p>{results.subtitle}</p>
-        </Reveal>
+        <CaseResultsReveal>
+          <div data-case-results-heading className="case-detail-results-heading">
+            <span data-case-eyebrow className="case-detail-eyebrow">
+              {results.eyebrow}
+            </span>
+            <h2>{results.title}</h2>
+            <p>{results.subtitle}</p>
+          </div>
 
-        <Reveal delay={0.1}>
           <dl className="case-detail-stats">
             {results.stats.map((stat) => (
-              <div key={stat.label} className="case-detail-stat">
+              <div key={stat.label} data-case-stat className="case-detail-stat">
                 <dt>{stat.label}</dt>
-                <dd>{stat.value}</dd>
+                <dd data-case-count>{stat.value}</dd>
               </div>
             ))}
           </dl>
-        </Reveal>
+        </CaseResultsReveal>
       </Container>
     </section>
   );

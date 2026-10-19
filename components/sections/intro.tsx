@@ -1,9 +1,14 @@
-import { Reveal } from "@/components/motion/reveal";
-import { Counter } from "@/components/motion/counter";
-import { Stagger } from "@/components/motion/stagger";
+import { StatsReveal } from "@/components/motion/stats-reveal";
 import { Container, Section } from "@/components/ui/section";
 import { intro, stats } from "@/lib/content";
 import bgShine from "../../app/assets/images/bg-shine.webp";
+
+/** The final figure, which the counter counts up to: "500+", "$10M+", … */
+function statText(stat: (typeof stats)[number]) {
+  if ("text" in stat) return stat.text;
+  const prefix = "prefix" in stat ? stat.prefix : "";
+  return `${prefix}${stat.value.toLocaleString("en-US")}${stat.suffix}`;
+}
 
 export function Intro() {
   return (
@@ -16,34 +21,25 @@ export function Intro() {
         style={{ backgroundImage: `url(${bgShine.src})` }}
       />
       <Container className="2xl:max-w-[1440px]">
-        <div className="mx-auto w-full max-w-[916px] xl:max-w-[1100px] 2xl:max-w-[1280px]">
-          <Reveal>
-            <div className="about-eyebrow mx-auto mb-8">
-              <span>{intro.eyebrow}</span>
-            </div>
-            <p className="about-copy">
-              {intro.bodyLead} <span>{intro.bodyAccent}</span>
-            </p>
-          </Reveal>
+        <StatsReveal className="mx-auto w-full max-w-[916px] xl:max-w-[1100px] 2xl:max-w-[1280px]">
+          <div data-stats-eyebrow className="about-eyebrow mx-auto mb-8">
+            <span>{intro.eyebrow}</span>
+          </div>
+          <h2 data-stats-heading className="about-copy">
+            {intro.bodyLead} <span>{intro.bodyAccent}</span>
+          </h2>
 
-          <Stagger className="mt-9 grid gap-6 sm:grid-cols-2" stagger={0.1}>
+          <ul className="mt-9 grid gap-6 sm:grid-cols-2">
             {stats.map((stat) => (
-              <div key={stat.label} className="about-stat-card">
-                {"text" in stat ? (
-                  <span className="about-stat-value">{stat.text}</span>
-                ) : (
-                  <Counter
-                    value={stat.value}
-                    prefix={"prefix" in stat ? stat.prefix : ""}
-                    suffix={stat.suffix}
-                    className="about-stat-value"
-                  />
-                )}
+              <li key={stat.label} data-stats-card className="about-stat-card">
+                <span data-stats-count className="about-stat-value">
+                  {statText(stat)}
+                </span>
                 <p className="about-stat-label">{stat.label}</p>
-              </div>
+              </li>
             ))}
-          </Stagger>
-        </div>
+          </ul>
+        </StatsReveal>
       </Container>
     </Section>
   );

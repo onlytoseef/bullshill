@@ -1,100 +1,229 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import { Button } from "@/components/ui/button";
 import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Container, Section } from "@/components/ui/section";
 import { projects } from "@/lib/content";
+import { Flip, gsap, useGSAP } from "@/lib/gsap";
+import { EASE_OUT_GSAP } from "@/lib/motion";
+import { replayOnScroll } from "@/lib/scroll-replay";
 import { cn } from "@/lib/utils";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
+const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+
+/**
+ * The "Our work" tabs.
+ *
+ * Animation hooks, all resolved inside this section:
+ * - `[data-work-reveal]` — header, tab row and panel; staggered in on scroll.
+ * - `[data-work-pill]`   — the filled oval behind the selected tab.
+ * - `[data-work-swap]`   — the panel's text block and graphic; swapped on click.
+ *
+ * Selection is two pieces of state on purpose: `selected` moves the pill and
+ * `aria-selected` the moment a tab is clicked, while `shown` is the content on
+ * screen, which only changes once the old content has animated out.
+ */
 export function Projects() {
-  const [active, setActive] = useState(0);
+  const root = useRef<HTMLDivElement>(null);
+  const [selected, setSelected] = useState(0);
+  const [shown, setShown] = useState(0);
+  // Refs, not state, for anything read from timeline callbacks: those run
+  // long after the render whose closure they captured.
+  const selectedRef = useRef(0);
+  const switching = useRef<gsap.core.Timeline | null>(null);
+  const queued = useRef<number | null>(null);
   const baseId = useId();
-  const current = projects.items[active];
+  const panelId = `${baseId}-panel`;
+  const current = projects.items[shown];
+
+  const { contextSafe } = useGSAP(
+    () => {
+      const el = root.current;
+      if (!el) return;
+
+      const mm = gsap.matchMedia();
+
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        // Paused and replayed every time the section comes back into view,
+        // rather than fired once off a ScrollTrigger — see `lib/scroll-replay`.
+        const reveal = gsap.from(
+          gsap.utils.toArray<HTMLElement>("[data-work-reveal]", el),
+          {
+            y: 20,
+            opacity: 0,
+            duration: 0.7,
+            stagger: 0.12,
+            ease: EASE_OUT_GSAP,
+            paused: true,
+          },
+        );
+
+        return replayOnScroll(el, {
+          // The bottom edge matches the old `top 80%` start.
+          rootMargin: "-20% 0px",
+          play: () => reveal.restart(),
+          reset: () => reveal.pause(0),
+        });
+      });
+
+      return () => mm.revert();
+    },
+    { scope: root },
+  );
+
+  /**
+   * Always entered through `contextSafe` (see the tabs' `onClick`), so
+   * everything it starts belongs to the `useGSAP` context and is killed and
+   * reverted on unmount. That includes the queued re-run from `onComplete`:
+   * GSAP runs callbacks inside the context their animation was created in.
+   */
+  function select(index: number) {
+    // The active-animation check: one switch at a time. A click that lands
+    // mid-switch is held, and the latest one runs as soon as this one is done.
+    if (switching.current?.isActive()) {
+      queued.current = index;
+      return;
+    }
+    queued.current = null;
+    if (index === selectedRef.current) return;
+    selectedRef.current = index;
+
+    const el = root.current;
+    if (!el || window.matchMedia(REDUCED_MOTION).matches) {
+      setSelected(index);
+      setShown(index);
+      return;
+    }
+
+    // FLIP: record where the pill is, let React move it into the new tab, then
+    // play it back from the old spot. One read before the DOM write and one
+    // after; the slide itself is transform-only — every tab is the same size,
+    // so `scale` stays at 1 and the oval never distorts.
+    const pillState = Flip.getState(el.querySelector("[data-work-pill]"));
+    flushSync(() => setSelected(index));
+    Flip.from(pillState, {
+      targets: el.querySelector("[data-work-pill]"),
+      duration: 0.5,
+      ease: "power3.inOut",
+      scale: true,
+    });
+
+    // React keeps the same two nodes and only swaps what is inside them, so
+    // one set of targets covers both halves of the switch.
+    const swap = gsap.utils.toArray<HTMLElement>("[data-work-swap]", el);
+
+    switching.current = gsap
+      .timeline({
+        onComplete: () => {
+          switching.current = null;
+          const next = queued.current;
+          queued.current = null;
+          if (next !== null) select(next);
+        },
+      })
+      .to(swap, { x: -20, opacity: 0, duration: 0.25, ease: "power2.in" })
+      .add(() => flushSync(() => setShown(index)))
+      .fromTo(
+        swap,
+        { x: 20, opacity: 0, scale: 0.98 },
+        {
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.45,
+          ease: "power2.out",
+          stagger: 0.06,
+          // fromTo renders its start state on creation by default — which
+          // would hide the old content before it had even begun to leave.
+          immediateRender: false,
+        },
+      );
+  }
 
   return (
     <Section id="projects" className="projects-section">
       <Container>
-        <SectionHeading
-          eyebrow={projects.eyebrow}
-          title={projects.title}
-          className="projects-heading mb-12"
-        />
+        <div ref={root}>
+          <div data-work-reveal>
+            <SectionHeading
+              eyebrow={projects.eyebrow}
+              title={projects.title}
+              reveal={false}
+              className="projects-heading mb-12"
+            />
+          </div>
 
-        <div
-          role="tablist"
-          aria-label="Project categories"
-          className="project-tabs flex flex-wrap justify-center"
-        >
-          {projects.items.map((item, index) => {
-            const selected = index === active;
+          <div
+            data-work-reveal
+            role="tablist"
+            aria-label="Project categories"
+            className="project-tabs flex flex-wrap justify-center"
+          >
+            {projects.items.map((item, index) => {
+              const isSelected = index === selected;
 
-            return (
-              <button
-                key={item.category}
-                type="button"
-                role="tab"
-                id={`${baseId}-tab-${index}`}
-                aria-selected={selected}
-                aria-controls={`${baseId}-panel-${index}`}
-                onClick={() => setActive(index)}
-                className={cn(
-                  "project-tab relative text-sm font-medium transition-colors",
-                  selected ? "project-tab-active text-blue-darker" : "text-blue-light-active hover:text-white",
-                )}
-              >
-                {selected ? (
-                  <motion.span
-                    layoutId="project-filter-pill"
-                    className="project-tab-active-fill absolute inset-0 rounded-full"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                  />
-                ) : null}
-                <span className="relative">{item.category}</span>
-              </button>
-            );
-          })}
-        </div>
+              return (
+                <button
+                  key={item.category}
+                  type="button"
+                  role="tab"
+                  id={`${baseId}-tab-${index}`}
+                  aria-selected={isSelected}
+                  aria-controls={panelId}
+                  onClick={() => contextSafe(select)(index)}
+                  className={cn(
+                    "project-tab relative text-sm font-medium transition-colors",
+                    isSelected ? "project-tab-active text-blue-darker" : "text-blue-light-active hover:text-white",
+                  )}
+                >
+                  {isSelected ? (
+                    <span
+                      data-work-pill
+                      data-flip-id="work-pill"
+                      className="project-tab-active-fill absolute inset-0 rounded-full"
+                    />
+                  ) : null}
+                  <span className="relative">{item.category}</span>
+                </button>
+              );
+            })}
+          </div>
 
-        <div className="mt-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current.category}
-              id={`${baseId}-panel-${active}`}
-              role="tabpanel"
-              aria-labelledby={`${baseId}-tab-${active}`}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="project-panel grid gap-8 p-6 sm:p-10 lg:grid-cols-2 lg:items-center lg:gap-14"
-            >
-              <div>
-                <h3 className="project-title">
-                  {current.title}
-                </h3>
-                <p className="project-body mt-4">
-                  {current.body}
-                </p>
-                <Button href="#contact" variant="light" size="sm" className="project-study-button mt-8">
-                  Study More
-                  <Image src={findMoreIcon} alt="" width={20} height={20} />
-                </Button>
-              </div>
+          <div
+            data-work-reveal
+            id={panelId}
+            role="tabpanel"
+            aria-labelledby={`${baseId}-tab-${shown}`}
+            className="project-panel mt-10 grid gap-8 p-6 sm:p-10 lg:grid-cols-2 lg:items-center lg:gap-14"
+          >
+            <div data-work-swap>
+              <h3 className="project-title">
+                {current.title}
+              </h3>
+              <p className="project-body mt-4">
+                {current.body}
+              </p>
+              <Button href="#contact" variant="light" size="sm" className="project-study-button cta-hover find-more-cta mt-8">
+                Study More
+                <Image src={findMoreIcon} alt="" width={20} height={20} />
+              </Button>
+            </div>
 
+            <div data-work-swap>
               <PlaceholderVisual
                 label={current.visual.label}
                 from={current.visual.from}
                 to={current.visual.to}
                 className="project-image w-full"
               />
-            </motion.div>
-          </AnimatePresence>
+            </div>
+          </div>
         </div>
       </Container>
     </Section>

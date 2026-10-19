@@ -28,7 +28,7 @@ export function CaseStudiesList() {
           <Button
             href={caseStudiesPage.moreCta.href}
             variant="light"
-            className="case-row-button case-rows-more"
+            className="case-row-button case-rows-more cta-hover find-more-cta"
           >
             {caseStudiesPage.moreCta.label}
             <Image src={findMoreIcon} alt="" width={24} height={24} />

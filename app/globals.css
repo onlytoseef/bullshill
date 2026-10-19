@@ -114,7 +114,15 @@
   }
 }
 
-.hero-heading-gradient > span > span {
+/* The sweep lands on each word, which is what the old `> span > span` selector
+   happened to target. Keyed off classes now, because SplitText nests a mask
+   span between the segment and the word and DOM depth is no longer stable.
+
+   The `:not(:has())` fallback covers the unsplit headline: reduced-motion
+   skips the split entirely, and without this the gradient — and therefore the
+   whole headline — would have no colour at all. */
+.hero-heading-gradient .hero-word,
+.hero-heading-gradient .hero-seg:not(:has(.hero-word)) {
   background: linear-gradient(
     96.03deg,
     #4b4b4b -31.59%,
@@ -124,6 +132,43 @@
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+}
+
+/* `accent: true` segments. This never rendered before: the gradient rule above
+   matched the same spans as Tailwind's `text-orange`, and an unlayered rule
+   beats anything in `@layer utilities` regardless of specificity, so the
+   accent silently lost. `-webkit-text-fill-color` is required — clearing the
+   background alone leaves WebKit's text fill from `background-clip: text`. */
+.hero-heading-gradient .hero-seg--accent .hero-word,
+.hero-heading-gradient .hero-seg--accent:not(:has(.hero-word)) {
+  background: none;
+  color: var(--color-orange);
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Transforms do not apply to inline boxes, and SplitText deliberately leaves
+   `display` alone when `tag: "span"` — so this is what makes the word tween
+   work at all, not styling. */
+.hero-heading-gradient .hero-word {
+  display: inline-block;
+}
+
+/* Same reason, one level out: SplitText sets only `overflow: clip` on the mask
+   it clones, which no-ops on an inline box. The class name is derived by
+   SplitText appending `-mask` to `wordsClass`, so these two names are coupled.
+
+   If the headline copy ever grows a descender (g, y, p) and it looks shaved,
+   the fix goes here — not on the word. */
+.hero-heading-gradient .hero-word-mask {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: top;
+  /* The mask clips to the word's box, which shaves descenders and the parts of
+     glyphs that hang below the baseline (the tail of a comma, for instance).
+     Pad the box and pull the margin back by the same amount so the layout is
+     unchanged but the ink has somewhere to live. */
+  padding-block: 0.18em;
+  margin-block: -0.18em;
 }
 
 .hero-heading-gradient {
@@ -201,7 +246,9 @@
 
 .blog-card {
   width: 100%;
-  height: 345px;
+  /* `min-height`, not `height`: at 390px the card is ~340px wide, so a longer
+     title wraps where it did not on desktop and a fixed box clips it. */
+  min-height: 345px;
   gap: 13px;
   padding: 12px;
   border: 3px solid #122945;
@@ -212,8 +259,9 @@
 .blog-card-media,
 .blog-card-image {
   width: 100%;
-  height: 230px;
-  flex: 0 0 230px;
+  aspect-ratio: 359 / 230;
+  height: auto;
+  flex: 0 0 auto;
 }
 
 .blog-card-content {
@@ -221,11 +269,14 @@
   padding: 0 2px 2px;
 }
 
+/* 10px was below a comfortable reading floor on phones. 12px everywhere: the
+   difference at desktop is invisible and it keeps the meta legible on a 320px
+   screen. */
 .blog-card-meta {
   color: #93a0b1;
   font-family: Geist, sans-serif;
-  font-size: 10px;
-  line-height: 16px;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .blog-card-category {
@@ -233,16 +284,16 @@
   border-radius: 2px;
   background: #f1f3f5;
   color: #35404c;
-  font-size: 10px;
-  line-height: 16px;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .blog-card-title {
   color: #f8fafc;
   font-family: Geist, sans-serif;
-  font-size: 13px;
+  font-size: clamp(14px, 3.4vw, 15px);
   font-weight: 600;
-  line-height: 18px;
+  line-height: 1.45;
 }
 
 @media (max-width: 1180px) {
@@ -272,11 +323,104 @@
     0 42px 107px 0 #ff580057,
     0 1px 4px 2px #ffeddb inset,
     0 1px 18px 2px #ffeddb inset;
-  transition: box-shadow 200ms ease, transform 200ms ease;
+  /* `.cta-hover` look: the same six shadows, brighter and lower. */
+  --cta-glow:
+    0 5px 8px 0 #ff580033,
+    0 14px 20px 0 #ff580047,
+    0 30px 44px 0 #ff58003d,
+    0 48px 120px 0 #ff58006e,
+    0 1px 4px 2px #ffeddb inset,
+    0 1px 18px 2px #ffeddb inset;
+  --cta-sheen: rgba(255, 237, 219, 0.5);
 }
 
-.hero-cta:hover {
-  background: linear-gradient(180deg, #ff5700 0%, #ef5200 100%);
+/* ---------------------------------------------------------------------------
+   `.cta-hover` — the shared hover for pill buttons: the pill lifts, its glow
+   brightens, a sheen sweeps across once and the icon moves forward. The
+   mechanics live here once; each button sets its own look:
+
+   --cta-glow   box-shadow while hovered. Give it as many shadows as the
+                button has at rest, or the change jumps instead of easing
+                (`none` at rest eases into any count).
+   --cta-sheen  colour of the band of light.
+   --cta-icon   transform for the icon while hovered.
+--------------------------------------------------------------------------- */
+
+/* Positioned and clipped so the sheen sweeps inside the pill's rounded edge.
+   `overflow` never clips an element's own box-shadow, so the glow is untouched;
+   `isolation` lets the sheen sit above the background but beneath the label.
+   This `transition` replaces Tailwind's colour one from <Button>, so it has to
+   carry the background colour too, or the light pills' hover colour would
+   snap instead of easing. */
+.cta-hover {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition:
+    box-shadow 200ms ease,
+    transform 200ms ease,
+    background-color 200ms ease;
+}
+
+/* A soft band of light, parked off the left edge until hover. */
+.cta-hover::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    var(--cta-sheen, rgba(255, 255, 255, 0.6)) 50%,
+    transparent 70%
+  );
+  content: "";
+  pointer-events: none;
+  transform: translateX(-110%);
+}
+
+.cta-hover > :is(svg, img) {
+  transition: transform 200ms ease;
+}
+
+/* Real pointers only — on touch, `:hover` latches after a tap and would leave
+   the button lifted. Keyboard focus gets the same treatment. */
+@media (hover: hover) {
+  .cta-hover:is(:hover, :focus-visible) {
+    transform: translateY(-2px);
+    box-shadow: var(--cta-glow, none);
+  }
+
+  /* Sweeps on the way in only. The resting rule has no transition, so on the
+     way out the sheen jumps straight back off the left edge — out of sight,
+     since the pill clips it. */
+  .cta-hover:is(:hover, :focus-visible)::after {
+    transform: translateX(110%);
+    transition: transform 750ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cta-hover:is(:hover, :focus-visible) > :is(svg, img) {
+    transform: var(--cta-icon, translateX(4px));
+  }
+}
+
+/* After the hover block: same specificity, so the press wins while held. */
+.cta-hover:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* The light pills that carry the paper-plane icon — "Find out more", "View all
+   services", the final "Contact us" and the rest. A soft light glow rather than
+   the hero's orange, a bright gloss for the sheen, and the plane takes off —
+   forward, up and nose-up, with a little overshoot. */
+.find-more-cta {
+  --cta-glow: 0 12px 28px rgba(232, 235, 238, 0.22);
+  --cta-sheen: rgba(255, 255, 255, 0.95);
+  --cta-icon: translate(4px, -3px) rotate(-14deg);
+}
+
+.find-more-cta > img {
+  transition-duration: 350ms;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @media (max-width: 767px) {
@@ -289,13 +433,19 @@
     padding-bottom: 28px;
   }
 
+  /* `min-height`, not `height`: the 640px block above lets this pill wrap, and
+     pinning a height here would clip the second line. Same specificity, later
+     in the file — so this rule wins and has to stay wrap-safe. */
   .hero-announcement {
     width: auto;
-    height: 44px;
+    min-height: 44px;
+    height: auto;
     gap: 10px;
     padding: 10px 16px;
     font-size: 14px;
     line-height: 20px;
+    white-space: normal;
+    text-align: center;
   }
 
   .hero-announcement svg {
@@ -580,6 +730,12 @@
   font-family: Geist, sans-serif;
   font-size: 14px;
   line-height: 20px;
+  transition: border-color 200ms ease, background-color 200ms ease;
+}
+
+.service-tag:hover {
+  border-color: var(--color-orange);
+  background: rgba(239, 121, 20, 0.1);
 }
 .service-number {
   width: 59px;
@@ -631,6 +787,18 @@
   isolation: isolate;
 }
 
+/* The hover is on the <img>, not on ServiceImage's wrapper. The wrapper's
+   `whileInView` already animates `scale`, and giving the same property a
+   second owner meant the two fought whenever you hovered mid-entrance. */
+.services-image img {
+  transition: transform 350ms ease, filter 350ms ease;
+}
+
+.services-image:hover img {
+  transform: scale(1.06);
+  filter: brightness(1.08);
+}
+
 .services-image-cta {
   width: 223px;
   height: 54px;
@@ -654,6 +822,32 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
+}
+
+/* Each service row is a card so the rows can stack over one another on scroll
+   (see StackingCards). Opaque on purpose: a card being covered has to hide the
+   one beneath it. Same treatment as the blog and testimonial cards; the upward
+   shadow is only visible where a card overlaps another. */
+.services-card {
+  position: relative;
+  isolation: isolate;
+  padding: 40px;
+  border: 3px solid #122945;
+  border-radius: 32px;
+  background: #0a1727;
+  box-shadow: 0 -16px 40px rgba(8, 18, 30, 0.5);
+}
+
+/* Darkens a card as others stack on top of it — GSAP drives the opacity. Covers
+   the border too, so the whole card recedes rather than just its contents. */
+.services-card-shade {
+  position: absolute;
+  inset: -3px;
+  z-index: 2;
+  border-radius: inherit;
+  background: var(--color-surface);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .worried-heading {
@@ -940,7 +1134,11 @@
   }
 }
 
-.testimonials-heading {
+/* The blog teaser's heading is the testimonials one at every breakpoint, so the
+   two share these rules rather than the blog markup borrowing a class that
+   claims it is a testimonial. */
+.testimonials-heading,
+.blog-heading {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1055,10 +1253,35 @@
   scroll-snap-align: start;
 }
 
+/* Set by TeamScroller while the cards are dealt in, and while a mouse drag (or
+   the throw after it) is moving the row. Chrome snaps to where a card is drawn
+   and snaps programmatic scrolls too, so with snapping on, the deal would drag
+   the row along and every frame of a drag would be pulled back to a card. */
+.awards-scroller:is([data-dealing], [data-dragging]) {
+  scroll-snap-type: none;
+}
+
 .awards-card {
   width: 100%;
   height: 460px;
   border-radius: 20px;
+  transition: transform 300ms ease, box-shadow 300ms ease;
+}
+
+/* Hover lives on the figure, not the <li>. The <li> carries GSAP's inline
+   transform from the entrance cascade, and two owners of one property fight
+   if you hover mid-tween. */
+.awards-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 34px rgba(239, 121, 20, 0.22);
+}
+
+.awards-card img {
+  transition: transform 400ms ease;
+}
+
+.awards-card:hover img {
+  transform: scale(1.04);
 }
 
 .faq-intro h2 {
@@ -1302,9 +1525,13 @@
   transform: translateX(-50%);
 }
 
-.contact-bubble:hover {
-  background: #dce0e6;
-  transform: translateY(-2px);
+/* `:hover` can latch on touch (iOS keeps it until the next tap), leaving this
+   fixed element floating 2px off its anchor. Only real pointers get it. */
+@media (hover: hover) {
+  .contact-bubble:hover {
+    background: #dce0e6;
+    transform: translateY(-2px);
+  }
 }
 
 /* Below sm the pill collapses to a round icon-only button; the icon centers
@@ -1400,7 +1627,9 @@
   padding: 0;
   color: #ffffff;
   font-family: Geist, sans-serif;
-  font-size: 14px;
+  /* 16px, not the design's 14px: iOS zooms the page on focus for anything
+     smaller and does not zoom back out. */
+  font-size: 16px;
   line-height: 24px;
 }
 
@@ -1571,7 +1800,8 @@
   }
 }
 
-.testimonials-eyebrow {
+.testimonials-eyebrow,
+.blog-eyebrow {
   display: inline-flex;
   width: 235px;
   height: 51px;
@@ -1590,7 +1820,8 @@
   white-space: nowrap;
 }
 
-.testimonials-heading h2 {
+.testimonials-heading h2,
+.blog-heading h2 {
   max-width: 760px;
   margin-top: 24px;
   background: linear-gradient(
@@ -1611,7 +1842,8 @@
   text-align: center;
 }
 
-.testimonials-heading p {
+.testimonials-heading p,
+.blog-heading p {
   max-width: 620px;
   margin-top: 20px;
   color: var(--color-blue-light);
@@ -1641,7 +1873,10 @@
 .project-image {
   width: 471px;
   max-width: 100%;
-  height: 314px;
+  /* Aspect ratio rather than a fixed height, so the frame keeps the design's
+     proportion at every width instead of relying on a mobile override. */
+  aspect-ratio: 471 / 314;
+  height: auto;
   border-radius: 12px;
 }
 
@@ -1729,12 +1964,16 @@
     gap: 12px;
   }
 
+  /* Two per row at this width, so a long category label can wrap onto a second
+     line; a fixed height clipped it. */
   .project-tab {
     width: calc(50% - 6px);
-    height: 46px;
+    min-height: 46px;
+    height: auto;
     padding: 11px 8px;
     font-size: 13px;
-    line-height: 20px;
+    line-height: 18px;
+    white-space: normal;
   }
 
   .project-panel {
@@ -1790,6 +2029,12 @@
   border: 3px solid #122945;
   border-radius: 32px;
   background: #0a1727;
+  transition: border-color 250ms ease, background-color 250ms ease;
+}
+
+.testimonial-card:hover {
+  border-color: rgba(239, 121, 20, 0.45);
+  background: #0c1b2e;
 }
 
 .testimonial-image {
@@ -1819,12 +2064,14 @@
 }
 
 @media (max-width: 767px) {
-  .testimonials-heading h2 {
+  .testimonials-heading h2,
+  .blog-heading h2 {
     font-size: 42px;
     line-height: 50px;
   }
 
-  .testimonials-heading p {
+  .testimonials-heading p,
+  .blog-heading p {
     font-size: 16px;
     line-height: 24px;
   }
@@ -1904,8 +2151,20 @@
     background: #e8750a;
     box-shadow: none;
     transform-origin: center;
+    transition: box-shadow 250ms ease;
   }
 
+  /* Shadow only, deliberately. The resting `transform: rotate(...)` below is
+     CSS's, and GSAP writes its own inline transform over the top while the
+     scrubbed timeline runs — a hover transform here would be a third writer
+     and would drop the tilt. */
+  .process-section .process-card:hover {
+    box-shadow: 0 14px 30px rgba(8, 18, 30, 0.45);
+  }
+
+  /* Resting tilts. Duplicated in `components/motion/process-flow.tsx` as
+     CARD_ROTATIONS — CSS owns the look before and without JS, GSAP re-declares
+     them so it owns the whole transform while animating. Change both. */
   .process-item:nth-child(1) .process-card {
     transform: rotate(-15deg);
   }
@@ -1968,6 +2227,11 @@
 
   .services-section .services-row {
     gap: 28px;
+  }
+
+  .services-card {
+    padding: 20px;
+    border-radius: 24px;
   }
 
   .services-section-heading {
@@ -2079,7 +2343,11 @@
   background: #0f233b;
   color: #ffffff;
   font-family: Geist, sans-serif;
-  font-size: 14px;
+  /* 16px is the floor, not a design value: iOS Safari zooms the whole page when
+     a field under 16px takes focus, and never zooms back out. The first field
+     the user taps would leave the contact page scaled and horizontally
+     scrolled. */
+  font-size: 16px;
   line-height: 24px;
   transition: border-color 200ms ease;
 }
@@ -2316,11 +2584,11 @@
 }
 
 .page-hero-backdrop::before {
-  background-image: url("/assets/images/hero-glow.png");
+  background-image: url("/assets/images/hero-glow.webp");
 }
 
 .page-hero-backdrop::after {
-  background-image: url("/assets/images/hero-grid.png");
+  background-image: url("/assets/images/hero-grid.webp");
   mix-blend-mode: overlay;
   -webkit-mask-image: linear-gradient(to bottom, #000 85%, transparent);
   mask-image: linear-gradient(to bottom, #000 85%, transparent);
@@ -3314,8 +3582,9 @@
 
 .blog-author-linkedin {
   display: grid;
-  width: 28px;
-  height: 28px;
+  /* 40px hit area — it is the only route to the author's profile. */
+  width: 40px;
+  height: 40px;
   place-items: center;
   margin-bottom: 4px;
   border-radius: 4px;
@@ -3385,13 +3654,17 @@
 .blog-share-links {
   display: flex;
   align-items: center;
-  gap: 20px;
+  /* The buttons are 40px targets now, so the visual gap the 28px version had
+     comes back through smaller spacing rather than a bigger card. */
+  gap: 8px;
+  margin-left: -6px;
 }
 
 .blog-share-links button {
   display: grid;
-  width: 28px;
-  height: 28px;
+  /* 40px hit area; the glyph inside stays 26px, so only the target grows. */
+  width: 40px;
+  height: 40px;
   place-items: center;
   color: #ffffff;
   cursor: pointer;
@@ -3805,6 +4078,9 @@
   font-family: Geist, sans-serif;
   font-size: 30px;
   font-weight: 600;
+  /* Counted up on load; equal-width digits keep the figure from shuffling
+     sideways as it climbs. */
+  font-variant-numeric: tabular-nums;
   line-height: 36px;
 }
 
@@ -3825,6 +4101,9 @@
   margin-top: 24px;
   background: rgba(232, 235, 238, 0.6);
   content: "";
+  /* Drawn out from the centre by `CaseStoryReveal` through `--rule-scale`;
+     unset, the rule is simply there. */
+  transform: scaleX(var(--rule-scale, 1));
 }
 
 .case-detail-block + .case-detail-block {
@@ -3946,9 +4225,12 @@
   pointer-events: none;
 }
 
+/* `--glow` (0–1) is scrubbed by `CaseResultsReveal` as the section scrolls into
+   view, so the light comes up as you arrive. Unset — no JS, reduced motion —
+   it falls back to 1 and the glow is simply on. */
 .case-detail-results::before {
   background: var(--results-glow);
-  opacity: 0.3;
+  opacity: calc(0.3 * var(--glow, 1));
   -webkit-mask-image: var(--results-ellipse);
   mask-image: var(--results-ellipse);
 }
@@ -3957,7 +4239,7 @@
   background:
     linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)),
     var(--results-glow);
-  opacity: 0.26;
+  opacity: calc(0.26 * var(--glow, 1));
   -webkit-mask-image:
     repeating-linear-gradient(
       to bottom,
@@ -4065,6 +4347,8 @@
   font-family: Geist, sans-serif;
   font-size: 72px;
   font-weight: 700;
+  /* Counted up as the card lands; see `.case-detail-intro li`. */
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   line-height: 88px;
   white-space: nowrap;
@@ -4154,17 +4438,15 @@
   }
 
   .case-detail-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: 16px;
     margin-top: 32px;
   }
 
+  /* One column, so the full-width fifth card that the old 2-up layout needed
+     would leave a lopsided 2-2-1. Everything stacks. */
   .case-detail-stat:nth-child(n) {
     grid-column: auto;
-  }
-
-  .case-detail-stat:nth-child(5) {
-    grid-column: 1 / -1;
   }
 
   .case-detail-stat {
@@ -4172,8 +4454,10 @@
     padding: 16px;
   }
 
+  /* A fixed 40px on a nowrap `$250K+` is ~140px wide against a 131px column at
+     390px, so the number painted over the next card. Fluid keeps it inside. */
   .case-detail-stat dd {
-    font-size: 40px;
+    font-size: clamp(26px, 9vw, 40px);
     line-height: 48px;
   }
 

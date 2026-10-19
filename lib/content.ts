@@ -476,12 +476,15 @@ export const blogPage = {
   },
 } as const;
 
-/** Every slug the /blog index links to — drives the static detail routes. */
-export const blogSlugs: readonly string[] = [
+/** The /blog index's posts, in the order the page shows them. */
+export const blogPosts: readonly BlogPost[] = [
   blogPage.featured,
   ...blogPage.secondary,
   ...blogPage.more.posts,
-].map((post) => post.slug);
+];
+
+/** Every slug the /blog index links to — drives the static detail routes. */
+export const blogSlugs: readonly string[] = blogPosts.map((post) => post.slug);
 
 /**
  * The /blog/[slug] detail page.
