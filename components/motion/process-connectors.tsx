@@ -53,8 +53,12 @@ export function ProcessConnectors() {
         () => {
           const rotations = [-15, 5.85, -5.39, 5.67, -6.58];
           const svgBounds = svgRef.current?.getBoundingClientRect();
+          const flow = svgRef.current?.parentElement;
 
-          if (!svgBounds) return;
+          if (!svgBounds || !flow) return;
+
+          const header = document.querySelector<HTMLElement>(".site-header");
+          const headerOffset = (header?.offsetHeight ?? 88) + 16;
 
           cards.slice(0, -1).forEach((card, index) => {
             const nextCard = cards[index + 1];
@@ -75,10 +79,12 @@ export function ProcessConnectors() {
 
           const timeline = gsap.timeline({
             scrollTrigger: {
-              trigger: svgRef.current,
-              start: "top 75%",
-              end: "bottom 85%",
+              trigger: flow,
+              start: `top top+=${headerOffset}`,
+              end: "+=120%",
               scrub: 0.5,
+              pin: true,
+              anticipatePin: 1,
             },
           });
 

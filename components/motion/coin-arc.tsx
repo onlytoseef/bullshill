@@ -65,14 +65,14 @@ export function CoinArc() {
     <div
       ref={container}
       aria-hidden
-      className="relative mx-auto aspect-[16/6] w-full max-w-5xl"
+      className="relative mx-auto aspect-[16/6] w-[88%] max-w-[760px]"
     >
       <div data-coin-image className="absolute inset-0">
         <Image
           src={coinsImage}
           alt=""
           fill
-          sizes="(max-width: 768px) 130vw, 1024px"
+          sizes="(max-width: 768px) 88vw, 760px"
           className="object-contain"
         />
       </div>

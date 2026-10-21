@@ -8,17 +8,17 @@ import bgShine from "../../app/assets/images/bg-shine.webp";
 export function Intro() {
   return (
     <Section
-      className="about-section relative overflow-hidden py-20 sm:py-28"
+      className="about-section relative overflow-hidden py-12 sm:py-14 lg:py-16"
     >
       <div
         aria-hidden
         className="about-shine"
         style={{ backgroundImage: `url(${bgShine.src})` }}
       />
-      <Container className="2xl:max-w-[1440px]">
-        <div className="mx-auto w-full max-w-[916px] xl:max-w-[1100px] 2xl:max-w-[1280px]">
+      <Container>
+        <div className="mx-auto w-full max-w-[1100px]">
           <Reveal>
-            <div className="about-eyebrow mx-auto mb-8">
+            <div className="about-eyebrow mx-auto mb-5">
               <span>{intro.eyebrow}</span>
             </div>
             <p className="about-copy">
@@ -26,7 +26,7 @@ export function Intro() {
             </p>
           </Reveal>
 
-          <Stagger className="mt-9 grid gap-6 sm:grid-cols-2" stagger={0.1}>
+          <Stagger className="about-stats grid gap-4 sm:grid-cols-2" stagger={0.1}>
             {stats.map((stat) => (
               <div key={stat.label} className="about-stat-card">
                 {"text" in stat ? (

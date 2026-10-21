@@ -34,7 +34,7 @@ export function CaseStudyRow({ study, cta }: Props) {
 
         <Button href={cta.href} variant="light" className="case-row-button">
           {cta.label}
-          <Image src={findMoreIcon} alt="" width={24} height={24} />
+          <Image src={findMoreIcon} alt="" width={18} height={18} />
         </Button>
       </Reveal>
 

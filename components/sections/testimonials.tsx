@@ -14,7 +14,7 @@ const testimonialImages = [
 
 function Stars() {
   return (
-    <div className="flex gap-0.5" aria-label="Rated 5 out of 5">
+    <div className="flex gap-0.5 mt-4" aria-label="Rated 5 out of 5">
       {Array.from({ length: 5 }, (_, index) => (
         <svg
           key={index}
@@ -57,11 +57,11 @@ export function Testimonials() {
               </div>
               <Stars />
 
-              <blockquote className="mt-6 flex-1 text-base leading-relaxed text-blue-light">
+              <blockquote className="mt-4 text-base leading-relaxed text-blue-light">
                 {item.quote}
               </blockquote>
 
-              <figcaption className="mt-8 flex items-center gap-4">
+              <figcaption className="mt-5 flex items-center gap-4">
                 <span
                   aria-hidden
                   className="grid size-11 shrink-0 place-items-center rounded-full text-sm font-semibold text-white"

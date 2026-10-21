@@ -19,11 +19,11 @@ export function SiteFooter() {
             <Wordmark className="footer-wordmark text-blue-darker" />
           </div>
 
-          <p className="footer-description mt-5 max-w-2xl">
+          <p className="footer-description mt-4 max-w-2xl">
             {footer.description}
           </p>
 
-          <ul className="footer-socials mt-7 flex items-center">
+          <ul className="footer-socials mt-5 flex items-center">
             {footer.socials.map((social) => (
               <li key={social.label}>
                 <Link
@@ -39,7 +39,7 @@ export function SiteFooter() {
             ))}
           </ul>
 
-          <form className="footer-newsletter mt-8 w-full">
+          <form className="footer-newsletter mt-6 w-full">
             <div className="footer-newsletter-row flex flex-col gap-2 sm:flex-row sm:items-center">
               <label htmlFor="footer-name" className="sr-only">
                 {footer.newsletter.name.label}
@@ -80,7 +80,7 @@ export function SiteFooter() {
         </div>
       </Container>
 
-      <Reveal y={40} duration={0.9} className="mt-14">
+      <Reveal y={40} duration={0.9} className="mt-10">
         <Parallax amount={6}>
           <div aria-hidden className="overflow-hidden px-6">
             <p className="footer-oversized-wordmark text-center select-none">

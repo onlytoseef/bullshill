@@ -83,7 +83,7 @@ export function Services() {
                         src={serviceImages[index]}
                         alt={service.title}
                         fill
-                        sizes="(max-width: 1024px) 100vw, 471px"
+                        sizes="(max-width: 1024px) 100vw, 360px"
                         className="object-cover"
                       />
                     </ServiceImage>

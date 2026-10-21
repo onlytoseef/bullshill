@@ -1,6 +1,8 @@
 import Image, { type StaticImageData } from "next/image";
 
 import { Reveal } from "@/components/motion/reveal";
+import { AwardsCarousel } from "@/components/sections/awards-carousel";
+import { CarouselItem } from "@/components/ui/carousel";
 import { Container, Section } from "@/components/ui/section";
 import { awards } from "@/lib/content";
 import adnanImage from "../../app/assets/team-section/Adnan Hussain.png";
@@ -48,22 +50,20 @@ export function Awards() {
         </div>
 
         <Reveal>
-          <ul className="awards-scroller" tabIndex={0} aria-label="Team members">
+          <AwardsCarousel>
             {awards.people.map((person) => (
-              <li key={person.name}>
+              <CarouselItem key={person.name} className="awards-slide">
                 <figure className="awards-card relative isolate overflow-hidden">
-                  <Image
-                    src={teamImages[person.name]}
-                    alt={person.name}
-                    fill
-                    sizes="(max-width: 767px) 280px, 460px"
-                    className="object-cover"
-                  />
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
-                  />
-                  <figcaption className="absolute inset-x-0 bottom-0 p-6">
+                  <div className="awards-image relative">
+                    <Image
+                      src={teamImages[person.name]}
+                      alt={person.name}
+                      fill
+                      sizes="(max-width: 767px) 230px, 280px"
+                      className="object-contain object-bottom"
+                    />
+                  </div>
+                  <figcaption className="awards-caption">
                     <span className="block text-lg font-semibold text-white">
                       {person.name}
                     </span>
@@ -74,9 +74,9 @@ export function Awards() {
                     ) : null}
                   </figcaption>
                 </figure>
-              </li>
+              </CarouselItem>
             ))}
-          </ul>
+          </AwardsCarousel>
         </Reveal>
       </Container>
     </Section>
