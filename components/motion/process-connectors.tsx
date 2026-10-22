@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 
-import { gsap, useGSAP } from "@/lib/gsap";
+import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
 import { process } from "@/lib/content";
 
 function toSvgPoint(
@@ -42,40 +42,84 @@ export function ProcessConnectors() {
 
   useGSAP(
     () => {
-      const paths = gsap.utils.toArray<SVGPathElement>("[data-connector]");
-      const cards = gsap.utils.toArray<HTMLElement>("[data-process-card]");
-      if (paths.length === 0 || cards.length === 0) return;
+      const flow = svgRef.current?.parentElement;
+      if (!flow) return;
+
+      const paths = gsap.utils.toArray<SVGPathElement>(
+        flow.querySelectorAll("[data-connector]"),
+      );
+      const cards = gsap.utils.toArray<HTMLElement>(
+        flow.querySelectorAll("[data-process-card]"),
+      );
+      if (paths.length !== cards.length - 1) return;
 
       const mm = gsap.matchMedia();
 
       mm.add(
-        "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
-        () => {
-          const rotations = [-15, 5.85, -5.39, 5.67, -6.58];
-          const svgBounds = svgRef.current?.getBoundingClientRect();
-          const flow = svgRef.current?.parentElement;
+        {
+          isDesktop: "(min-width: 1024px)",
+          reduceMotion: "(prefers-reduced-motion: reduce)",
+        },
+        (context) => {
+          const { isDesktop, reduceMotion } = context.conditions as {
+            isDesktop: boolean;
+            reduceMotion: boolean;
+          };
 
-          if (!svgBounds || !flow) return;
+          if (!isDesktop) return;
+
+          const rotations = [-15, 5.85, -5.39, 5.67, -6.58];
+          // Re-measures card/line geometry. Needed on top of the initial run because
+          // layout shifts after mount (web fonts swapping in, window resize) would
+          // otherwise leave the connector lines pointing at stale card positions —
+          // `refreshInit` lets us reset before ScrollTrigger recalculates.
+          function layout() {
+            // Neutralize any scale/translate left over from a previous run (or from
+            // mid-scroll scrub progress) before measuring — otherwise a shrunk,
+            // shifted card box gets baked into the line coordinates below.
+            gsap.set(cards, { scale: 1, y: 0 });
+
+            const svgBounds = svgRef.current!.getBoundingClientRect();
+
+            cards.slice(0, -1).forEach((card, index) => {
+              const nextCard = cards[index + 1];
+              paths[index].setAttribute(
+                "d",
+                connector(card.getBoundingClientRect(), nextCard.getBoundingClientRect(), svgBounds),
+              );
+            });
+
+            cards.forEach((card, index) => {
+              const revealed = reduceMotion || index === 0;
+              gsap.set(card, {
+                opacity: revealed ? 1 : 0,
+                rotation: rotations[index] ?? 0,
+                scale: revealed ? 1 : 0.92,
+                y: revealed ? 0 : 24,
+              });
+            });
+
+            paths.forEach((path) => {
+              const length = path.getTotalLength();
+              gsap.set(path, {
+                strokeDasharray: length,
+                // With reduced motion we skip the scroll-driven draw entirely, so
+                // the lines need to render fully visible right away.
+                strokeDashoffset: reduceMotion ? 0 : length,
+              });
+            });
+          }
+
+          layout();
+          ScrollTrigger.addEventListener("refreshInit", layout);
+
+          const cleanup = () =>
+            ScrollTrigger.removeEventListener("refreshInit", layout);
+
+          if (reduceMotion) return cleanup;
 
           const header = document.querySelector<HTMLElement>(".site-header");
           const headerOffset = (header?.offsetHeight ?? 88) + 16;
-
-          cards.slice(0, -1).forEach((card, index) => {
-            const nextCard = cards[index + 1];
-            paths[index].setAttribute(
-              "d",
-              connector(card.getBoundingClientRect(), nextCard.getBoundingClientRect(), svgBounds),
-            );
-          });
-
-          cards.forEach((card, index) => {
-            gsap.set(card, {
-              opacity: index === 0 ? 1 : 0,
-              rotation: rotations[index] ?? 0,
-              scale: index === 0 ? 1 : 0.92,
-              y: index === 0 ? 0 : 24,
-            });
-          });
 
           const timeline = gsap.timeline({
             scrollTrigger: {
@@ -85,15 +129,11 @@ export function ProcessConnectors() {
               scrub: 0.5,
               pin: true,
               anticipatePin: 1,
+              invalidateOnRefresh: true,
             },
           });
 
           paths.forEach((path, index) => {
-            const length = path.getTotalLength();
-            gsap.set(path, {
-              strokeDasharray: length,
-              strokeDashoffset: length,
-            });
             timeline.to(path, { strokeDashoffset: 0, ease: "none" });
             timeline.to(
               cards[index + 1],
@@ -107,6 +147,8 @@ export function ProcessConnectors() {
               ">-0.08",
             );
           });
+
+          return cleanup;
         },
       );
 
@@ -123,7 +165,7 @@ export function ProcessConnectors() {
       preserveAspectRatio="none"
       className="connector-layer pointer-events-none absolute inset-0 z-[1] hidden size-full lg:block"
     >
-      {process.steps.slice(0, -1).map((step, index) => (
+      {process.steps.slice(0, -1).map((step) => (
         <path
           key={step.title}
           data-connector
