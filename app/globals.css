@@ -4460,64 +4460,52 @@
   line-height: 88px;
 }
 
-.case-row-summary,
-.case-row-result {
+.case-row-summary {
   max-width: 575px;
+  margin-top: 28px;
+  color: #a3a3a3;
   font-family: Geist, sans-serif;
   font-size: 24px;
   font-weight: 400;
   line-height: 36px;
 }
 
-.case-row-summary {
-  margin-top: 28px;
-  color: #a3a3a3;
-}
-
 .case-row-summary span {
-  color: #e5e5e5;
-}
-
-.case-row-metric {
-  display: inline-block;
-  min-width: min(317px, 100%);
-  margin-top: 24px;
-  padding: 12px 24px;
-  border: 1px solid #283748;
-  background: linear-gradient(135deg, #071527 0%, #101f31 100%);
-  color: var(--color-blue-light);
-  font-family: Geist, sans-serif;
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 36px;
-  text-align: center;
-}
-
-.case-row-result {
-  margin-top: 30px;
   color: #e5e5e5;
 }
 
 .case-row-tags {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px 23px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
   margin-top: 20px;
 }
 
 .case-row-tags li {
-  display: inline-flex;
-  height: 56px;
-  align-items: center;
-  padding: 0 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9.09px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 14px 24px;
   border: 0.91px solid var(--color-blue-light);
-  border-radius: 36px;
+  border-radius: 999px;
   color: var(--color-blue-light);
   font-family: Geist, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 24px;
-  white-space: nowrap;
+  line-height: 20px;
+}
+
+.case-row-tags li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  margin-top: 9px;
+  border-radius: 50%;
+  background: var(--color-blue-light);
 }
 
 .case-row-button {
@@ -4537,9 +4525,9 @@
 }
 
 .case-row-visual {
-  aspect-ratio: 462 / 362;
+  position: relative;
+  aspect-ratio: 3375 / 1605;
   overflow: hidden;
-  border: 5px solid #ffffff;
   border-radius: 20px;
 }
 
@@ -4554,8 +4542,7 @@
     line-height: 68px;
   }
 
-  .case-row-summary,
-  .case-row-result {
+  .case-row-summary {
     font-size: 20px;
     line-height: 30px;
   }
@@ -4587,33 +4574,21 @@
     line-height: 48px;
   }
 
-  .case-row-summary,
-  .case-row-result {
+  .case-row-summary {
+    margin-top: 20px;
     font-size: 18px;
     line-height: 28px;
   }
 
-  .case-row-summary {
-    margin-top: 20px;
-  }
-
-  .case-row-metric {
-    font-size: 22px;
-    line-height: 30px;
-  }
-
-  .case-row-result {
-    margin-top: 20px;
-  }
-
   .case-row-tags {
-    gap: 12px;
+    gap: 10px;
   }
 
   .case-row-tags li {
-    height: 46px;
-    padding: 0 18px;
-    font-size: 14px;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 20px;
   }
 
   .case-row-button {
@@ -4623,7 +4598,6 @@
   }
 
   .case-row-visual {
-    border-width: 3px;
     border-radius: 16px;
   }
 }
@@ -4682,31 +4656,15 @@
 
 #case-studies .case-row-copy h2 {
   max-width: none;
-  font-size: clamp(24px, 2.4vw, 30px);
+  font-size: clamp(20px, 2vw, 26px);
   line-height: 1.2;
 }
 
-#case-studies .case-row-summary,
-#case-studies .case-row-result {
+#case-studies .case-row-summary {
   max-width: 590px;
+  margin-top: 16px;
   font-size: 14px;
   line-height: 1.6;
-}
-
-#case-studies .case-row-summary {
-  margin-top: 16px;
-}
-
-#case-studies .case-row-metric {
-  min-width: 0;
-  margin-top: 16px;
-  padding: 8px 16px;
-  font-size: 16px;
-  line-height: 24px;
-}
-
-#case-studies .case-row-result {
-  margin-top: 16px;
 }
 
 #case-studies .case-row-tags {
@@ -4715,10 +4673,10 @@
 }
 
 #case-studies .case-row-tags li {
-  height: 34px;
-  padding: 0 12px;
-  font-size: 12px;
-  line-height: 18px;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 #case-studies .case-row-button {
@@ -4732,16 +4690,20 @@
 
 #case-studies .case-row-visual {
   width: 100%;
-  max-width: 360px;
-  aspect-ratio: 462 / 362;
-  border-width: 3px;
+  max-width: 440px;
+  aspect-ratio: 9 / 4;
+  background: #071527;
   border-radius: 12px;
 }
 
 @media (min-width: 1024px) {
   #case-studies .case-row {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
     column-gap: 40px;
+  }
+
+  #case-studies .case-row-copy {
+    max-width: 520px;
   }
 }
 
@@ -4762,8 +4724,7 @@
     padding-top: 16px;
   }
 
-  #case-studies .case-row-summary,
-  #case-studies .case-row-result {
+  #case-studies .case-row-summary {
     font-size: 14px;
   }
 }
@@ -4782,6 +4743,7 @@
 }
 
 .case-detail-cover-image {
+  position: relative;
   width: 100%;
   aspect-ratio: 1140 / 500;
   border-radius: 0;
