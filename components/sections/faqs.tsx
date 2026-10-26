@@ -14,7 +14,7 @@ export function Faqs({ variant = "home" }: Props) {
     <Section
       id="faqs"
       className={cn(
-        "faqs-section",
+        "faqs-section bubble-zone",
         variant === "page" && "faqs-section--page",
       )}
     >

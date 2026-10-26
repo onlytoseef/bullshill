@@ -15,15 +15,9 @@ const testimonialImages = [
 
 function Stars() {
   return (
-    <div className="flex gap-0.5 mt-4" aria-label="Rated 5 out of 5">
+    <div className="testimonial-stars" role="img" aria-label="Rated 5 out of 5">
       {Array.from({ length: 5 }, (_, index) => (
-        <svg
-          key={index}
-          aria-hidden
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          className="size-4 text-orange"
-        >
+        <svg key={index} aria-hidden viewBox="0 0 20 20" fill="currentColor">
           <path d="M10 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.9l-5.2 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z" />
         </svg>
       ))}
@@ -33,7 +27,7 @@ function Stars() {
 
 export function Testimonials() {
   return (
-    <Section id="testimonials" className="testimonials-section">
+    <Section id="testimonials" className="testimonials-section bubble-zone">
       <Container>
         <StaggerHeading
           eyebrow={testimonials.eyebrow}
@@ -54,36 +48,52 @@ export function Testimonials() {
                   src={testimonialImages[index]}
                   alt=""
                   fill
-                  sizes="(max-width: 767px) 312px, 366px"
+                  sizes="(max-width: 767px) 92vw, (max-width: 1023px) 46vw, 366px"
                   className="object-cover"
                 />
               </div>
-              <Stars />
 
-              <blockquote className="mt-4 text-base leading-relaxed text-blue-light">
-                {item.quote}
-              </blockquote>
+              <div className="testimonial-rating">
+                <Stars />
+                <span aria-hidden className="testimonial-quote-mark">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.17 6A5.17 5.17 0 0 0 2 11.17V18h6.83v-6.83H5.42a1.75 1.75 0 0 1 1.75-1.75V6Z" />
+                    <path d="M16.58 6a5.17 5.17 0 0 0-5.17 5.17V18h6.83v-6.83h-3.41a1.75 1.75 0 0 1 1.75-1.75V6Z" />
+                  </svg>
+                </span>
+              </div>
 
-              <figcaption className="mt-5 flex items-center gap-4">
+              <blockquote className="testimonial-quote">{item.quote}</blockquote>
+
+              <figcaption className="testimonial-author">
                 <span
                   aria-hidden
-                  className="grid size-11 shrink-0 place-items-center rounded-full text-sm font-semibold text-white"
+                  className="testimonial-avatar"
                   style={{
                     backgroundImage: `linear-gradient(135deg, ${item.from}, ${item.to})`,
                   }}
                 >
                   {item.initials}
                 </span>
-                <span className="min-w-0">
-                  {/* No `truncate`: at 390px the avatar leaves ~250px, so a
-                      longer role silently lost its ending. Wrapping is the
-                      honest failure mode here. */}
-                  <span className="block break-words text-sm font-medium text-white">
-                    {item.name}
-                  </span>
-                  <span className="block break-words text-sm text-blue-light-active">
+
+                <span className="testimonial-author-text">
+                  <span className="testimonial-author-name">{item.name}</span>
+                  <span className="testimonial-author-role">
                     {item.role}
                   </span>
+                </span>
+
+                <span aria-hidden className="testimonial-arrow">
+                  <svg
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3.5 10.5 10.5 3.5M5.2 3.5h5.3v5.3" />
+                  </svg>
                 </span>
               </figcaption>
             </figure>

@@ -8,7 +8,7 @@ import { blog } from "@/lib/content";
 
 export function Blog() {
   return (
-    <Section id="blog">
+    <Section id="blog" className="bubble-zone">
       <Container>
         <StaggerHeading
           eyebrow={blog.eyebrow}

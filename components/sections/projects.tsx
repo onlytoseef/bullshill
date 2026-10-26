@@ -5,10 +5,10 @@ import { useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
 import { Button } from "@/components/ui/button";
-import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
+import { caseStudyImages } from "@/components/ui/case-study-row";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Container, Section } from "@/components/ui/section";
-import { projects } from "@/lib/content";
+import { caseStudiesPage, projects } from "@/lib/content";
 import { Flip, gsap, useGSAP } from "@/lib/gsap";
 import { EASE_OUT_GSAP } from "@/lib/motion";
 import { replayOnScroll } from "@/lib/scroll-replay";
@@ -40,7 +40,8 @@ export function Projects() {
   const queued = useRef<number | null>(null);
   const baseId = useId();
   const panelId = `${baseId}-panel`;
-  const current = projects.items[shown];
+  const current = caseStudiesPage.items[shown];
+  const image = caseStudyImages[current.slug];
 
   const { contextSafe } = useGSAP(
     () => {
@@ -162,20 +163,21 @@ export function Projects() {
           <div
             data-work-reveal
             role="tablist"
-            aria-label="Project categories"
+            aria-label="Case studies"
             className="project-tabs flex flex-wrap justify-center"
           >
-            {projects.items.map((item, index) => {
+            {caseStudiesPage.items.map((study, index) => {
               const isSelected = index === selected;
 
               return (
                 <button
-                  key={item.category}
+                  key={study.slug}
                   type="button"
                   role="tab"
                   id={`${baseId}-tab-${index}`}
                   aria-selected={isSelected}
                   aria-controls={panelId}
+                  aria-label={study.client}
                   onClick={() => contextSafe(select)(index)}
                   className={cn(
                     "project-tab relative text-sm font-medium transition-colors",
@@ -189,7 +191,7 @@ export function Projects() {
                       className="project-tab-active-fill absolute inset-0 rounded-full"
                     />
                   ) : null}
-                  <span className="relative">{item.category}</span>
+                  <span className="relative">{study.slug.toUpperCase()}</span>
                 </button>
               );
             })}
@@ -203,25 +205,34 @@ export function Projects() {
             className="project-panel mt-10 grid gap-8 p-6 sm:p-10 lg:grid-cols-2 lg:items-center lg:gap-14"
           >
             <div data-work-swap>
-              <h3 className="project-title">
-                {current.title}
-              </h3>
+              <h3 className="project-title">{current.client}</h3>
               <p className="project-body mt-4">
-                {current.body}
+                {current.summaryLead}
+                {current.summaryRest}
               </p>
-              <Button href="#contact" variant="light" size="sm" className="project-study-button cta-hover find-more-cta mt-8">
+              <Button
+                href={`/case-studies/${current.slug}`}
+                variant="light"
+                size="sm"
+                className="project-study-button cta-hover find-more-cta mt-8"
+              >
                 Study More
                 <Image src={findMoreIcon} alt="" width={20} height={20} />
               </Button>
             </div>
 
-            <div data-work-swap>
-              <PlaceholderVisual
-                label={current.visual.label}
-                from={current.visual.from}
-                to={current.visual.to}
-                className="project-image w-full"
-              />
+            <div data-work-swap className="project-panel-visual">
+              <div className="project-image relative w-full overflow-hidden">
+                {image ? (
+                  <Image
+                    src={image}
+                    alt={current.client}
+                    fill
+                    sizes="(min-width: 1024px) 360px, 100vw"
+                    className="object-cover"
+                  />
+                ) : null}
+              </div>
             </div>
           </div>
         </div>

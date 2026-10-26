@@ -1,25 +1,15 @@
 import { CoinArc } from "@/components/motion/coin-arc";
+import { HeroParticles } from "@/components/motion/hero-particles";
 import { Reveal } from "@/components/motion/reveal";
 import { SplitHeadline } from "@/components/motion/split-headline";
 import { Button } from "@/components/ui/button";
 import { ArrowIcon } from "@/components/ui/icons";
 import { hero, site } from "@/lib/content";
-import heroBackground from "../../app/assets/images/hero-bg.svg";
-
-function Backdrop() {
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 bg-cover bg-top bg-no-repeat"
-      style={{ backgroundImage: `url(${heroBackground.src})` }}
-    />
-  );
-}
 
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
-      <Backdrop />
+      <HeroParticles className="pointer-events-none absolute inset-0" />
 
       <div className="hero-content relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-12 sm:pt-28">
         <div className="mx-auto max-w-3xl text-center">

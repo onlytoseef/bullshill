@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { Reveal } from "@/components/motion/reveal";
+import { CaseHeroReveal } from "@/components/motion/case-study-reveal";
 import { Container } from "@/components/ui/section";
 import { caseStudyDetail, type CaseStudy } from "@/lib/content";
 import { caseStudyImages } from "@/components/ui/case-study-row";
@@ -16,20 +16,21 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
       />
 
       <Container className="relative z-10">
-        <Reveal trigger="mount" className="case-detail-cover">
-          <div className="case-detail-cover-image">
-            {image ? (
-              <Image
-                src={image}
-                alt={study.client}
-                fill
-                sizes="1140px"
-                className="object-cover"
-                priority
-              />
-            ) : null}
+        <CaseHeroReveal>
+          <div data-case-cover className="case-detail-cover">
+            <div className="case-detail-cover-image">
+              {image ? (
+                <Image
+                  src={image}
+                  alt={study.client}
+                  fill
+                  sizes="1140px"
+                  className="object-cover"
+                  priority
+                />
+              ) : null}
+            </div>
           </div>
-        </Reveal>
 
           <div className="case-detail-intro">
             <h1 data-case-title>{study.client}</h1>

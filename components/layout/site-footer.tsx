@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { FooterMap } from "@/components/motion/footer-map";
 import { Parallax } from "@/components/motion/parallax";
 import { Reveal } from "@/components/motion/reveal";
 import { SocialIcon } from "@/components/ui/social-icons";
@@ -12,6 +13,7 @@ import logo from "../../app/assets/images/logo.webp";
 export function SiteFooter() {
   return (
     <footer className="site-footer bg-blue-light text-blue-darker">
+      <FooterMap />
       <Container>
         <div className="flex flex-col items-center text-center">
           <div className="footer-brand">

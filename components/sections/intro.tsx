@@ -1,3 +1,4 @@
+import { ReactiveGrid } from "@/components/motion/reactive-grid";
 import { StatsReveal } from "@/components/motion/stats-reveal";
 import { Container, Section } from "@/components/ui/section";
 import { intro, stats } from "@/lib/content";
@@ -13,25 +14,24 @@ function statText(stat: (typeof stats)[number]) {
 export function Intro() {
   return (
     <Section
-      className="about-section relative overflow-hidden py-12 sm:py-14 lg:py-16"
+      className="about-section relative overflow-hidden py-20 sm:py-28"
     >
       <div
         aria-hidden
         className="about-shine"
         style={{ backgroundImage: `url(${bgShine.src})` }}
       />
-      <Container>
-        <div className="mx-auto w-full max-w-[1100px]">
-          <Reveal>
-            <div className="about-eyebrow mx-auto mb-5">
-              <span>{intro.eyebrow}</span>
-            </div>
-            <p className="about-copy">
-              {intro.bodyLead} <span>{intro.bodyAccent}</span>
-            </p>
-          </Reveal>
+      <ReactiveGrid />
+      <Container className="pointer-events-none relative z-10 2xl:max-w-[1440px]">
+        <StatsReveal className="mx-auto w-full max-w-[916px] xl:max-w-[1100px] 2xl:max-w-[1280px]">
+          <div data-stats-eyebrow className="about-eyebrow mx-auto mb-8">
+            <span>{intro.eyebrow}</span>
+          </div>
+          <h2 data-stats-heading className="about-copy">
+            {intro.bodyLead} <span>{intro.bodyAccent}</span>
+          </h2>
 
-          <Stagger className="about-stats grid gap-4 sm:grid-cols-2" stagger={0.1}>
+          <ul className="mt-9 grid gap-6 sm:grid-cols-2">
             {stats.map((stat) => (
               <li key={stat.label} data-stats-card className="about-stat-card">
                 <span data-stats-count className="about-stat-value">
