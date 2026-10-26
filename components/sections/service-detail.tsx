@@ -10,7 +10,7 @@ type Props = {
 
 export function ServiceDetail({ service, index }: Props) {
   return (
-    <section className="service-detail">
+    <section className="service-detail service-detail--single">
       <div
         aria-hidden
         className="page-hero-backdrop page-hero-backdrop--image"

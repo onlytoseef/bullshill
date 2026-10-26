@@ -81,29 +81,26 @@ export function Services() {
                     </div>
                   </Reveal>
 
-                  <Reveal x={32} y={0} delay={0.1}>
-                    <div className="services-image relative aspect-[471/314] overflow-hidden rounded-[12px] border-[8px] border-[#3f4750]">
-                      <ServiceImage>
-                        <Image
-                          src={serviceImages[index]}
-                          alt={service.title}
-                          fill
-                          sizes="(max-width: 767px) 296px, (max-width: 1024px) 60vw, 471px"
-                          className="object-cover"
-                        />
-                      </ServiceImage>
-                    </div>
-                    <p className="services-caption mt-5 text-sm leading-relaxed text-blue-light-active">
-                      {services.caption}
-                    </p>
-                    <Button href={service.href} variant="light" size="md" className="services-image-cta cta-hover find-more-cta mt-5">
-                      Find out more
-                      <Image src={findMoreIcon} alt="" width={20} height={20} />
-                    </Button>
-                  </Reveal>
-
-                  <span aria-hidden data-stack-shade className="services-card-shade" />
-                </div>
+                <Reveal x={32} y={0} delay={0.1}>
+                  <div className="services-image relative aspect-[471/314] overflow-hidden rounded-[12px] border-[8px] border-[#3f4750]">
+                    <ServiceImage>
+                      <Image
+                        src={serviceImages[index]}
+                        alt={service.title}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 360px"
+                        className="object-cover"
+                      />
+                    </ServiceImage>
+                  </div>
+                  <p className="services-caption mt-5 text-sm leading-relaxed text-blue-light-active">
+                    {services.caption}
+                  </p>
+                  <Button href={service.href} variant="light" size="md" className="services-image-cta mt-5">
+                    Find out more
+                    <Image src={findMoreIcon} alt="" width={20} height={20} />
+                  </Button>
+                </Reveal>
               </div>
             </li>
           ))}

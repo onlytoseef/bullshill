@@ -1,10 +1,20 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
-import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import type { CaseStudy } from "@/lib/content";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
+import amalasImage from "../../app/assets/case-studies/AMALAS case.webp";
+import avxImage from "../../app/assets/case-studies/AVX case.webp";
+import pcpImage from "../../app/assets/case-studies/PCP case.webp";
+import xeraImage from "../../app/assets/case-studies/Xera case.webp";
+
+export const caseStudyImages: Record<string, StaticImageData> = {
+  xera: xeraImage,
+  amalas: amalasImage,
+  avx: avxImage,
+  pcp: pcpImage,
+};
 
 type Props = {
   study: CaseStudy;
@@ -12,6 +22,8 @@ type Props = {
 };
 
 export function CaseStudyRow({ study, cta }: Props) {
+  const image = caseStudyImages[study.slug];
+
   return (
     <li className="case-row">
       <Reveal x={-24} y={0} className="case-row-copy">
@@ -22,28 +34,28 @@ export function CaseStudyRow({ study, cta }: Props) {
           {study.summaryRest}
         </p>
 
-        <p className="case-row-metric">{study.metric}</p>
-
-        <p className="case-row-result">{study.result}</p>
-
         <ul className="case-row-tags">
-          {study.tags.map((tag) => (
-            <li key={tag}>{tag}</li>
+          {study.achievements.map((achievement) => (
+            <li key={achievement}>{achievement}</li>
           ))}
         </ul>
 
         <Button href={cta.href} variant="light" className="case-row-button cta-hover find-more-cta">
           {cta.label}
-          <Image src={findMoreIcon} alt="" width={24} height={24} />
+          <Image src={findMoreIcon} alt="" width={18} height={18} />
         </Button>
       </Reveal>
 
       <Reveal x={24} y={0} delay={0.1} className="case-row-visual">
-        <PlaceholderVisual
-          from={study.visual.from}
-          to={study.visual.to}
-          className="size-full rounded-none ring-0"
-        />
+        {image ? (
+          <Image
+            src={image}
+            alt={study.client}
+            fill
+            sizes="(min-width: 1280px) 440px, (min-width: 1024px) 40vw, (min-width: 768px) 560px, 100vw"
+            className="object-cover"
+          />
+        ) : null}
       </Reveal>
     </li>
   );

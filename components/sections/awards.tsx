@@ -1,7 +1,8 @@
 import Image, { type StaticImageData } from "next/image";
 
-import { StaggerHeading } from "@/components/motion/stagger-heading";
-import { TeamScroller } from "@/components/motion/team-scroller";
+import { Reveal } from "@/components/motion/reveal";
+import { AwardsCarousel } from "@/components/sections/awards-carousel";
+import { CarouselItem } from "@/components/ui/carousel";
 import { Container, Section } from "@/components/ui/section";
 import { awards } from "@/lib/content";
 import adnanImage from "../../app/assets/team-section/Adnan Hussain.webp";
@@ -50,43 +51,35 @@ export function Awards() {
           eyebrowClassName="awards-eyebrow"
         />
 
-        <TeamScroller label="Team members" className="awards-scroller">
-          {awards.people.map((person) => (
-            <li key={person.name} data-team-card>
-              <figure className="awards-card relative isolate overflow-hidden">
-                {/* 8% wider than the card on each side, so the photo has
-                    room to drift without its edges showing. The drift and the
-                    entrance zoom each get their own layer: two tweens sharing
-                    one element's transform do not compose reliably. */}
-                <div data-team-photo className="absolute inset-y-0 -inset-x-[8%]">
-                  <div data-team-zoom className="absolute inset-0">
+        <Reveal>
+          <AwardsCarousel>
+            {awards.people.map((person) => (
+              <CarouselItem key={person.name} className="awards-slide">
+                <figure className="awards-card relative isolate overflow-hidden">
+                  <div className="awards-image relative">
                     <Image
                       src={teamImages[person.name]}
                       alt={person.name}
                       fill
-                      sizes="(max-width: 1000px) 330px, 540px"
-                      className="object-cover"
+                      sizes="(max-width: 767px) 230px, 280px"
+                      className="object-contain object-bottom"
                     />
                   </div>
-                </div>
-                <div
-                  aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
-                />
-                <figcaption className="absolute inset-x-0 bottom-0 p-6">
-                  <span className="block text-lg font-semibold text-white">
-                    {person.name}
-                  </span>
-                  {person.role ? (
-                    <span className="block text-sm text-white/70">
-                      {person.role}
+                  <figcaption className="awards-caption">
+                    <span className="block text-lg font-semibold text-white">
+                      {person.name}
                     </span>
-                  ) : null}
-                </figcaption>
-              </figure>
-            </li>
-          ))}
-        </TeamScroller>
+                    {person.role ? (
+                      <span className="block text-sm text-white/70">
+                        {person.role}
+                      </span>
+                    ) : null}
+                  </figcaption>
+                </figure>
+              </CarouselItem>
+            ))}
+          </AwardsCarousel>
+        </Reveal>
       </Container>
     </Section>
   );

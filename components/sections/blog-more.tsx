@@ -30,7 +30,7 @@ export function BlogMore() {
     <section id="more-to-read" className="scroll-mt-24 py-12 sm:py-16">
       <Container>
         <Reveal className="text-center">
-          <h2 className="text-display-sm font-semibold text-white sm:text-display-md">
+          <h2 className="blog-more-heading text-display-sm font-semibold text-white sm:text-display-md">
             {more.title}
           </h2>
         </Reveal>

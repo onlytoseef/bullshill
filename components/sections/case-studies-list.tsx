@@ -24,14 +24,14 @@ export function CaseStudiesList() {
           ))}
         </ul>
 
-        <Reveal className="mt-20 flex justify-center">
+        <Reveal className="mt-10 flex justify-center">
           <Button
             href={caseStudiesPage.moreCta.href}
             variant="light"
             className="case-row-button case-rows-more cta-hover find-more-cta"
           >
             {caseStudiesPage.moreCta.label}
-            <Image src={findMoreIcon} alt="" width={24} height={24} />
+            <Image src={findMoreIcon} alt="" width={18} height={18} />
           </Button>
         </Reveal>
       </Container>

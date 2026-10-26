@@ -12,7 +12,7 @@ export function Process() {
         <SectionHeading
           eyebrow={process.eyebrow}
           title={process.title}
-          className="mb-16"
+          className="mb-20 lg:mb-28"
         />
 
         <ProcessFlow>

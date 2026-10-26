@@ -23,7 +23,7 @@ export function Hero() {
 
       <div className="hero-content relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-12 sm:pt-28">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="hero-announcement mx-auto mb-9 max-w-full">
+          <div className="hero-announcement mx-auto mb-6 max-w-full">
             <svg
               aria-hidden
               viewBox="0 0 24 24"
@@ -53,7 +53,7 @@ export function Hero() {
             <Button
               href={hero.cta.href}
               size="lg"
-              className="hero-cta cta-hover h-[54px] w-[338px] max-w-full gap-[10px] rounded-[50px] border px-8 py-3"
+              className="hero-cta max-w-full rounded-full border"
             >
               {hero.cta.label}
               <ArrowIcon />

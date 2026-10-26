@@ -9,7 +9,7 @@ import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
 export function BlogHero() {
   return (
-    <section className="page-hero">
+    <section className="page-hero blog-page-hero">
       <div aria-hidden className="page-hero-backdrop" />
 
       <Container className="relative z-10">

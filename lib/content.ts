@@ -561,20 +561,12 @@ export type CaseStudy = {
   /** Opening clause — rendered brighter than the rest of the summary. */
   summaryLead: string;
   summaryRest: string;
-  /** Headline number, shown in its own bordered chip. */
-  metric: string;
-  result: string;
-  tags: readonly string[];
-  /** Gradient stand-in until real art lands in `public/assets/images/`. */
-  visual: { from: string; to: string };
+  /** The three headline wins, shown as bordered chips. */
+  achievements: readonly string[];
 };
 
 /**
  * The /case-studies index.
- *
- * The mockup repeats one dummy row three times, so every entry below carries
- * the same summary, metric and result. Those three fields are the ones to
- * replace first once real client numbers are signed off.
  */
 export const caseStudiesPage = {
   eyebrow: "Client Results & Case Studies",
@@ -587,43 +579,56 @@ export const caseStudiesPage = {
   moreCta: { label: "Find out more", href: "/#contact" },
   items: [
     {
-      slug: "algorand-foundation",
-      client: "Algorand Foundation",
+      slug: "xera",
+      client: "$XERA Community Growth Success",
       summaryLead:
-        "Crypto hive connects ambitious projects with a global community of backers,",
+        "We executed a comprehensive Web3 marketing strategy for XERA,",
       summaryRest:
-        " providing a platform to raise funds, track growth, and thrive in the decentralized ecosystem",
-      metric: "25M+ Impressions",
-      result:
-        "Driving 620K Crypto-Native Site Users to Polkadot's Ecosystem",
-      tags: ["Featured", "Content creation"],
-      visual: { from: "#eab308", to: "#0b3a22" },
+        " driving organic community expansion, strengthening investor engagement, and increasing market visibility through targeted campaigns and consistent outreach.",
+      achievements: [
+        "Executed Complete Community Growth & Marketing Management",
+        "Helped Grow XERA's Community to 13.98K+ Token Holders",
+        "Strengthened Market Visibility as Market Cap Reached $665.31M",
+      ],
     },
     {
-      slug: "crypto-hive",
-      client: "Crypto Hive",
+      slug: "amalas",
+      client: "$Amalas Successful Launch",
       summaryLead:
-        "Crypto hive connects ambitious projects with a global community of backers,",
+        "We executed a complete pre-launch and post-launch marketing strategy for Amalas,",
       summaryRest:
-        " providing a platform to raise funds, track growth, and thrive in the decentralized ecosystem",
-      metric: "25M+ Impressions",
-      result:
-        "Driving 620K Crypto-Native Site Users to Polkadot's Ecosystem",
-      tags: ["Featured", "Content creation"],
-      visual: { from: "#16a34a", to: "#05291a" },
+        " helping drive $1.7M in trading volume within 24 hours, attract 1,100 holders in the first week, and establish a strong market presence.",
+      achievements: [
+        "Executed Complete Pre-Launch & Post-Launch Marketing",
+        "Helped Drive $1.7M Trading Volume Within 24 Hours",
+        "Reached 1,100 Holders in Week One & Achieved Bitget Listing",
+      ],
     },
     {
-      slug: "polymarket",
-      client: "Polymarket",
+      slug: "avx",
+      client: "$AVX Successful Fundraising Campaign",
       summaryLead:
-        "Crypto hive connects ambitious projects with a global community of backers,",
+        "We supported Avirvox's token fundraising campaign through strategic marketing and project positioning,",
       summaryRest:
-        " providing a platform to raise funds, track growth, and thrive in the decentralized ecosystem",
-      metric: "25M+ Impressions",
-      result:
-        "Driving 620K Crypto-Native Site Users to Polkadot's Ecosystem",
-      tags: ["Featured", "Content creation"],
-      visual: { from: "#22c55e", to: "#052e16" },
+        " contributing to a successful $500K raise to support product development and ecosystem expansion.",
+      achievements: [
+        "Executed Strategic Token Fundraising & Marketing Campaign",
+        "Helped Raise $500K for Product Development",
+        "Strengthened Investor Awareness & Ecosystem Visibility",
+      ],
+    },
+    {
+      slug: "pcp",
+      client: "$PCP Memecoin Successful Launch",
+      summaryLead:
+        "We executed a targeted launch marketing strategy for $PCP memecoin,",
+      summaryRest:
+        " helping establish strong initial market visibility and supporting a successful debut that recorded $1.6M in trading volume on launch day.",
+      achievements: [
+        "Executed Strategic Memecoin Launch Marketing Campaign",
+        "Helped Achieve $1.6M Trading Volume on Launch Day",
+        "Drove Initial Market Visibility & Community Engagement",
+      ],
     },
   ] satisfies CaseStudy[],
 } as const;
