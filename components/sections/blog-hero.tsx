@@ -26,7 +26,7 @@ export function BlogHero() {
           <Button
             href={blogPage.cta.href}
             variant="light"
-            className="page-hero-button"
+            className="page-hero-button cta-hover find-more-cta"
           >
             {blogPage.cta.label}
             <Image src={findMoreIcon} alt="" width={24} height={24} />

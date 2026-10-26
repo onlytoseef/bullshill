@@ -15,7 +15,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
-import logo from "../../app/assets/images/logo.png";
+import logo from "../../app/assets/images/logo.webp";
 import heroBackground from "../../app/assets/images/hero-bg.svg";
 import headerContactIcon from "../../app/assets/contact -us/header-contact-icon.svg";
 
@@ -80,7 +80,7 @@ export function SiteHeader() {
               alt=""
               width={29}
               height={29}
-              priority
+              preload
               className="size-7 object-contain"
             />
             <span className="header-wordmark">

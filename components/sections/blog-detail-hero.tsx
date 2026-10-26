@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/section";
 import { ShareLinksLazy } from "@/components/ui/share-links-lazy";
 import { SocialIcon } from "@/components/ui/social-icons";
 import { blogArticle } from "@/lib/content";
-import authorPhoto from "../../app/assets/team-section/Muhammad Jawad Nawaz.png";
+import authorPhoto from "../../app/assets/team-section/Muhammad Jawad Nawaz.webp";
 
 const { author, share, visual } = blogArticle;
 

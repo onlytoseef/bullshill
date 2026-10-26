@@ -1,6 +1,6 @@
 import { CoinArc } from "@/components/motion/coin-arc";
 import { Reveal } from "@/components/motion/reveal";
-import { WordReveal } from "@/components/motion/word-reveal";
+import { SplitHeadline } from "@/components/motion/split-headline";
 import { Button } from "@/components/ui/button";
 import { ArrowIcon } from "@/components/ui/icons";
 import { hero, site } from "@/lib/content";
@@ -38,7 +38,7 @@ export function Hero() {
             <span>{site.announcement}</span>
           </div>
 
-          <WordReveal
+          <SplitHeadline
             lines={hero.headline}
             className="hero-heading-gradient"
           />

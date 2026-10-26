@@ -5,20 +5,20 @@ import { AwardsCarousel } from "@/components/sections/awards-carousel";
 import { CarouselItem } from "@/components/ui/carousel";
 import { Container, Section } from "@/components/ui/section";
 import { awards } from "@/lib/content";
-import adnanImage from "../../app/assets/team-section/Adnan Hussain.png";
-import faisalNoorImage from "../../app/assets/team-section/Faisal Noor.png";
-import junaidImage from "../../app/assets/team-section/Junaid Muneer.png";
-import saadImage from "../../app/assets/team-section/M. Saad Akhtar.png";
-import bilalImage from "../../app/assets/team-section/Muhammad Bilal.png";
-import faisalImage from "../../app/assets/team-section/Muhammad Faisal.png";
-import jawadImage from "../../app/assets/team-section/Muhammad Jawad Nawaz.png";
-import rehanImage from "../../app/assets/team-section/Muhammad Rehan (2).png";
-import rizwanImage from "../../app/assets/team-section/Muhammad Rizwan.png";
-import sadaqatImage from "../../app/assets/team-section/Sadaqat (2).png";
-import saqibImage from "../../app/assets/team-section/Saqib Ijaz.png";
-import usamaImage from "../../app/assets/team-section/Usama Abid (2).png";
-import zaighamImage from "../../app/assets/team-section/Zaigham.png";
-import zeeshanImage from "../../app/assets/team-section/zeeshan (2).png";
+import adnanImage from "../../app/assets/team-section/Adnan Hussain.webp";
+import faisalNoorImage from "../../app/assets/team-section/Faisal Noor.webp";
+import junaidImage from "../../app/assets/team-section/Junaid Muneer.webp";
+import saadImage from "../../app/assets/team-section/M. Saad Akhtar.webp";
+import bilalImage from "../../app/assets/team-section/Muhammad Bilal.webp";
+import faisalImage from "../../app/assets/team-section/Muhammad Faisal.webp";
+import jawadImage from "../../app/assets/team-section/Muhammad Jawad Nawaz.webp";
+import rehanImage from "../../app/assets/team-section/Muhammad Rehan (2).webp";
+import rizwanImage from "../../app/assets/team-section/Muhammad Rizwan.webp";
+import sadaqatImage from "../../app/assets/team-section/Sadaqat (2).webp";
+import saqibImage from "../../app/assets/team-section/Saqib Ijaz.webp";
+import usamaImage from "../../app/assets/team-section/Usama Abid (2).webp";
+import zaighamImage from "../../app/assets/team-section/Zaigham.webp";
+import zeeshanImage from "../../app/assets/team-section/zeeshan (2).webp";
 
 type PersonName = (typeof awards.people)[number]["name"];
 
@@ -43,11 +43,13 @@ export function Awards() {
   return (
     <Section id="about">
       <Container>
-        <div className="awards-heading mb-16">
-          <span className="awards-eyebrow">{awards.eyebrow}</span>
-          <h2>{awards.title}</h2>
-          <p>{awards.subtitle}</p>
-        </div>
+        <StaggerHeading
+          eyebrow={awards.eyebrow}
+          title={awards.title}
+          subtitle={awards.subtitle}
+          className="awards-heading mb-16"
+          eyebrowClassName="awards-eyebrow"
+        />
 
         <Reveal>
           <AwardsCarousel>

@@ -7,9 +7,9 @@ import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { servicesPage } from "@/lib/content";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 import tickIcon from "../../app/assets/images/tick-icon.png";
-import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.png";
-import nftPromotionImage from "../../app/assets/services-section/nft-promotion.png";
-import tokenMarketingImage from "../../app/assets/services-section/token-marketing.png";
+import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.webp";
+import nftPromotionImage from "../../app/assets/services-section/nft-promotion.webp";
+import tokenMarketingImage from "../../app/assets/services-section/token-marketing.webp";
 
 export type Service = (typeof servicesPage.items)[number];
 
@@ -69,8 +69,8 @@ export function ServiceBlock({
                 src={image}
                 alt={service.title}
                 fill
-                priority={eager}
-                sizes="(max-width: 1024px) 100vw, 484px"
+                preload={eager}
+                sizes="(max-width: 767px) 342px, (max-width: 1024px) 100vw, 484px"
                 className="object-cover"
               />
             </ServiceImage>
@@ -88,7 +88,7 @@ export function ServiceBlock({
 
         <div className="service-detail-aside">
           <p>{service.caption}</p>
-          <Button href={href} variant="light" className="services-image-cta">
+          <Button href={href} variant="light" className="services-image-cta cta-hover find-more-cta">
             {service.button}
             <Image src={findMoreIcon} alt="" width={20} height={20} />
           </Button>

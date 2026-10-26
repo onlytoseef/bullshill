@@ -31,19 +31,22 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
           </div>
         </Reveal>
 
-        <Reveal trigger="mount" delay={0.15} className="case-detail-intro">
-          <h1>{study.client}</h1>
-          <p>
-            <span>{study.summaryLead}</span>
-            {study.summaryRest}
-          </p>
+          <div className="case-detail-intro">
+            <h1 data-case-title>{study.client}</h1>
+            <p data-case-summary>
+              <span>{study.summaryLead}</span>
+              {study.summaryRest}
+            </p>
 
-          <ul>
-            {caseStudyDetail.metrics.map((metric) => (
-              <li key={metric}>{metric}</li>
-            ))}
-          </ul>
-        </Reveal>
+            <ul>
+              {caseStudyDetail.metrics.map((metric) => (
+                <li key={metric} data-case-metric>
+                  {metric}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </CaseHeroReveal>
       </Container>
     </section>
   );

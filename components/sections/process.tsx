@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-import { ProcessConnectors } from "@/components/motion/process-connectors";
+import { ProcessFlow } from "@/components/motion/process-flow";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Container, Section } from "@/components/ui/section";
 import { process } from "@/lib/content";
@@ -15,9 +15,7 @@ export function Process() {
           className="mb-20 lg:mb-28"
         />
 
-        <div className="process-flow relative lg:aspect-[16/12]">
-          <ProcessConnectors />
-
+        <ProcessFlow>
           <ol className="process-list flex flex-col gap-4 lg:block">
             {process.steps.map((step, index) => (
               <li
@@ -44,7 +42,7 @@ export function Process() {
               </li>
             ))}
           </ol>
-        </div>
+        </ProcessFlow>
       </Container>
     </Section>
   );

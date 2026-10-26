@@ -78,7 +78,7 @@ export function BlogMore() {
           <Button
             href={more.cta.href}
             variant="light"
-            className="case-row-button"
+            className="case-row-button cta-hover find-more-cta"
           >
             {more.cta.label}
             <Image src={findMoreIcon} alt="" width={24} height={24} />

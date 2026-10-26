@@ -21,7 +21,8 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-4 text-sm",
+  // 40px minimum: below that a button is awkward to hit on a phone.
+  sm: "h-10 px-4 text-sm",
   md: "h-11 px-6 text-sm",
   lg: "h-14 px-8 text-base",
 };

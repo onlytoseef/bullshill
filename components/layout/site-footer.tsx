@@ -7,7 +7,7 @@ import { SocialIcon } from "@/components/ui/social-icons";
 import { Container } from "@/components/ui/section";
 import { Wordmark } from "@/components/ui/wordmark";
 import { footer } from "@/lib/content";
-import logo from "../../app/assets/images/logo.png";
+import logo from "../../app/assets/images/logo.webp";
 
 export function SiteFooter() {
   return (

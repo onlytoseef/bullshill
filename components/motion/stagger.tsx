@@ -1,9 +1,11 @@
 "use client";
 
-import { motion, useInView, type Variants } from "motion/react";
+import { motion, type Variants } from "motion/react";
 import { Children, useRef, type ReactNode } from "react";
 
-const EASE_OUT = [0.22, 1, 0.36, 1] as const;
+import { EASE_OUT } from "@/lib/motion";
+
+import { useScrollReplay } from "./use-scroll-replay";
 
 const container: Variants = {
   hidden: {},
@@ -31,7 +33,9 @@ export function Stagger({
   itemClassName,
 }: StaggerProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { margin: "-10% 0px" });
+  // Replays every time the grid comes back into view. It only re-hides once it
+  // is fully off screen, so it never visibly fades out at the edge on the way.
+  const visible = useScrollReplay(ref);
 
   return (
     <motion.div
@@ -40,7 +44,7 @@ export function Stagger({
       custom={stagger}
       variants={container}
       initial="hidden"
-      animate={isInView ? "show" : "hidden"}
+      animate={visible ? "show" : "hidden"}
     >
       {Children.map(children, (child) => (
         <motion.div className={itemClassName} variants={item}>
