@@ -1,6 +1,7 @@
 import Image, { type StaticImageData } from "next/image";
 
 import { Reveal } from "@/components/motion/reveal";
+import { StaggerHeading } from "@/components/motion/stagger-heading";
 import { AwardsCarousel } from "@/components/sections/awards-carousel";
 import { CarouselItem } from "@/components/ui/carousel";
 import { Container, Section } from "@/components/ui/section";
@@ -41,7 +42,7 @@ const teamImages: Record<PersonName, StaticImageData> = {
 
 export function Awards() {
   return (
-    <Section id="about">
+    <Section id="about" className="bubble-zone">
       <Container>
         <StaggerHeading
           eyebrow={awards.eyebrow}
@@ -66,13 +67,9 @@ export function Awards() {
                     />
                   </div>
                   <figcaption className="awards-caption">
-                    <span className="block text-lg font-semibold text-white">
-                      {person.name}
-                    </span>
+                    <span className="awards-name">{person.name}</span>
                     {person.role ? (
-                      <span className="block text-sm text-white/70">
-                        {person.role}
-                      </span>
+                      <span className="awards-role">{person.role}</span>
                     ) : null}
                   </figcaption>
                 </figure>

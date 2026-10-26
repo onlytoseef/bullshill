@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 
+import { ProcessBackdrop } from "@/components/motion/process-backdrop";
 import { ProcessFlow } from "@/components/motion/process-flow";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Container, Section } from "@/components/ui/section";
@@ -8,11 +9,12 @@ import { process } from "@/lib/content";
 export function Process() {
   return (
     <Section className="process-section">
-      <Container>
+      <ProcessBackdrop />
+      <Container className="relative z-10">
         <SectionHeading
           eyebrow={process.eyebrow}
           title={process.title}
-          className="mb-20 lg:mb-28"
+          className="process-heading mb-20 lg:mb-28"
         />
 
         <ProcessFlow>

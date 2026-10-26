@@ -5,6 +5,7 @@ import { ContactBubble } from "@/components/layout/contact-bubble";
 import { PageLoader } from "@/components/layout/page-loader";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { BubbleField } from "@/components/motion/bubble-field";
 import { MotionProviders } from "@/components/motion/providers";
 import "./globals.css";
 
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
     >
       <body className="min-h-dvh font-sans">
+        <BubbleField />
         <MotionProviders>
           <PageLoader />
           <SiteHeader />

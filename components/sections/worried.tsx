@@ -13,7 +13,7 @@ export function Worried() {
           className="worried-heading mb-14"
         />
 
-        <Parallax amount={8} className="mx-auto max-w-[520px]">
+        <Parallax amount={8} className="w-full">
           <div className="worried-video-frame">
             <WorriedVideo />
           </div>

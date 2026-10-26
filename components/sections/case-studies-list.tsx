@@ -9,7 +9,10 @@ import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
 export function CaseStudiesList() {
   return (
-    <section id="case-studies" className="scroll-mt-24 pb-12 sm:pb-16">
+    <section
+      id="case-studies"
+      className="bubble-zone scroll-mt-24 pb-12 sm:pb-16"
+    >
       <Container>
         <ul className="case-rows">
           {caseStudiesPage.items.map((study) => (

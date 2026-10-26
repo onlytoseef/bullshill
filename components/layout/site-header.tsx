@@ -46,7 +46,7 @@ export function SiteHeader() {
 
   return (
     <header
-      className="site-header sticky top-0 z-50 px-4 pt-5 md:px-7"
+      className="site-header sticky top-0 z-50 mx-auto w-[calc(100%-2rem)] max-w-[1140px] pt-5 md:w-[calc(100%-3.5rem)]"
       style={{
         backgroundImage:
           scrolled || !ownBackdrop ? "none" : `url(${heroBackground.src})`,

@@ -111,6 +111,14 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
 
           layout();
 
+          // Pin once the stage's top clears the sticky header, rather than when
+          // it is centered: at `center center` the stage is tall enough that its
+          // first card sits up under the header, and the connectors only start
+          // drawing from there — so the line appeared *behind* the header. From
+          // here the cards are in view when the draws run.
+          const header = document.querySelector<HTMLElement>(".site-header");
+          const headerOffset = (header?.offsetHeight ?? 88) + 16;
+
           // GSAP takes ownership of the transform so its scale/y tweens below
           // compose with the tilt instead of flattening it.
           gsap.set(cards, {
@@ -122,8 +130,8 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
               // The stage, not the SVG — the SVG is `absolute inset-0` inside
               // it and has no height of its own to pin.
               trigger: stageEl,
-              start: "center center",
-              end: "+=120%",
+              start: `top top+=${headerOffset}`,
+              end: "+=60%",
               pin: true,
               pinSpacing: true,
               scrub: 0.5,

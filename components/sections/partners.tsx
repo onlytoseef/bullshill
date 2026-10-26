@@ -1,3 +1,4 @@
+import { ReactiveGrid } from "@/components/motion/reactive-grid";
 import { Reveal } from "@/components/motion/reveal";
 import Image from "next/image";
 import { Container, Section } from "@/components/ui/section";
@@ -74,7 +75,8 @@ export function Partners({ variant = "home" }: Props) {
 
   return (
     <Section className="partners-section py-16 sm:py-20">
-      <Container>
+      <ReactiveGrid />
+      <Container className="pointer-events-none">
         <Reveal className="partners-heading text-center">
           <h2>
             {partners.title}
