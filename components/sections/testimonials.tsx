@@ -1,16 +1,18 @@
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { Stagger } from "@/components/motion/stagger";
 import { StaggerHeading } from "@/components/motion/stagger-heading";
 import Image from "next/image";
 import { Container, Section } from "@/components/ui/section";
 import { testimonials } from "@/lib/content";
-import tokenMarketingImage from "../../app/assets/services-section/token-marketing.webp";
-import socialMediaMarketingImage from "../../app/assets/services-section/social-media-marketing.webp";
-import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.webp";
+import jmundlochReview from "../../app/assets/client-reviews/IMG_6251.webp";
+import anthonyReview from "../../app/assets/client-reviews/IMG_6258.webp";
+import albeearoundReview from "../../app/assets/client-reviews/IMG_6253.webp";
 
+/** The reviews as they were left, in the order `testimonials.items` lists them. */
 const testimonialImages = [
-  tokenMarketingImage,
-  socialMediaMarketingImage,
-  aiProductLaunchImage,
+  jmundlochReview,
+  anthonyReview,
+  albeearoundReview,
 ] as const;
 
 function Stars() {
@@ -27,7 +29,8 @@ function Stars() {
 
 export function Testimonials() {
   return (
-    <Section id="testimonials" className="testimonials-section bubble-zone">
+    <Section id="testimonials" className="testimonials-section bubble-zone has-particles">
+      <ParticleBackground />
       <Container>
         <StaggerHeading
           eyebrow={testimonials.eyebrow}
@@ -43,7 +46,7 @@ export function Testimonials() {
               key={item.name}
               className="testimonial-card flex h-full flex-col"
             >
-              <div className="testimonial-image">
+              <div className="testimonial-image testimonial-image--review">
                 <Image
                   src={testimonialImages[index]}
                   alt=""

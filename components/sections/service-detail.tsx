@@ -16,7 +16,7 @@ export function ServiceDetail({ service, index }: Props) {
         className="page-hero-backdrop page-hero-backdrop--image"
       />
 
-      <Container className="relative z-10 max-w-[1200px]">
+      <Container className="relative z-10 max-w-[75rem]">
         <Reveal trigger="mount" className="service-detail-grid">
           <p className="service-detail-heading">{servicesPage.title}</p>
           <div className="service-detail-eyebrow">

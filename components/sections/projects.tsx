@@ -6,6 +6,7 @@ import { flushSync } from "react-dom";
 
 import { Button } from "@/components/ui/button";
 import { caseStudyImages } from "@/components/ui/case-study-row";
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Container, Section } from "@/components/ui/section";
 import { caseStudiesPage, projects } from "@/lib/content";
@@ -148,7 +149,8 @@ export function Projects() {
   }
 
   return (
-    <Section id="projects" className="projects-section">
+    <Section id="projects" className="projects-section has-particles">
+      <ParticleBackground />
       <Container>
         <div ref={root}>
           <div data-work-reveal>
@@ -156,7 +158,7 @@ export function Projects() {
               eyebrow={projects.eyebrow}
               title={projects.title}
               reveal={false}
-              className="projects-heading mb-12"
+              className="projects-heading"
             />
           </div>
 
@@ -202,7 +204,7 @@ export function Projects() {
             id={panelId}
             role="tabpanel"
             aria-labelledby={`${baseId}-tab-${shown}`}
-            className="project-panel mt-10 grid gap-8 p-6 sm:p-10 lg:grid-cols-2 lg:items-center lg:gap-14"
+            className="project-panel grid gap-8"
           >
             <div data-work-swap>
               <h3 className="project-title">{current.client}</h3>
@@ -227,9 +229,10 @@ export function Projects() {
                   <Image
                     src={image}
                     alt={current.client}
-                    fill
+                    width={image.width}
+                    height={image.height}
                     sizes="(min-width: 1024px) 360px, 100vw"
-                    className="object-cover"
+                    className="block h-auto w-full"
                   />
                 ) : null}
               </div>

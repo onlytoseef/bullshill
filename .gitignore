@@ -41,3 +41,6 @@ dev.log
 *.tsbuildinfo
 next-env.d.ts
 .commandcode/
+
+# payload uploads (local disk storage — survives redeploys via a volume in prod)
+/media

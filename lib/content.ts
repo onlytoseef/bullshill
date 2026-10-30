@@ -26,7 +26,7 @@ export const nav = {
   /** Shown to the right of the wordmark on desktop. */
   right: [
     { label: "Team", href: "/#about" },
-    { label: "Testimonials", href: "/#testimonials" },
+    { label: "Testimonials", href: "/testimonials" },
   ],
   cta: { label: "Contact us", href: "/contact" },
 } as const;
@@ -85,7 +85,7 @@ export const intro = {
 export const stats = [
   { value: 500, suffix: "+", label: "Web3 & AI Projects" },
   { value: 3000, suffix: "+", label: "Digital Marketing Projects" },
-  { text: "Top Rated", label: "Upwork and Fiverr" },
+  { text: "TOP RATED", label: "Upwork and Fiverr" },
   { value: 10, prefix: "$", suffix: "M+", label: "Client Revenue Generated" },
 ] as const;
 
@@ -225,16 +225,8 @@ export const process = {
 
 export const partners = {
   title: "Our partners",
-  subtitle: "Trusted by teams at over 1,000 of the world's leading organizations",
-  logos: [
-    "DELL",
-    "zendesk",
-    "Rakuten",
-    "PACIFIC FUNDS",
-    "NCR",
-    "Lattice",
-    "TED",
-  ],
+  subtitle:
+    "Trusted by 3000+ satisfied customers of the world's leading organizations",
 } as const;
 
 export const testimonials = {
@@ -245,32 +237,39 @@ export const testimonials = {
   items: [
     {
       quote:
-        "They treated our launch like it was their own token. Mint sold out in under four hours and the Discord is still active a year later.",
-      name: "Arjun Mehta",
-      role: "Founder, Nebula Labs",
-      initials: "AM",
+        "Jawad and his team have been very professional and are talented at what they do. Communication has been great and I will be using again in the future.",
+      name: "jmundloch",
+      role: "United States",
+      initials: "J",
       from: "#ef7914",
       to: "#7a3c08",
     },
     {
-      quote:
-        "The weekly reporting changed how our board talks about marketing. For the first time we could point at a number and say what caused it.",
-      name: "Sofia Almeida",
-      role: "CMO, Pyre Protocol",
-      initials: "SA",
+      quote: "Wonderful working with Jawad. Highly recommended !!!!",
+      name: "anthony_1303",
+      role: "United Arab Emirates",
+      initials: "A",
       from: "#2563eb",
       to: "#132a5e",
     },
     {
-      quote:
-        "We'd burned through two agencies before this. Bullshill shipped more in the first month than either managed in a quarter.",
-      name: "Daniel Osei",
-      role: "Head of Growth, Arclight",
-      initials: "DO",
+      quote: "Great everything! would highly recommend.",
+      name: "albeearound",
+      role: "United States",
+      initials: "A",
       from: "#7c3aed",
       to: "#2a1358",
     },
   ],
+} as const;
+
+export const reviewsPage = {
+  eyebrow: "Client reviews",
+  title: "What Our Clients Say About Bullshill",
+  subtitle:
+    "Every review below was left by a real client — token launches, community growth and full Web3 marketing campaigns, in their own words. Trusted by 3000+ satisfied customers.",
+  meta: "Verified client reviews of Bullshill, the crypto and Web3 marketing agency: token launches, community growth, paid campaigns and affiliate programmes, in our clients' own words.",
+  cta: { label: "Book free consultation", href: "/contact" },
 } as const;
 
 export const projects = {
@@ -637,62 +636,11 @@ export const caseStudiesPage = {
  * The /case-studies/[slug] detail page.
  *
  * Title, summary and artwork come from the matching `caseStudiesPage` item;
- * everything below is the one dummy story the design ships, shared by every
- * slug until real write-ups exist. A `\n` inside a paragraph is a deliberate
- * line break from the design.
+ * the metrics are the one dummy set the design ships, shared by every slug
+ * until real write-ups exist.
  */
 export const caseStudyDetail = {
   metrics: ["25M+ Impressions", "10K+ New users", "$250K+ Affiliate Revenue"],
-  blocks: [
-    {
-      eyebrow: "The Challenge",
-      title: "Turning a Regulatory Milestone Into Real European Growth",
-      paragraphs: [
-        "Algorand Foundation had just secured its MiCA license.\nThe EU market brought a distinct set of obstacles: trust-sensitive consumers, heavy regulatory scrutiny, and a competitive field running near-identical messaging.",
-      ],
-    },
-    {
-      eyebrow: "Why Bullshill",
-      title: "The Right Partner for a Compliance-First, Creator-Led Launch",
-      paragraphs: [
-        "Bybit needed a partner with deep roots in the European crypto creator ecosystem and the strategic capability to balance compliance-first messaging with authentic, high-converting content.",
-        "Bullshill's KOL network, narrative expertise, and EU market experience made it the right fit.",
-      ],
-    },
-    {
-      eyebrow: "The Solution",
-      title: "A Three-Track Campaign Built for Trust and Conversion",
-      paragraphs: [
-        "Bullshill acted as Bybit's strategic marketing and communications partner for the full EU rollout, executing across three integrated workstreams that reinforced each other at every touchpoint.",
-      ],
-    },
-  ],
-  tracks: [
-    {
-      title: "KOL Marketing & Creator Activation",
-      body: "We activated a targeted selection of crypto-native creators across X, YouTube and Telegram, chosen for audience quality over follower count. Each creator received a tailored brief and tracked links, so every post could be tied back to sign-ups and funded accounts.",
-    },
-    {
-      title: "Narrative & Campaign Structuring",
-      body: "Before any content went live, we developed the overarching campaign narrative and sequenced it into phases: announce, educate and convert. That gave creators, media and the client's own channels one consistent story to tell.",
-    },
-    {
-      title: "PR & Communications Support",
-      body: "We coordinated media coverage and PR alignment to ensure consistent messaging across press and owned channels, reinforcing the campaign narrative with third-party credibility.",
-    },
-  ],
-  results: {
-    eyebrow: "Campaign Results",
-    title: "Numbers That Speak for Themselves",
-    subtitle: "Numbers That Speak for Themselves",
-    stats: [
-      { value: "2.5M+", label: "Total Impressions" },
-      { value: "10K+", label: "New EU Users" },
-      { value: "8.25%", label: "Click-Through Rate" },
-      { value: "$9.8", label: "CPM" },
-      { value: "$250K+", label: "Affiliate Revenue" },
-    ],
-  },
 } as const;
 
 export const awards = {
@@ -805,7 +753,7 @@ export const services = {
   items: [
     {
       title: "Complete Token Marketing",
-      body: "From crafting a strategy marketing plan for a successful token launch, through to exchange listings and sustained community growth — we run the whole campaign.",
+      body: "From crafting a strategic marketing plan for a successful launch to assisting in community building, we specialize in full-scale marketing for any Web3 or crypto project. Whether you're launching an NFT, ICO, Memecoin, DEX, DAO, or Crypto Gaming platform, we're here to support every aspect of your marketing journey.",
       tags: ["Token Launch", "NFT Promotion", "Memecoin Hype", "ICO Strategy"],
       href: "#contact",
       visual: {

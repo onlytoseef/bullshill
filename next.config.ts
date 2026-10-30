@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+import { withPayload } from "@payloadcms/next/withPayload";
+
 const nextConfig: NextConfig = {
   /**
    * Lets a phone on the same Wi-Fi open the dev server at this machine's LAN
@@ -28,4 +30,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPayload(nextConfig);

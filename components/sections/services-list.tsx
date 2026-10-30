@@ -6,7 +6,7 @@ import { servicesPage } from "@/lib/content";
 export function ServicesList() {
   return (
     <section className="service-detail service-detail--list">
-      <Container className="max-w-[1200px]">
+      <Container className="max-w-[75rem]">
         <Reveal trigger="mount" className="service-detail-grid">
           <h1 className="service-detail-heading">{servicesPage.title}</h1>
           <div className="service-detail-eyebrow">

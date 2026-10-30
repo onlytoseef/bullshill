@@ -43,23 +43,23 @@ export function Accordion({ items }: { items: readonly Item[] }) {
                   {item.question}
                 </span>
 
-                <motion.span
-                  aria-hidden
-                  animate={{ rotate: open ? 45 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="grid size-7 shrink-0 place-items-center rounded-full border border-surface-border text-orange"
-                >
+                <span aria-hidden className="faq-icon">
                   <svg
                     viewBox="0 0 14 14"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="1.75"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
-                    className="size-3.5"
+                    className="faq-icon-glyph"
                   >
-                    <path d="M7 2v10M2 7h10" />
+                    <path d="M2 7h10" />
+                    <motion.path
+                      d="M7 2v10"
+                      animate={{ opacity: open ? 0 : 1 }}
+                      transition={{ duration: 0.2 }}
+                    />
                   </svg>
-                </motion.span>
+                </span>
               </button>
             </h3>
 

@@ -1,6 +1,6 @@
-import { ReactiveGrid } from "@/components/motion/reactive-grid";
 import { Reveal } from "@/components/motion/reveal";
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import { Container, Section } from "@/components/ui/section";
 import { partners } from "@/lib/content";
 import mintRewards from "../../app/assets/partner-logos/mintrewards.webp";
@@ -33,14 +33,21 @@ const partnerImages = [
   { name: "Escrowly", src: escrowly },
 ] as const;
 
-const stripLogos = [
-  { name: "Dell", file: "dell", width: 82, height: 27 },
-  { name: "Zendesk", file: "zendesk", width: 115, height: 23 },
-  { name: "Rakuten", file: "rakuten", width: 89, height: 28 },
-  { name: "Pacific Funds", file: "pacific_funds", width: 189, height: 18 },
-  { name: "NCR", file: "ncr", width: 106, height: 32 },
-  { name: "Lattice", file: "lattice", width: 159, height: 31 },
-  { name: "TED", file: "ted", width: 72, height: 27 },
+/**
+ * A few individual grid cells tinted a shade lighter. Positions are whole cells,
+ * so each one lines up with the painted lines exactly; the scatter is irregular
+ * on purpose, not a pattern.
+ */
+const GRID_HIGHLIGHTS = [
+  { col: 3, row: 0 },
+  { col: 15, row: 0 },
+  { col: 9, row: 1 },
+  { col: 6, row: 2 },
+  { col: 17, row: 2 },
+  { col: 2, row: 3 },
+  { col: 12, row: 3 },
+  { col: 8, row: 4 },
+  { col: 14, row: 4 },
 ] as const;
 
 type Props = {
@@ -55,18 +62,24 @@ export function Partners({ variant = "home" }: Props) {
           <Reveal>
             <p>{partners.subtitle}</p>
 
-            <ul>
-              {stripLogos.map((logo) => (
-                <li key={logo.name}>
-                  <Image
-                    src={`/assets/icons/${logo.file}.png`}
-                    alt={logo.name}
-                    width={logo.width}
-                    height={logo.height}
-                  />
-                </li>
-              ))}
-            </ul>
+            <div className="partner-marquee partners-strip-marquee">
+              <div className="partner-marquee-track">
+                {[...partnerImages, ...partnerImages].map((logo, index) => (
+                  <span
+                    key={`${logo.name}-${index}`}
+                    className="partner-logo partners-strip-logo"
+                    aria-hidden={index >= partnerImages.length}
+                  >
+                    <Image
+                      src={logo.src}
+                      alt={logo.name}
+                      fill
+                      sizes="120px"
+                    />
+                  </span>
+                ))}
+              </div>
+            </div>
           </Reveal>
         </Container>
       </section>
@@ -75,8 +88,16 @@ export function Partners({ variant = "home" }: Props) {
 
   return (
     <Section className="partners-section py-16 sm:py-20">
-      <ReactiveGrid />
-      <Container className="pointer-events-none">
+      <div aria-hidden className="partners-grid">
+        {GRID_HIGHLIGHTS.map((cell) => (
+          <span
+            key={`${cell.col}-${cell.row}`}
+            className="partners-grid-cell"
+            style={{ "--col": cell.col, "--row": cell.row } as CSSProperties}
+          />
+        ))}
+      </div>
+      <Container>
         <Reveal className="partners-heading text-center">
           <h2>
             {partners.title}

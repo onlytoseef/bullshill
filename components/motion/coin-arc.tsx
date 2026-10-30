@@ -90,7 +90,7 @@ export function CoinArc() {
     <div
       ref={container}
       aria-hidden
-      className="relative mx-auto aspect-[16/6] w-[88%] max-w-[760px]"
+      className="relative mx-auto aspect-[16/6] w-[88%] max-w-[47.5rem]"
     >
       <div data-coin-image className="absolute inset-0">
         <Image

@@ -1,5 +1,6 @@
 import Image, { type StaticImageData } from "next/image";
 
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { Reveal } from "@/components/motion/reveal";
 import { StaggerHeading } from "@/components/motion/stagger-heading";
 import { AwardsCarousel } from "@/components/sections/awards-carousel";
@@ -42,7 +43,8 @@ const teamImages: Record<PersonName, StaticImageData> = {
 
 export function Awards() {
   return (
-    <Section id="about" className="bubble-zone">
+    <Section id="about" className="bubble-zone has-particles">
+      <ParticleBackground />
       <Container>
         <StaggerHeading
           eyebrow={awards.eyebrow}
@@ -62,7 +64,7 @@ export function Awards() {
                       src={teamImages[person.name]}
                       alt={person.name}
                       fill
-                      sizes="(max-width: 767px) 230px, 280px"
+                      sizes="(max-width: 767px) 86vw, (max-width: 1023px) 46vw, 30vw"
                       className="object-contain object-bottom"
                     />
                   </div>

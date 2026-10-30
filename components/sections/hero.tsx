@@ -8,7 +8,7 @@ import { hero, site } from "@/lib/content";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="hero-section relative overflow-hidden">
       <HeroParticles className="pointer-events-none absolute inset-0" />
 
       <div className="hero-content relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-12 sm:pt-28">

@@ -9,14 +9,12 @@ import {
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import logo from "../../app/assets/images/logo.webp";
-import heroBackground from "../../app/assets/images/hero-bg.svg";
 import headerContactIcon from "../../app/assets/contact -us/header-contact-icon.svg";
 
 const loadMobileMenu = () => import("./mobile-menu");
@@ -31,32 +29,24 @@ const preloadMobileMenu = () => {
 };
 
 const linkClass =
-  "text-[13px] font-medium text-blue-darker transition-colors hover:text-blue";
+  "text-[0.8125rem] font-medium text-blue-darker transition-colors hover:text-blue";
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
-  const pathname = usePathname();
-  const ownBackdrop = pathname === "/";
 
   useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 24));
 
   const close = () => setMenuOpen(false);
 
   return (
-    <header
-      className="site-header sticky top-0 z-50 mx-auto w-[calc(100%-2rem)] max-w-[1140px] pt-5 md:w-[calc(100%-3.5rem)]"
-      style={{
-        backgroundImage:
-          scrolled || !ownBackdrop ? "none" : `url(${heroBackground.src})`,
-      }}
-    >
+    <header className="site-header sticky top-0 z-50 mx-auto w-[calc(100%-2rem)] max-w-[71.25rem] pt-5 md:w-[calc(100%-3.5rem)]">
       <nav
         aria-label="Main"
         className={cn(
-          "relative mx-auto flex h-[68px] max-w-[1140px] items-center rounded-full bg-blue-light px-5 text-blue-darker shadow-[0_10px_30px_rgba(8,18,30,0.14)] transition-shadow duration-300 md:px-6",
-          scrolled && "shadow-[0_12px_34px_rgba(8,18,30,0.24)]",
+          "relative mx-auto flex h-[4.25rem] max-w-[71.25rem] items-center rounded-full bg-blue-light px-5 text-blue-darker shadow-[0_0.625rem_1.875rem_rgba(8,18,30,0.14)] transition-shadow duration-300 md:px-6",
+          scrolled && "shadow-[0_0.75rem_2.125rem_rgba(8,18,30,0.24)]",
         )}
       >
         <ul className="hidden flex-1 items-center gap-7 lg:flex">

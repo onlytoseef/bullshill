@@ -1,4 +1,3 @@
-import { ReactiveGrid } from "@/components/motion/reactive-grid";
 import { StatsReveal } from "@/components/motion/stats-reveal";
 import { Container, Section } from "@/components/ui/section";
 import { intro, stats } from "@/lib/content";
@@ -21,9 +20,8 @@ export function Intro() {
         className="about-shine"
         style={{ backgroundImage: `url(${bgShine.src})` }}
       />
-      <ReactiveGrid />
-      <Container className="pointer-events-none relative z-10 2xl:max-w-[1440px]">
-        <StatsReveal className="mx-auto w-full max-w-[916px] xl:max-w-[1100px] 2xl:max-w-[1280px]">
+      <Container className="pointer-events-none relative z-10 2xl:max-w-[90rem]">
+        <StatsReveal className="mx-auto w-full max-w-[57.25rem] xl:max-w-[68.75rem] 2xl:max-w-[80rem]">
           <div data-stats-eyebrow className="about-eyebrow mx-auto mb-8">
             <span>{intro.eyebrow}</span>
           </div>

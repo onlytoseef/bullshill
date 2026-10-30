@@ -1,33 +1,31 @@
 import { Reveal } from "@/components/motion/reveal";
 import { ArticleToc } from "@/components/ui/article-toc";
+import { ArticleBody } from "@/components/ui/rich-text";
 import { Container } from "@/components/ui/section";
-import { blogArticle } from "@/lib/content";
+import type { BlogArticleView } from "@/lib/cms/types";
 
-export function BlogDetailBody() {
-  const sections = blogArticle.sections.filter(
-    (section) => section.paragraphs.length > 0,
-  );
-
+/**
+ * The article body.
+ *
+ * Payload's rich text renders inside the existing `.blog-article` container, so
+ * the CSS that styles `.blog-article h2` / `p` does the typography — nothing
+ * about the article design depends on the CMS. The TOC rail is always rendered
+ * so the two-column grid keeps its shape; it simply has no nav when the post has
+ * no headings yet.
+ */
+export function BlogDetailBody({ article }: { article: BlogArticleView }) {
   return (
     <section className="blog-detail-body">
       <Container>
         <div className="blog-detail-grid">
           <Reveal className="blog-article">
-            {sections.map((section) => (
-              <section key={section.id} id={section.id}>
-                <h2>{section.title}</h2>
-                {section.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </section>
-            ))}
+            <ArticleBody data={article.content} />
           </Reveal>
 
           <Reveal delay={0.1} className="blog-toc-rail">
-            <ArticleToc
-              title={blogArticle.tocTitle}
-              items={blogArticle.sections}
-            />
+            {article.toc.length > 0 ? (
+              <ArticleToc title="In this article" items={article.toc} />
+            ) : null}
           </Reveal>
         </div>
       </Container>

@@ -142,7 +142,17 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
           });
 
           paths.forEach((path, index) => {
-            timeline.from(path, { drawSVG: "0%", ease: "none" });
+            /**
+             * Reveal by opacity rather than a draw.
+             *
+             * DrawSVG works by setting `stroke-dasharray` — which is now the dot
+             * pattern itself, so it would erase the dots. Masking the dots and
+             * drawing the mask instead rendered nothing at all. Fading the whole
+             * connector is the one reveal that leaves `stroke-dasharray` free
+             * for the pattern, and it keeps the same scrub timing, so a line is
+             * still fully in place before its card passes under the header.
+             */
+            timeline.from(path, { opacity: 0, duration: 0.5, ease: "none" });
             // `from`, not set-then-to: the resting state is the visible one, so
             // if this timeline never builds the cards are simply not animated
             // rather than stuck at opacity 0 forever.
@@ -219,9 +229,9 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
             data-connector
             fill="none"
             stroke="#E8750A"
-            strokeWidth="1"
+            strokeWidth="3"
             strokeLinecap="round"
-            opacity="0.72"
+            opacity="0.8"
             vectorEffect="non-scaling-stroke"
           />
         ))}

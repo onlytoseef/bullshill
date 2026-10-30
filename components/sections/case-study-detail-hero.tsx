@@ -23,9 +23,10 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
                 <Image
                   src={image}
                   alt={study.client}
-                  fill
+                  width={image.width}
+                  height={image.height}
                   sizes="1140px"
-                  className="object-cover"
+                  className="block h-auto w-full"
                   priority
                 />
               ) : null}
@@ -40,11 +41,18 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
             </p>
 
             <ul>
-              {caseStudyDetail.metrics.map((metric) => (
-                <li key={metric} data-case-metric>
-                  {metric}
-                </li>
-              ))}
+              {caseStudyDetail.metrics.map((metric) => {
+                // Split for styling only: the figure is what the landing page's
+                // stats paint in metallic orange. The counter counts this
+                // element (`data-case-figure`), so the label beside it is left
+                // as its own text node, untouched.
+                const [figure, ...label] = metric.split(" ");
+                return (
+                  <li key={metric} data-case-metric>
+                    <strong data-case-figure>{figure}</strong> {label.join(" ")}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </CaseHeroReveal>

@@ -51,9 +51,10 @@ export function CaseStudyRow({ study, cta }: Props) {
           <Image
             src={image}
             alt={study.client}
-            fill
+            width={image.width}
+            height={image.height}
             sizes="(min-width: 1280px) 440px, (min-width: 1024px) 40vw, (min-width: 768px) 560px, 100vw"
-            className="object-cover"
+            className="block h-auto w-full"
           />
         ) : null}
       </Reveal>

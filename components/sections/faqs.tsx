@@ -1,3 +1,4 @@
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { Reveal } from "@/components/motion/reveal";
 import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
@@ -14,12 +15,13 @@ export function Faqs({ variant = "home" }: Props) {
     <Section
       id="faqs"
       className={cn(
-        "faqs-section bubble-zone",
+        "faqs-section bubble-zone has-particles",
         variant === "page" && "faqs-section--page",
       )}
     >
+      <ParticleBackground />
       <Container>
-        <div className="faqs-layout grid gap-12 lg:grid-cols-2 lg:gap-20">
+        <div className="faqs-layout grid">
           <Reveal x={-24} y={0}>
             <div className="faq-intro">
               <h2>{faqs.title}</h2>

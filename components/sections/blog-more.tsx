@@ -8,30 +8,38 @@ import { Stagger } from "@/components/motion/stagger";
 import { Button } from "@/components/ui/button";
 import { PostCard } from "@/components/ui/post-card";
 import { Container } from "@/components/ui/section";
-import { blogPage } from "@/lib/content";
+import type { BlogPostView } from "@/lib/cms/types";
 import { cn } from "@/lib/utils";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
-const { more } = blogPage;
-const [ALL] = more.filters;
+type Props = {
+  title: string;
+  cta: { label: string; href: string };
+  /** `filters[0]` is the "show everything" chip. */
+  filters: string[];
+  posts: BlogPostView[];
+};
 
-export function BlogMore() {
+/**
+ * "More to read". The chips and filtering are untouched — they now derive from
+ * the CMS categories instead of a hardcoded list, with "Featured" still driven
+ * by the post's `featured` flag.
+ */
+export function BlogMore({ title, cta, filters, posts }: Props) {
+  const [ALL] = filters;
   const [active, setActive] = useState<string>(ALL);
 
-  const posts =
+  const shown =
     active === ALL
-      ? more.posts
-      :
-        more.posts.filter((post) =>
-          (post.filters as readonly string[]).includes(active),
-        );
+      ? posts
+      : posts.filter((post) => post.filters.includes(active));
 
   return (
     <section id="more-to-read" className="scroll-mt-24 py-12 sm:py-16">
       <Container>
         <Reveal className="text-center">
           <h2 className="blog-more-heading text-display-sm font-semibold text-white sm:text-display-md">
-            {more.title}
+            {title}
           </h2>
         </Reveal>
 
@@ -39,7 +47,7 @@ export function BlogMore() {
           delay={0.05}
           className="mt-8 flex flex-wrap items-center justify-center gap-3"
         >
-          {more.filters.map((filter) => (
+          {filters.map((filter) => (
             <button
               key={filter}
               type="button"
@@ -57,14 +65,14 @@ export function BlogMore() {
           ))}
         </Reveal>
 
-        {posts.length > 0 ? (
+        {shown.length > 0 ? (
           <Stagger
             key={active}
             className="blog-post-grid blog-post-grid--more"
             itemClassName="h-full"
             stagger={0.08}
           >
-            {posts.map((post) => (
+            {shown.map((post) => (
               <PostCard key={post.slug} post={post} />
             ))}
           </Stagger>
@@ -76,11 +84,11 @@ export function BlogMore() {
 
         <Reveal className="mt-14 flex justify-center">
           <Button
-            href={more.cta.href}
+            href={cta.href}
             variant="light"
             className="case-row-button cta-hover find-more-cta"
           >
-            {more.cta.label}
+            {cta.label}
             <Image src={findMoreIcon} alt="" width={24} height={24} />
           </Button>
         </Reveal>

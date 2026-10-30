@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { Stagger } from "@/components/motion/stagger";
 import { StaggerHeading } from "@/components/motion/stagger-heading";
 import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
@@ -8,7 +9,8 @@ import { blog } from "@/lib/content";
 
 export function Blog() {
   return (
-    <Section id="blog" className="bubble-zone">
+    <Section id="blog" className="bubble-zone has-particles">
+      <ParticleBackground />
       <Container>
         <StaggerHeading
           eyebrow={blog.eyebrow}
