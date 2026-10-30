@@ -1,8 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const OG_ALT =
-  "Bullshill — Marketing Built for Web3 Success. Crypto and AI marketing agency.";
-
 /**
  * The 1200×630 social card, drawn with Satori via `next/og`.
  *

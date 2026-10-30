@@ -6,11 +6,18 @@ import { BlogMore } from "@/components/sections/blog-more";
 import { FinalCta } from "@/components/sections/final-cta";
 import { Partners } from "@/components/sections/partners";
 import { Container } from "@/components/ui/section";
-import { getPublishedPosts, REVALIDATE } from "@/lib/cms/posts";
+import { getPublishedPosts } from "@/lib/cms/posts";
 import { blogPage } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
-export const revalidate = REVALIDATE;
+/**
+ * Literal, not imported: Next reads segment config by static analysis at build
+ * time, and an imported binding fails that check with "Invalid segment
+ * configuration export detected" — a dev-only warning that is a hard build
+ * error in production. Keep this number in step with `REVALIDATE` in
+ * `lib/cms/posts.ts`.
+ */
+export const revalidate = 60;
 
 export const metadata: Metadata = pageMetadata({
   title: "Blog",

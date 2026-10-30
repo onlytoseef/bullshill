@@ -65,6 +65,15 @@ type PostDoc = {
   } | null;
 };
 
+/**
+ * How long a fetched blog payload stays fresh.
+ *
+ * NOT exported on purpose: the pages that set `revalidate` have to write the
+ * number as a literal, because Next reads segment config by static analysis at
+ * build time. An imported binding fails that check with "Invalid segment
+ * configuration export detected" — which is a hard production build error. If
+ * this changes, change those two pages with it.
+ */
 const REVALIDATE = 60;
 
 /** Payload serves uploads from here, on this same origin. */
@@ -234,5 +243,3 @@ export async function getPublishedPostEntries(): Promise<
     return [];
   }
 }
-
-export { REVALIDATE };
