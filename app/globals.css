@@ -1724,6 +1724,16 @@
   }
 }
 
+@media (max-width: 1023px) {
+  /* Stacked, the artwork starts where the paragraph starts — past the step
+     number and its gap — so the image is exactly as wide as the copy under the
+     heading instead of running the full width of the screen. The caption and
+     the CTA come with it, because they share this column. */
+  .services-section .services-media {
+    padding-left: calc(clamp(2.6rem, 3.4vw, 3.1rem) + 0.875rem);
+  }
+}
+
 @media (max-width: 767px) {
   .services-section .services-row {
     gap: 1.5rem;
