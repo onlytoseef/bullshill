@@ -8,15 +8,27 @@ import { servicesPage } from "@/lib/content";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 import tickIcon from "../../app/assets/images/tick-icon.png";
 import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.webp";
+import communityGrowthImage from "../../app/assets/services-section/community-growth.webp";
+import memecoinMarketingImage from "../../app/assets/services-section/meme-coin-marketing.png";
 import nftPromotionImage from "../../app/assets/services-section/nft-promotion.webp";
+import redditGrowthImage from "../../app/assets/services-section/reddit-growth.webp";
 import tokenMarketingImage from "../../app/assets/services-section/token-marketing.webp";
+import xTwitterMarketingImage from "../../app/assets/services-section/x-twitter-marketing.webp";
 
 export type Service = (typeof servicesPage.items)[number];
 
-const serviceImages: Partial<Record<Service["slug"], StaticImageData>> = {
+/**
+ * Artwork per service, keyed by slug. Every entry in `servicesPage` has one, so
+ * the placeholder only remains as the fallback for a service added without art.
+ */
+export const serviceImages: Partial<Record<Service["slug"], StaticImageData>> = {
   "ico-token-launches": tokenMarketingImage,
+  "memecoin-marketing": memecoinMarketingImage,
   "ai-product-marketing": aiProductLaunchImage,
   "nft-marketing": nftPromotionImage,
+  "community-growth": communityGrowthImage,
+  "x-marketing": xTwitterMarketingImage,
+  "reddit-marketing": redditGrowthImage,
 };
 
 type Props = {

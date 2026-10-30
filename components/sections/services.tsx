@@ -7,18 +7,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowIcon } from "@/components/ui/icons";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Container, Section } from "@/components/ui/section";
-import { services } from "@/lib/content";
-import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.webp";
-import nftPromotionImage from "../../app/assets/services-section/nft-promotion.webp";
-import socialMediaMarketingImage from "../../app/assets/services-section/social-media-marketing.webp";
-import tokenMarketingImage from "../../app/assets/services-section/token-marketing.webp";
-
-const serviceImages = [
-  tokenMarketingImage,
-  socialMediaMarketingImage,
-  aiProductLaunchImage,
-  nftPromotionImage,
-] as const;
+import { serviceImages } from "@/components/ui/service-block";
+import { services, servicesPage } from "@/lib/content";
 
 /** Small light square with a dark tick, for the feature pills. */
 function PillCheck() {
@@ -48,68 +38,76 @@ export function Services() {
           className="services-section-heading mb-10"
         />
 
+        {/* The full service list, not a shortlist: these are the same entries —
+            and the same artwork — the services page renders. */}
         <StackingCards className="services-list flex flex-col gap-16">
-          {services.items.map((service, index) => (
-            <li key={service.title}>
-              {/* Later cards have to paint above earlier ones as they land. */}
-              <div data-stack-pin style={{ zIndex: index + 1 }}>
-                <div
-                  data-stack-card
-                  className="services-row grid gap-10 lg:items-start"
-                >
-                  <Reveal x={-32} y={0} className="services-copy">
-                    <span
-                      aria-hidden
-                      className="service-number grid shrink-0 place-items-center tabular-nums"
-                    >
-                      {index + 1}.
-                    </span>
+          {servicesPage.items.map((service, index) => {
+            const image = serviceImages[service.slug];
 
-                    {/* Heading, copy and pills share this column, so they all
-                        line up on the heading's left edge rather than under the
-                        badge. */}
-                    <div className="min-w-0 flex-1">
-                      <h3 className="services-title">{service.title}</h3>
-                      <p className="services-body">{service.body}</p>
+            return (
+              <li key={service.slug}>
+                {/* Later cards have to paint above earlier ones as they land. */}
+                <div data-stack-pin style={{ zIndex: index + 1 }}>
+                  <div
+                    data-stack-card
+                    className="services-row grid gap-10 lg:items-start"
+                  >
+                    <Reveal x={-32} y={0} className="services-copy">
+                      <span
+                        aria-hidden
+                        className="service-number grid shrink-0 place-items-center tabular-nums"
+                      >
+                        {index + 1}.
+                      </span>
 
-                      <ul className="services-tags">
-                        {service.tags.map((tag) => (
-                          <li key={tag} className="service-pill">
-                            <PillCheck />
-                            <span>{tag}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </Reveal>
+                      {/* Heading, copy and pills share this column, so they all
+                          line up on the heading's left edge rather than under
+                          the badge. */}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="services-title">{service.title}</h3>
+                        <p className="services-body">{service.body}</p>
 
-                  <Reveal x={32} y={0} delay={0.1} className="services-media">
-                    <div className="services-image relative">
-                      <ServiceImage>
-                        <Image
-                          src={serviceImages[index]}
-                          alt={service.title}
-                          fill
-                          sizes="(max-width: 1024px) 100vw, 360px"
-                          className="object-cover"
-                        />
-                      </ServiceImage>
-                    </div>
-                    <p className="services-caption">{services.caption}</p>
-                    <Button
-                      href={service.href}
-                      variant="light"
-                      size="md"
-                      className="services-image-cta"
-                    >
-                      Find out more
-                      <ArrowIcon className="size-4" />
-                    </Button>
-                  </Reveal>
+                        <ul className="services-tags">
+                          {service.tags.map((tag) => (
+                            <li key={tag} className="service-pill">
+                              <PillCheck />
+                              <span>{tag}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </Reveal>
+
+                    <Reveal x={32} y={0} delay={0.1} className="services-media">
+                      <div className="services-image relative">
+                        <ServiceImage>
+                          {image ? (
+                            <Image
+                              src={image}
+                              alt={service.title}
+                              fill
+                              sizes="(max-width: 1024px) 100vw, 360px"
+                              className="object-cover"
+                            />
+                          ) : null}
+                        </ServiceImage>
+                      </div>
+                      <p className="services-caption">{service.caption}</p>
+                      <Button
+                        href={`/services/${service.slug}`}
+                        variant="light"
+                        size="md"
+                        className="services-image-cta"
+                      >
+                        Find out more
+                        <ArrowIcon className="size-4" />
+                      </Button>
+                    </Reveal>
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </StackingCards>
 
         <Reveal className="mt-16 flex justify-center">

@@ -16,10 +16,11 @@
 # next.js
 /.next/
 /out/
+/.next-build-check/
 
 # production
 /build
-
+.next-build-check/
 # misc
 .DS_Store
 *.pem
