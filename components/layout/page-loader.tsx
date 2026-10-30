@@ -36,9 +36,9 @@ const SAFETY_MS = 4000;
  * How long the charge runs before it may hand over — matched to the duration the
  * old splash held for, so the site's first-load beat is unchanged.
  */
-const CHARGE_MS = 1500;
+const CHARGE_MS = 1900;
 /** How long the shockwave takes to clear the viewport; the old wipe was 850ms. */
-const WAVE_MS = 850;
+const WAVE_MS = 900;
 
 type Phase = "idle" | "charge" | "reveal";
 
@@ -129,17 +129,17 @@ export function PageLoader() {
           x: "108vmax",
           y: "-108vmax",
           autoAlpha: 1,
-          duration: 0.58,
+          duration: 0.72,
           ease: "power2.in",
         },
-        0.08,
+        0.1,
       )
-        .to(streak.current, { autoAlpha: 0, duration: 0.14 }, 0.62)
+        .to(streak.current, { autoAlpha: 0, duration: 0.16 }, 0.76)
         .fromTo(
           word.current,
           { autoAlpha: 0, yPercent: 12 },
-          { autoAlpha: 1, yPercent: 0, duration: 0.3, ease: "power2.out" },
-          0.42,
+          { autoAlpha: 1, yPercent: 0, duration: 0.34, ease: "power2.out" },
+          0.52,
         );
 
       // Burst: each square flies from the centre on its own vector.
@@ -153,11 +153,11 @@ export function PageLoader() {
             scale: 1,
             x: (_i, el) => Number((el as HTMLElement).dataset.dx),
             y: (_i, el) => Number((el as HTMLElement).dataset.dy),
-            duration: 0.62,
+            duration: 0.8,
             ease: "power2.out",
-            stagger: 0.008,
+            stagger: 0.01,
           },
-          0.36,
+          0.44,
         );
 
         // Ambient: once the charge settles, the fragments keep drifting so a
