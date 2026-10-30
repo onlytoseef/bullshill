@@ -760,85 +760,136 @@
   }
 }
 
-.page-loader {
+/* ---------------------------------------------------------------------------
+   "BULL CHARGE" — the route transition.
+
+   Cover, a diagonal energy streak, a burst of square fragments, the wordmark,
+   then a shockwave that hands the viewport over. Only transform and opacity
+   move, and the fragments are DOM squares rather than a second canvas: the
+   whole thing has to stay cheap on a phone, where a WebGL context is the one
+   thing we cannot afford to add.
+--------------------------------------------------------------------------- */
+.charge {
   position: fixed;
   inset: 0;
   z-index: 100;
+  display: grid;
+  place-items: center;
   overflow: hidden;
-  background: transparent;
+  background:
+    radial-gradient(120% 85% at 50% 0%, #0e2136 0%, #08121e 52%, #04090f 100%);
+  color: #ffffff;
+  will-change: opacity;
 }
 
-.page-loader__panel {
+/* A short bar rotated onto the diagonal; GSAP carries it across the viewport,
+   which is why the gradient's midpoint is the bright part. */
+.charge__streak {
   position: absolute;
-  inset: 0;
-  background: #000000;
-  transition: clip-path 850ms 220ms cubic-bezier(0.76, 0, 0.24, 1) !important;
-  will-change: clip-path;
+  bottom: -8vmax;
+  left: -34vmax;
+  width: 46vmax;
+  height: 0.125rem;
+  border-radius: 62.4375rem;
+  transform: rotate(-45deg);
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #2f7fb8 20%,
+    #8fd8f2 46%,
+    var(--color-orange) 56%,
+    transparent 88%
+  );
+  box-shadow:
+    0 0 1.5rem rgba(143, 216, 242, 0.5),
+    0 0 4.5rem rgba(239, 121, 20, 0.24);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
 }
 
-.page-loader__panel--left {
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-  transform-origin: top left;
-}
-
-.page-loader__panel--right {
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  transform-origin: bottom right;
-}
-
-.page-loader.is-exiting .page-loader__panel--left {
-  clip-path: polygon(0 0, 0 0, 0 0);
-}
-
-.page-loader.is-exiting .page-loader__panel--right {
-  clip-path: polygon(100% 100%, 100% 100%, 100% 100%);
-}
-
-.page-loader__content {
+/* A zero-sized point at the centre: every fragment starts at 0,0 of this box
+   and GSAP carries it outward, so the burst originates where the streak crosses. */
+.charge__burst {
   position: absolute;
   top: 50%;
   left: 50%;
-  display: grid;
-  place-items: center;
-  width: 12.5rem;
-  height: 12.5rem;
-  transform: translate(-50%, -50%);
-  transition: opacity 300ms ease;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
-.page-loader.is-exiting .page-loader__content {
+/* One square per fragment, laid on the centre and thrown outward by GSAP. */
+.charge__burst span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.1875rem;
+  height: 0.1875rem;
+  background: #9fd8f0;
+  box-shadow: 0 0 0.375rem rgba(143, 216, 242, 0.75);
   opacity: 0;
+  will-change: transform, opacity;
 }
 
-.page-loader__ring {
-  display: grid;
-  place-items: center;
-  width: 9.375rem;
-  height: 9.375rem;
-  border: 2px solid rgba(255, 87, 0, 0.9);
+.charge__burst span:nth-child(3n) {
+  background: var(--color-orange);
+  box-shadow: 0 0 0.375rem rgba(239, 121, 20, 0.75);
+}
+
+.charge__burst span:nth-child(4n) {
+  width: 0.125rem;
+  height: 0.125rem;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.charge__burst span:nth-child(5n) {
+  width: 0.25rem;
+  height: 0.25rem;
+}
+
+.charge__word {
+  position: relative;
+  z-index: 1;
+  font-family: Geist, sans-serif;
+  font-size: clamp(1.375rem, 4.6vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  /* The letter-spacing opens a gap after the last letter; pull it back so the
+     wordmark stays optically centred. */
+  text-indent: 0.26em;
+  color: #ffffff;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.charge__word span {
+  color: var(--color-orange);
+}
+
+.charge__wave {
+  position: absolute;
+  width: min(120vmax, 120rem);
+  height: min(120vmax, 120rem);
+  border: 2px solid rgba(143, 216, 242, 0.75);
   border-radius: 50%;
   box-shadow:
-    0 0 0 0.5rem rgba(255, 87, 0, 0.08),
-    0 0 2.125rem rgba(255, 87, 0, 0.5),
-    inset 0 0 1.25rem rgba(255, 87, 0, 0.18);
-  animation: page-loader-pulse 1.35s ease-in-out infinite;
+    0 0 3rem rgba(143, 216, 242, 0.3),
+    inset 0 0 3rem rgba(239, 121, 20, 0.16);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
 }
 
-.page-loader__ring img {
-  width: 5.75rem;
-  height: 5.75rem;
-  object-fit: contain;
-}
-
-/* Keep the loader's branded reveal visible even when the site prefers reduced motion. */
-@keyframes page-loader-pulse {
-  0%,
-  100% {
-    transform: scale(0.86);
-  }
-
-  50% {
-    transform: scale(1.08);
+/* Reduced motion keeps the cover and the wordmark — the state change is still
+   announced — and drops everything that travels. */
+@media (prefers-reduced-motion: reduce) {
+  .charge__streak,
+  .charge__burst,
+  .charge__wave {
+    display: none;
   }
 }
 
