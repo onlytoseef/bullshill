@@ -95,6 +95,11 @@ export function PageLoader() {
     startedAt.current = performance.now();
     setPhase("charge");
 
+    // Let the page render underneath straight away rather than at the wipe, so
+    // its own content is already in place the moment the cover clears — waiting
+    // until the reveal made the text appear a beat after the transition ended.
+    releaseIntro();
+
     clearTimers();
     safety.current = window.setTimeout(release, SAFETY_MS);
     requestRelease();
@@ -135,11 +140,13 @@ export function PageLoader() {
         0.12,
       )
         .to(streak.current, { autoAlpha: 0, duration: 0.18 }, 0.96)
+        // The wordmark lands with the cover, not after the sweep: the brand is
+        // the first thing on screen, and it then holds for the rest of the beat.
         .fromTo(
           word.current,
           { autoAlpha: 0, yPercent: 12 },
-          { autoAlpha: 1, yPercent: 0, duration: 0.42, ease: "power2.out" },
-          0.66,
+          { autoAlpha: 1, yPercent: 0, duration: 0.3, ease: "power2.out" },
+          0.12,
         );
 
       // Burst: each square flies from the centre on its own vector.
@@ -185,9 +192,6 @@ export function PageLoader() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const root = cover.current?.parentElement;
     if (!root) return;
-
-    // Let the hero's own entrance play into the wipe, not behind it.
-    releaseIntro();
 
     const ctx = gsap.context(() => {
       const done = () => setPhase("idle");
