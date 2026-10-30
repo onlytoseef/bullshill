@@ -32,10 +32,13 @@ import { releaseIntro } from "@/lib/intro-gate";
 const FRAGMENTS = 16;
 /** Longest the overlay may stay up if a route never confirms. */
 const SAFETY_MS = 4000;
-/** How long the charge sequence runs before it may hand over. */
-const CHARGE_MS = 620;
-/** How long the shockwave takes to clear the viewport. */
-const WAVE_MS = 320;
+/**
+ * How long the charge runs before it may hand over — matched to the duration the
+ * old splash held for, so the site's first-load beat is unchanged.
+ */
+const CHARGE_MS = 1500;
+/** How long the shockwave takes to clear the viewport; the old wipe was 850ms. */
+const WAVE_MS = 850;
 
 type Phase = "idle" | "charge" | "reveal";
 
@@ -117,6 +120,8 @@ export function PageLoader() {
 
       // The bar is parked bottom-left and rotated onto the diagonal; travelling
       // +x / -y carries it across the centre and off the top-right corner.
+      // Stretched to the longer hold: at the old 0.42s pace the sequence was
+      // over by 0.7s and the wordmark then sat still for the rest of the beat.
       tl.fromTo(
         streak.current,
         { x: "0vmax", y: "0vmax", autoAlpha: 0 },
@@ -124,17 +129,17 @@ export function PageLoader() {
           x: "108vmax",
           y: "-108vmax",
           autoAlpha: 1,
-          duration: 0.42,
+          duration: 0.58,
           ease: "power2.in",
         },
-        0.05,
+        0.08,
       )
-        .to(streak.current, { autoAlpha: 0, duration: 0.12 }, 0.45)
+        .to(streak.current, { autoAlpha: 0, duration: 0.14 }, 0.62)
         .fromTo(
           word.current,
           { autoAlpha: 0, yPercent: 12 },
-          { autoAlpha: 1, yPercent: 0, duration: 0.22, ease: "power2.out" },
-          0.26,
+          { autoAlpha: 1, yPercent: 0, duration: 0.3, ease: "power2.out" },
+          0.42,
         );
 
       // Burst: each square flies from the centre on its own vector.
@@ -148,11 +153,11 @@ export function PageLoader() {
             scale: 1,
             x: (_i, el) => Number((el as HTMLElement).dataset.dx),
             y: (_i, el) => Number((el as HTMLElement).dataset.dy),
-            duration: 0.46,
+            duration: 0.62,
             ease: "power2.out",
-            stagger: 0.006,
+            stagger: 0.008,
           },
-          0.24,
+          0.36,
         );
 
         // Ambient: once the charge settles, the fragments keep drifting so a
