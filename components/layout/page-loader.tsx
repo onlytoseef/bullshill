@@ -193,9 +193,11 @@ export function PageLoader() {
       const done = () => setPhase("idle");
 
       if (reduced) {
-        gsap.to(root, { autoAlpha: 0, duration: 0.16, onComplete: done });
+        gsap.to(cover.current, { autoAlpha: 0, duration: 0.16, onComplete: done });
         return;
       }
+
+      const seconds = WAVE_MS / 1000;
 
       gsap
         .timeline({ onComplete: done })
@@ -203,16 +205,19 @@ export function PageLoader() {
         .fromTo(
           wave.current,
           { autoAlpha: 0.9, scale: 0.05 },
-          {
-            autoAlpha: 0,
-            scale: 1.8,
-            duration: WAVE_MS / 1000,
-            ease: "power2.out",
-          },
+          { autoAlpha: 0, scale: 1.8, duration: seconds, ease: "power2.out" },
           0,
         )
-        .to(cover.current, { autoAlpha: 0, duration: 0.24, ease: "power2.in" }, 0.08)
-        .to(root, { autoAlpha: 0, duration: 0.06 }, (WAVE_MS - 40) / 1000);
+        // The cover clears *with* the wave, not before it, so the new page
+        // materialises through the ring instead of appearing ahead of it.
+        .to(
+          cover.current,
+          { autoAlpha: 0, duration: seconds - 0.08, ease: "power2.in" },
+          0.08,
+        );
+      // Never the wrapper: fading that took the whole page to opacity 0 for a
+      // frame, and the cleanup restored it — the flash that followed the
+      // transition.
     }, root);
 
     return () => ctx.revert();
