@@ -14,17 +14,25 @@ import { releaseIntro } from "@/lib/intro-gate";
  * transform/opacity only, and no canvas: the fragments are DOM squares, which
  * keeps this cheap enough for a phone and impossible to blow a WebGL context on.
  *
- * Navigation is never held up. The overlay covers on click and leaves the moment
- * `usePathname` reports the new route; if that is slower than the animation, the
- * fragments simply drift until it arrives, and a safety timer removes the
- * overlay regardless so a failed navigation can never trap the page.
+ * Two things make it read as intentional rather than as a flicker:
+ *
+ * - The cover is opaque in the server HTML. It is not faded in and does not wait
+ *   for hydration, so the real page never paints first and then get covered.
+ * - The charge owns a minimum duration. A client navigation finishes in tens of
+ *   milliseconds, and releasing the moment the pathname changed meant the
+ *   streak and the wordmark were cut off mid-flight; `requestRelease` holds the
+ *   reveal until the sequence has had its 620ms, then plays the shockwave.
+ *
+ * Navigation itself is never delayed — the route swaps underneath the overlay
+ * while it runs, and a 4s safety timer removes the overlay regardless so a
+ * failed navigation cannot trap the page.
  */
 
 /** Fragments thrown from the centre when the streak crosses it. */
 const FRAGMENTS = 16;
 /** Longest the overlay may stay up if a route never confirms. */
 const SAFETY_MS = 4000;
-/** How long the charge sequence itself runs before it waits for the route. */
+/** How long the charge sequence runs before it may hand over. */
 const CHARGE_MS = 620;
 /** How long the shockwave takes to clear the viewport. */
 const WAVE_MS = 320;
@@ -33,7 +41,9 @@ type Phase = "idle" | "charge" | "reveal";
 
 export function PageLoader() {
   const pathname = usePathname();
-  const [phase, setPhase] = useState<Phase>("idle");
+  // Starts covered: the overlay is part of the first paint, so the page can
+  // never appear before it.
+  const [phase, setPhase] = useState<Phase>("charge");
 
   const cover = useRef<HTMLDivElement>(null);
   const streak = useRef<HTMLDivElement>(null);
@@ -41,35 +51,51 @@ export function PageLoader() {
   const word = useRef<HTMLDivElement>(null);
   const wave = useRef<HTMLDivElement>(null);
 
-  const charge = useRef<gsap.core.Timeline | null>(null);
-  const drift = useRef<gsap.core.Timeline | null>(null);
-  const safety = useRef<number | null>(null);
   const armed = useRef(false);
   const revealed = useRef(false);
+  const startedAt = useRef(0);
+  const floor = useRef<number | null>(null);
+  const safety = useRef<number | null>(null);
 
-  /** The new route is on screen (or we gave up waiting): open the viewport. */
+  const clearTimers = useCallback(() => {
+    for (const timer of [floor, safety]) {
+      if (timer.current) window.clearTimeout(timer.current);
+      timer.current = null;
+    }
+  }, []);
+
+  /** Open the viewport. Only ever runs once per transition. */
   const release = useCallback(() => {
     if (revealed.current || !armed.current) return;
     revealed.current = true;
-
-    if (safety.current) {
-      window.clearTimeout(safety.current);
-      safety.current = null;
-    }
-
+    clearTimers();
     setPhase("reveal");
-  }, []);
+  }, [clearTimers]);
 
-  /** Runs the moment we know a transition is happening (first load or a click). */
+  /**
+   * Asks for the reveal, but never before the charge has run its course.
+   * Called both when a route confirms and when the intro's own beat is up.
+   */
+  const requestRelease = useCallback(() => {
+    const elapsed = performance.now() - startedAt.current;
+    const wait = Math.max(0, CHARGE_MS - elapsed);
+
+    if (floor.current) window.clearTimeout(floor.current);
+    floor.current = window.setTimeout(release, wait);
+  }, [release]);
+
+  /** Begins a transition: first load, or a click on an internal link. */
   const start = useCallback(() => {
-    if (armed.current) return;
+    if (!revealed.current && armed.current) return; // already charging
     armed.current = true;
     revealed.current = false;
+    startedAt.current = performance.now();
     setPhase("charge");
 
-    if (safety.current) window.clearTimeout(safety.current);
+    clearTimers();
     safety.current = window.setTimeout(release, SAFETY_MS);
-  }, [release]);
+    requestRelease();
+  }, [clearTimers, release, requestRelease]);
 
   // ---- the charge sequence -------------------------------------------------
   useEffect(() => {
@@ -80,44 +106,35 @@ export function PageLoader() {
     if (!root) return;
 
     const ctx = gsap.context(() => {
+      // The cover is already opaque from the markup; it only settles.
       if (reduced) {
-        gsap.set([cover.current, streak.current, burst.current], { autoAlpha: 0 });
-        gsap.fromTo(
-          word.current,
-          { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.18, ease: "none" },
-        );
+        gsap.set([streak.current, burst.current], { autoAlpha: 0 });
+        gsap.set(word.current, { autoAlpha: 1 });
         return;
       }
 
       const tl = gsap.timeline();
-      charge.current = tl;
 
+      // The bar is parked bottom-left and rotated onto the diagonal; travelling
+      // +x / -y carries it across the centre and off the top-right corner.
       tl.fromTo(
-        cover.current,
-        { autoAlpha: 0, scale: 1.02 },
-        { autoAlpha: 1, scale: 1, duration: 0.2, ease: "power2.out" },
+        streak.current,
+        { x: "0vmax", y: "0vmax", autoAlpha: 0 },
+        {
+          x: "108vmax",
+          y: "-108vmax",
+          autoAlpha: 1,
+          duration: 0.42,
+          ease: "power2.in",
+        },
+        0.05,
       )
-        // The bar is parked bottom-left and rotated onto the diagonal; travelling
-        // +x / -y carries it across the centre and off the top-right corner.
-        .fromTo(
-          streak.current,
-          { x: "0vmax", y: "0vmax", autoAlpha: 0 },
-          {
-            x: "108vmax",
-            y: "-108vmax",
-            autoAlpha: 1,
-            duration: 0.42,
-            ease: "power2.in",
-          },
-          0.12,
-        )
-        .to(streak.current, { autoAlpha: 0, duration: 0.12 }, 0.5)
+        .to(streak.current, { autoAlpha: 0, duration: 0.12 }, 0.45)
         .fromTo(
           word.current,
           { autoAlpha: 0, yPercent: 12 },
           { autoAlpha: 1, yPercent: 0, duration: 0.22, ease: "power2.out" },
-          0.32,
+          0.26,
         );
 
       // Burst: each square flies from the centre on its own vector.
@@ -129,21 +146,19 @@ export function PageLoader() {
           {
             autoAlpha: 0,
             scale: 1,
-            x: (_i, el) => Number((el as HTMLElement).dataset.dx) * 1,
-            y: (_i, el) => Number((el as HTMLElement).dataset.dy) * 1,
+            x: (_i, el) => Number((el as HTMLElement).dataset.dx),
+            y: (_i, el) => Number((el as HTMLElement).dataset.dy),
             duration: 0.46,
             ease: "power2.out",
             stagger: 0.006,
           },
-          0.3,
+          0.24,
         );
-      }
 
-      // Ambient: once the charge settles, the fragments keep drifting so a slow
-      // route reads as "still charging" rather than frozen. The burst wrapper is
-      // a zero-sized point, so the movement belongs on the squares themselves.
-      if (squares && squares.length > 0) {
-        drift.current = gsap
+        // Ambient: once the charge settles, the fragments keep drifting so a
+        // slower route reads as "still charging" rather than frozen. The burst
+        // wrapper is a zero-sized point, so the drift belongs on the squares.
+        gsap
           .timeline({ repeat: -1, yoyo: true })
           .to(squares, {
             x: "+=2",
@@ -155,11 +170,7 @@ export function PageLoader() {
       }
     }, root);
 
-    return () => {
-      charge.current = null;
-      drift.current = null;
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, [phase]);
 
   // ---- the reveal ----------------------------------------------------------
@@ -181,16 +192,21 @@ export function PageLoader() {
         return;
       }
 
-      const tl = gsap.timeline({ onComplete: done });
-
-      tl.to(word.current, { autoAlpha: 0, duration: 0.14, ease: "none" }, 0)
+      gsap
+        .timeline({ onComplete: done })
+        .to(word.current, { autoAlpha: 0, duration: 0.12, ease: "none" }, 0)
         .fromTo(
           wave.current,
           { autoAlpha: 0.9, scale: 0.05 },
-          { autoAlpha: 0, scale: 1.8, duration: WAVE_MS / 1000, ease: "power2.out" },
+          {
+            autoAlpha: 0,
+            scale: 1.8,
+            duration: WAVE_MS / 1000,
+            ease: "power2.out",
+          },
           0,
         )
-        .to(cover.current, { autoAlpha: 0, duration: 0.24, ease: "power2.in" }, 0.1)
+        .to(cover.current, { autoAlpha: 0, duration: 0.24, ease: "power2.in" }, 0.08)
         .to(root, { autoAlpha: 0, duration: 0.06 }, (WAVE_MS - 40) / 1000);
     }, root);
 
@@ -222,23 +238,14 @@ export function PageLoader() {
 
   // ---- navigation complete -------------------------------------------------
   useEffect(() => {
-    if (armed.current && !revealed.current) release();
-  }, [pathname, release]);
+    if (armed.current && !revealed.current) requestRelease();
+  }, [pathname, requestRelease]);
 
   // ---- first load ----------------------------------------------------------
   useEffect(() => {
     start();
-    return () => {
-      if (safety.current) window.clearTimeout(safety.current);
-    };
-  }, [start]);
-
-  // The intro has no route change to wait for, so it releases on its own beat.
-  useEffect(() => {
-    if (phase !== "charge") return;
-    const timer = window.setTimeout(release, CHARGE_MS);
-    return () => window.clearTimeout(timer);
-  }, [phase, release]);
+    return clearTimers;
+  }, [start, clearTimers]);
 
   if (phase === "idle") return null;
 
@@ -256,9 +263,6 @@ export function PageLoader() {
               key={index}
               data-dx={Math.cos(angle) * distance}
               data-dy={Math.sin(angle) * distance}
-              style={{
-                animationDelay: `${(index % 5) * 40}ms`,
-              }}
             />
           );
         })}
