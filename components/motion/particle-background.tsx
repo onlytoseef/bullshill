@@ -184,21 +184,42 @@ export function ParticleBackground() {
     const host = hostRef.current;
     if (!host) return;
 
+    /**
+     * Phones get a cheaper context on purpose. `antialias` asks for MSAA and
+     * `high-performance` asks for a discrete GPU; on a mobile driver either can
+     * make context creation fail outright, and this component mounts once per
+     * section, so a failure here is a whole background going white.
+     */
+    const coarse = window.matchMedia("(hover: none)").matches;
+
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: true,
-        powerPreference: "high-performance",
+        antialias: !coarse,
+        powerPreference: coarse ? "default" : "high-performance",
       });
-    } catch {
+    } catch (error) {
+      console.warn("[particles] WebGL context creation failed", error);
       return;
     }
+
+    renderer.domElement.addEventListener("webglcontextlost", (event) => {
+      event.preventDefault();
+      // A lost context can composite as opaque white on mobile. Removing the
+      // dead canvas leaves the section's own background visible until the
+      // browser hands the context back.
+      renderer.domElement.style.display = "none";
+      console.warn("[particles] WebGL context lost — this section's field stops");
+    });
+    renderer.domElement.addEventListener("webglcontextrestored", () => {
+      renderer.domElement.style.display = "block";
+      console.info("[particles] WebGL context restored");
+    });
 
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    const coarse = window.matchMedia("(hover: none)").matches;
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, DPR_CAP));
     renderer.setClearColor(0x000000, 0);

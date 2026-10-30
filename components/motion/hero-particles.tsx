@@ -243,16 +243,47 @@ export function HeroParticles({ className, color = "#b6c9de" }: Props) {
     const host = hostRef.current;
     if (!host) return;
 
+    /**
+     * Phones get a cheaper context on purpose.
+     *
+     * `antialias: true` asks for MSAA, which on a mobile GPU costs real memory
+     * and can fail the context outright; `powerPreference: "high-performance"`
+     * has the same failure mode on some Android drivers, because it asks the
+     * browser to pick the discrete/high-clock GPU — which a phone does not have,
+     * so it declines. Both only make sense on a machine with a real GPU.
+     */
+    const coarse = window.matchMedia("(hover: none)").matches;
+
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: true,
-        powerPreference: "high-performance",
+        antialias: !coarse,
+        powerPreference: coarse ? "default" : "high-performance",
       });
-    } catch {
+    } catch (error) {
+      console.warn("[hero-particles] WebGL context creation failed", error);
       return;
     }
+
+    // Diagnostics: a lost context is the one failure that makes the field
+    // vanish without any CSS being involved.
+    renderer.domElement.addEventListener("webglcontextlost", (event) => {
+      event.preventDefault();
+      // A lost context can composite as opaque white on mobile, which is what
+      // turns the hero into a white block. Take the dead canvas out of the
+      // layer so the section's own background shows instead, and let the
+      // restore put it back.
+      renderer.domElement.style.display = "none";
+      console.warn("[hero-particles] WebGL context lost", {
+        dpr: window.devicePixelRatio,
+        size: renderer.getSize(new THREE.Vector2()),
+      });
+    });
+    renderer.domElement.addEventListener("webglcontextrestored", () => {
+      renderer.domElement.style.display = "block";
+      console.info("[hero-particles] WebGL context restored");
+    });
 
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -299,7 +330,7 @@ export function HeroParticles({ className, color = "#b6c9de" }: Props) {
     const keepAt = (down: number) =>
       1 + (BOTTOM_KEEP - 1) * Math.pow(down, KEEP_CURVE);
 
-    let resolution = new THREE.Vector2(1, 1);
+    const resolution = new THREE.Vector2(1, 1);
 
     /** Re-tile the lattice for the current size, at a constant pixel pitch. */
     const build = () => {

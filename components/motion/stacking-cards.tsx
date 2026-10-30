@@ -52,22 +52,28 @@ export function StackingCards({ children, className }: Props) {
       const mm = gsap.matchMedia();
 
       /**
-       * Every screen size. Below `lg` the rows are single-column and taller
-       * than a phone screen, so `restAt` pins them by their bottom edge: a card
-       * only stops once you have scrolled to its end, and is never covered
-       * while you are still reading it.
+       * Medium screens and up only. On phones the cards are just cards: a pinned
+       * row taller than the screen makes the reader scroll to reach its own
+       * CTA, and the stack reads as a bug rather than an effect. Below 768px
+       * nothing is created, so the list scrolls like an ordinary column.
+       *
+       * `desktop` still splits the recede behaviour: from `lg` the buried cards
+       * stay in view as a cascade, between 768 and 1024 the next card covers
+       * them completely.
        */
       mm.add(
         {
           desktop: "(min-width: 1024px)",
+          stacked: "(min-width: 768px)",
           motion: "(prefers-reduced-motion: no-preference)",
         },
         (context) => {
-          const { desktop, motion } = context.conditions as {
+          const { desktop, stacked, motion } = context.conditions as {
             desktop: boolean;
+            stacked: boolean;
             motion: boolean;
           };
-          if (!motion) return;
+          if (!motion || !stacked) return;
 
           const pins = gsap.utils.toArray<HTMLElement>("[data-stack-pin]", el);
           if (pins.length < 2) return;
