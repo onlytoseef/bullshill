@@ -5768,10 +5768,29 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 28.875rem;
   column-gap: 3rem;
+  row-gap: 0;
   align-items: start;
 }
 
-.case-row-copy h2 {
+/* Two columns: heading and body share the left one, the artwork fills the right
+   from the top. Explicit placement is what lets the markup be ordered
+   "heading, artwork, body" — the order the single-column layout needs. */
+.case-row-heading {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.case-row-copy {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.case-row-visual {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.case-row-heading h2 {
   max-width: 30rem;
   color: var(--color-blue-light);
   font-family: Geist, sans-serif;
@@ -5865,7 +5884,7 @@
     column-gap: 2.5rem;
   }
 
-  .case-row-copy h2 {
+  .case-row-heading h2 {
     font-size: 3.5rem;
     line-height: 4.25rem;
   }
@@ -5886,6 +5905,13 @@
     row-gap: 2.5rem;
   }
 
+  /* One column: drop the desktop placement and read the source order instead —
+     heading, then artwork, then the body. */
+  .case-row > * {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
   .case-row-visual {
     width: min(35rem, 100%);
   }
@@ -5897,7 +5923,7 @@
     padding-top: 1rem;
   }
 
-  .case-row-copy h2 {
+  .case-row-heading h2 {
     font-size: 2.5rem;
     line-height: 3rem;
   }
@@ -6258,7 +6284,9 @@
 }
 
 #case-studies .case-row {
-  row-gap: 1.5rem;
+  /* Zero while the row is two columns — the body's own margins do the spacing,
+     exactly as they did when heading and body shared one cell. */
+  row-gap: 0;
   padding: 2.5rem 0;
 }
 
@@ -6266,7 +6294,7 @@
   padding-top: 1.5rem;
 }
 
-#case-studies .case-row-copy h2 {
+#case-studies .case-row-heading h2 {
   max-width: none;
   font-size: clamp(1.25rem, 2vw, 1.625rem);
   line-height: 1.2;
@@ -6313,7 +6341,10 @@
     column-gap: 2.5rem;
   }
 
-  #case-studies .case-row-copy {
+  /* The heading and the body share the left column, so they share its cap —
+     otherwise a long client name would run wider than the copy under it. */
+  #case-studies .case-row-copy,
+  #case-studies .case-row-heading {
     max-width: 32.5rem;
   }
 }
