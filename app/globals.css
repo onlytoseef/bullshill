@@ -5912,6 +5912,12 @@
     grid-row: auto;
   }
 
+  /* The row gap stays at zero so the two-column spacing is unchanged; stacked,
+     the heading carries the space above the artwork instead. */
+  .case-row-heading {
+    margin-bottom: 1.75rem;
+  }
+
   .case-row-visual {
     width: min(35rem, 100%);
   }
