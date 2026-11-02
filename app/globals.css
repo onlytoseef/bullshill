@@ -3497,24 +3497,23 @@
   position: relative;
 }
 
-/* The electric charge running along a connector: a short dash of bright light
-   over the dotted line, glow only — no blur on the path itself, so it stays a
-   crisp spark rather than a smear. */
+/* The electric charge running along a connector.
+   Every `drop-shadow` is gone on purpose: a filter on an element that moves each
+   frame forces the browser to re-run it and re-rasterise the region around it,
+   which is what made scrolling stutter. The glow now comes entirely from the
+   radial gradient on the head, so a frame costs one transform and one opacity —
+   compositor work only. */
 .connector-pulse {
   stroke: #ffd2a1;
-  filter: drop-shadow(0 0 0.2rem rgba(255, 170, 90, 0.95))
-    drop-shadow(0 0 0.55rem rgba(255, 120, 20, 0.55));
 }
 
-/* The head and its landing flash. Glow comes from the gradient and one soft
-   shadow — nothing here is neon, and the dotted base keeps its own colour. */
-.connector-charge {
-  filter: drop-shadow(0 0 0.22rem rgba(255, 180, 100, 0.75));
+.connector-charge,
+.connector-spark {
+  will-change: transform, opacity;
 }
 
 .connector-spark {
   fill: #ffe6bd;
-  filter: drop-shadow(0 0 0.2rem rgba(255, 170, 90, 0.8));
 }
 
 @media (prefers-reduced-motion: reduce) {
