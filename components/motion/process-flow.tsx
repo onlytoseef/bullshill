@@ -108,6 +108,7 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
         "[data-process-card]",
         stageEl,
       );
+      const pulses = gsap.utils.toArray<SVGPathElement>("[data-pulse]", stageEl);
       if (paths.length === 0 || cards.length === 0) return;
 
       const mm = gsap.matchMedia();
@@ -139,14 +140,41 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
             const boxes = cards.map((card) => boxWithin(card, stageEl));
 
             boxes.slice(0, -1).forEach((box, index) => {
-              paths[index].setAttribute(
-                "d",
-                connector(box, boxes[index + 1], width, height),
-              );
+              const d = connector(box, boxes[index + 1], width, height);
+              paths[index].setAttribute("d", d);
+
+              // The charge runs the identical path, and its dash pattern is
+              // rebuilt from the new length so the dot keeps the same size.
+              const pulse = pulses[index];
+              if (!pulse) return;
+              pulse.setAttribute("d", d);
+              const length = pulse.getTotalLength() || 1;
+              pulse.style.strokeDasharray = `${length * 0.1} ${length}`;
             });
           };
 
           layout();
+
+          // The charge: a short bright dash that runs the line from one card to
+          // the next, then waits. The pause between pulses is what makes it read
+          // as current moving through a cable rather than a loading bar.
+          pulses.forEach((path, index) => {
+            const length = path.getTotalLength() || 1;
+            const tail = length * 0.1;
+
+            gsap.fromTo(
+              path,
+              { strokeDashoffset: length },
+              {
+                strokeDashoffset: -tail,
+                duration: 1.5,
+                ease: "power1.inOut",
+                repeat: -1,
+                repeatDelay: 1 + index * 0.2,
+                delay: index * 0.28,
+              },
+            );
+          });
 
           // Pin once the stage's top clears the sticky header, rather than when
           // it is centered: at `center center` the stage is tall enough that its
@@ -270,6 +298,21 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
             strokeLinecap="round"
             opacity="0.8"
             vectorEffect="non-scaling-stroke"
+          />
+        ))}
+
+        {/* The charge itself: one bright dot that runs the same path as the
+            dotted line, drawn above it and below the cards. No
+            `non-scaling-stroke` here — the dash values have to be the path's own
+            units, which is what lets `getTotalLength()` time the run exactly. */}
+        {process.steps.slice(0, -1).map((step) => (
+          <path
+            key={`pulse-${step.title}`}
+            data-pulse
+            className="connector-pulse"
+            fill="none"
+            strokeLinecap="round"
+            strokeWidth="0.55"
           />
         ))}
       </svg>

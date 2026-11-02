@@ -3497,6 +3497,22 @@
   position: relative;
 }
 
+/* The electric charge running along a connector: a short dash of bright light
+   over the dotted line, glow only — no blur on the path itself, so it stays a
+   crisp spark rather than a smear. */
+.connector-pulse {
+  stroke: #ffd2a1;
+  filter: drop-shadow(0 0 0.2rem rgba(255, 170, 90, 0.95))
+    drop-shadow(0 0 0.55rem rgba(255, 120, 20, 0.55));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The charge is decorative motion; the dotted line alone still reads. */
+  .connector-pulse {
+    display: none;
+  }
+}
+
 .process-card {
   padding: 1.5rem;
   border-radius: 1rem;
