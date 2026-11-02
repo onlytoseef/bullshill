@@ -650,19 +650,19 @@ export const awards = {
     "Led by Web3 founders and backed by a 40-person team that runs your marketing from first post to post-launch growth.",
   people: [
     {
-      name: "Jawad Ahmad",
+      name: "Muhammad Jawad Nawaz",
       role: "CEO / Founder",
       from: "#1e3a5f",
       to: "#0a1727",
     },
     {
-      name: "Zeeshan",
+      name: "Muhammad Zeeshan",
       role: "Team Lead | Business Manager",
       from: "#1e3a5f",
       to: "#0a1727",
     },
     {
-      name: "Bilal",
+      name: "Muhammad Bilal",
       role: "Organic Growth Expert",
       from: "#1e3a5f",
       to: "#0a1727",
@@ -670,8 +670,8 @@ export const awards = {
     { name: "Adnan Hussain", role: "", from: "#1e3a5f", to: "#0a1727" },
     { name: "Faisal Noor", role: "", from: "#1e3a5f", to: "#0a1727" },
     { name: "Junaid Muneer", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "M. Saad Akhtar", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Muhammad Faisal", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "M Saad Akhtar", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Muhammad Faisal Bashir", role: "", from: "#1e3a5f", to: "#0a1727" },
     { name: "Muhammad Rehan", role: "", from: "#1e3a5f", to: "#0a1727" },
     { name: "Muhammad Rizwan", role: "", from: "#1e3a5f", to: "#0a1727" },
     { name: "Sadaqat", role: "", from: "#1e3a5f", to: "#0a1727" },
