@@ -648,36 +648,25 @@ export const awards = {
   title: "Award Winning",
   subtitle:
     "Led by Web3 founders and backed by a 40-person team that runs your marketing from first post to post-launch growth.",
+  /**
+   * The directory order, and the designation each person carries. Names match
+   * the artwork filenames in `app/assets/bullshill-team`.
+   */
   people: [
-    {
-      name: "Muhammad Jawad Nawaz",
-      role: "CEO / Founder",
-      from: "#1e3a5f",
-      to: "#0a1727",
-    },
-    {
-      name: "Muhammad Zeeshan",
-      role: "Team Lead | Business Manager",
-      from: "#1e3a5f",
-      to: "#0a1727",
-    },
-    {
-      name: "Muhammad Bilal",
-      role: "Organic Growth Expert",
-      from: "#1e3a5f",
-      to: "#0a1727",
-    },
-    { name: "Adnan Hussain", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Faisal Noor", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Junaid Muneer", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "M Saad Akhtar", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Muhammad Faisal Bashir", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Muhammad Rehan", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Muhammad Rizwan", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Sadaqat", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Saqib Ijaz", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Usama Abid", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Zaigham", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Muhammad Jawad Nawaz", role: "CEO / Founder" },
+    { name: "Muhammad Rizwan", role: "Head of Content" },
+    { name: "Junaid Muneer", role: "Senior Team Lead" },
+    { name: "Saqib Ijaz", role: "Social Media Head" },
+    { name: "Muhammad Rehan", role: "Senior AI Content Manager" },
+    { name: "M Saad Akhtar", role: "AI Content Manager" },
+    { name: "Zaigham", role: "Social Media Manager" },
+    { name: "Muhammad Bilal", role: "Organic Growth Expert" },
+    { name: "Muhammad Zeeshan", role: "Operations Manager" },
+    { name: "Adnan Hussain", role: "Senior Video Editor" },
+    { name: "Sadaqat", role: "2D & 3D Video Editor" },
+    { name: "Faisal Noor", role: "Community Manager" },
+    { name: "Muhammad Faisal Bashir", role: "Video Editor" },
+    { name: "Usama Abid", role: "Video Editor" },
   ],
 } as const;
 
