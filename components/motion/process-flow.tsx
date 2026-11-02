@@ -109,6 +109,8 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
         stageEl,
       );
       const pulses = gsap.utils.toArray<SVGPathElement>("[data-pulse]", stageEl);
+      const charges = gsap.utils.toArray<SVGCircleElement>("[data-charge]", stageEl);
+      const sparks = gsap.utils.toArray<SVGCircleElement>("[data-spark]", stageEl);
       if (paths.length === 0 || cards.length === 0) return;
 
       const mm = gsap.matchMedia();
@@ -148,33 +150,104 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
               const pulse = pulses[index];
               if (!pulse) return;
               pulse.setAttribute("d", d);
+
               const length = pulse.getTotalLength() || 1;
-              pulse.style.strokeDasharray = `${length * 0.1} ${length}`;
+              pulse.style.strokeDasharray = `${length * 0.06} ${length}`;
+
+              // The arrival flash sits on the point the connector ends at, which
+              // is inside the next card, so it reads as the charge landing there.
+              const spark = sparks[index];
+              if (spark) {
+                const end = pulse.getPointAtLength(length);
+                spark.setAttribute("cx", String(end.x));
+                spark.setAttribute("cy", String(end.y));
+              }
             });
           };
 
           layout();
 
-          // The charge: a short bright dash that runs the line from one card to
-          // the next, then waits. The pause between pulses is what makes it read
-          // as current moving through a cable rather than a loading bar.
-          pulses.forEach((path, index) => {
-            const length = path.getTotalLength() || 1;
-            const tail = length * 0.1;
+          /**
+           * The charge, in workflow order: one connector at a time, two seconds
+           * each with a short pause between, then the whole run repeats.
+           *
+           * The head is a circle moved along the connector with MotionPathPlugin,
+           * so it follows the curve exactly. The trail is the same path's dash,
+           * driven over the identical window and ease — dash offset and
+           * MotionPath's progress are both arc length, so the two cannot drift
+           * apart and the tail always sits behind the head.
+           */
+          const RUN = 2;
+          const GAP = 0.35;
 
-            gsap.fromTo(
+          const master = gsap.timeline({
+            repeat: -1,
+            repeatDelay: 0.9,
+            paused: true,
+          });
+
+          pulses.forEach((path, index) => {
+            const at = index * (RUN + GAP);
+            const length = path.getTotalLength() || 1;
+            const tail = length * 0.06;
+            const charge = charges[index];
+            const spark = sparks[index];
+
+            if (charge) {
+              master.set(charge, { opacity: 0 }, at);
+              master.to(charge, { opacity: 1, duration: 0.18 }, at);
+              master.to(
+                charge,
+                {
+                  motionPath: {
+                    path,
+                    align: path,
+                    alignOrigin: [0.5, 0.5],
+                  },
+                  duration: RUN,
+                  ease: "power1.inOut",
+                },
+                at,
+              );
+              master.to(charge, { opacity: 0, duration: 0.22 }, at + RUN);
+            }
+
+            master.set(path, { opacity: 0.8 }, at);
+            master.fromTo(
               path,
               { strokeDashoffset: length },
               {
                 strokeDashoffset: -tail,
-                duration: 1.5,
+                duration: RUN,
                 ease: "power1.inOut",
-                repeat: -1,
-                repeatDelay: 1 + index * 0.2,
-                delay: index * 0.28,
               },
+              at,
             );
+            master.to(path, { opacity: 0, duration: 0.3 }, at + RUN - 0.3);
+
+            // A soft landing where the charge meets the next card.
+            if (spark) {
+              master.fromTo(
+                spark,
+                { opacity: 0, scale: 0.35 },
+                {
+                  opacity: 0.75,
+                  scale: 1,
+                  duration: 0.16,
+                  ease: "power2.out",
+                  transformOrigin: "center",
+                },
+                at + RUN - 0.08,
+              );
+              master.to(
+                spark,
+                { opacity: 0, scale: 1.5, duration: 0.5, ease: "power2.out" },
+                at + RUN + 0.08,
+              );
+            }
           });
+
+          master.play();
 
           // Pin once the stage's top clears the sticky header, rather than when
           // it is centered: at `center center` the stage is tall enough that its
@@ -301,10 +374,10 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
           />
         ))}
 
-        {/* The charge itself: one bright dot that runs the same path as the
-            dotted line, drawn above it and below the cards. No
-            `non-scaling-stroke` here — the dash values have to be the path's own
-            units, which is what lets `getTotalLength()` time the run exactly. */}
+        {/* The trail: a short dash of the same path, drawn above the dotted line
+            and below the cards. No `non-scaling-stroke` — the dash values have to
+            be the path's own units, which is what lets `getTotalLength()` time
+            the run exactly. */}
         {process.steps.slice(0, -1).map((step) => (
           <path
             key={`pulse-${step.title}`}
@@ -312,7 +385,38 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
             className="connector-pulse"
             fill="none"
             strokeLinecap="round"
-            strokeWidth="0.55"
+            strokeWidth="0.5"
+          />
+        ))}
+
+        <defs>
+          {/* Warm white core, orange falloff, transparent rim: the charge reads
+              as light rather than a dot because only its centre is opaque. */}
+          <radialGradient id="connector-charge">
+            <stop offset="0%" stopColor="#fffbe8" />
+            <stop offset="34%" stopColor="#ffd98f" />
+            <stop offset="68%" stopColor="#ff8a1f" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#ff7a00" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        {process.steps.slice(0, -1).map((step) => (
+          <circle
+            key={`charge-${step.title}`}
+            data-charge
+            r="1.8"
+            fill="url(#connector-charge)"
+            opacity="0"
+          />
+        ))}
+
+        {process.steps.slice(0, -1).map((step) => (
+          <circle
+            key={`spark-${step.title}`}
+            data-spark
+            className="connector-spark"
+            r="0.9"
+            opacity="0"
           />
         ))}
       </svg>
