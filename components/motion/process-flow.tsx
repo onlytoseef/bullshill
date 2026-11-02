@@ -17,33 +17,69 @@ import { replayOnScroll } from "@/lib/scroll-replay";
  */
 const CARD_ROTATIONS = [-15, 5.85, -5.39, 5.67, -6.58];
 
-function toSvgPoint(point: { x: number; y: number }, bounds: DOMRect) {
+type Box = {
+  left: number;
+  top: number;
+  right: number;
+  width: number;
+  height: number;
+};
+
+/**
+ * Where `el` sits inside `root`, from layout offsets rather than its on-screen
+ * rectangle.
+ *
+ * The cards are rotated, and `getBoundingClientRect` reports the rotated card's
+ * axis-aligned box — wider and taller than the card — so connectors started and
+ * ended a dozen pixels away from it and read as floating arcs. `offsetLeft` and
+ * `offsetTop` ignore transforms, so both ends land on the card itself.
+ */
+function boxWithin(el: HTMLElement, root: HTMLElement): Box {
+  let left = 0;
+  let top = 0;
+  let node: HTMLElement | null = el;
+
+  while (node && node !== root) {
+    left += node.offsetLeft;
+    top += node.offsetTop;
+    node = node.offsetParent as HTMLElement | null;
+  }
+
   return {
-    x: ((point.x - bounds.left) / bounds.width) * 100,
-    y: ((point.y - bounds.top) / bounds.height) * 100,
+    left,
+    top,
+    right: left + el.offsetWidth,
+    width: el.offsetWidth,
+    height: el.offsetHeight,
   };
 }
 
-function connector(first: DOMRect, second: DOMRect, svgBounds: DOMRect) {
+/**
+ * A dotted S-curve from one card to the next.
+ *
+ * Both ends sit *inside* their card: the cards paint above the connector layer
+ * (`z-10` against `z-[1]`), so the overshoot is hidden and the line visibly
+ * meets the edge it belongs to at any rotation.
+ */
+const CONNECTOR_INSET = 24;
+
+function connector(first: Box, second: Box, w: number, h: number) {
   const movesRight = second.left >= first.left;
-  const from = toSvgPoint(
-    {
-      x: movesRight ? first.right : first.left,
-      y: first.top + first.height * 0.56,
-    },
-    svgBounds,
-  );
-  const to = toSvgPoint(
-    {
-      x: movesRight ? second.left : second.right,
-      y: second.top + second.height * 0.44,
-    },
-    svgBounds,
-  );
-  const bend = Math.max(Math.abs(to.x - from.x) * 0.55, 8);
   const direction = movesRight ? 1 : -1;
 
-  return `M ${from.x} ${from.y} C ${from.x + bend * direction} ${from.y}, ${to.x - bend * direction} ${to.y}, ${to.x} ${to.y}`;
+  const x1 = (movesRight ? first.right - CONNECTOR_INSET : first.left + CONNECTOR_INSET) / w;
+  const x2 = (movesRight ? second.left + CONNECTOR_INSET : second.right - CONNECTOR_INSET) / w;
+  const y1 = (first.top + first.height * 0.5) / h;
+  const y2 = (second.top + second.height * 0.5) / h;
+
+  const toX1 = x1 * 100;
+  const toX2 = x2 * 100;
+  const toY1 = y1 * 100;
+  const toY2 = y2 * 100;
+
+  const bend = Math.max(Math.abs(toX2 - toX1) * 0.5, 6);
+
+  return `M ${toX1} ${toY1} C ${toX1 + bend * direction} ${toY1}, ${toX2 - bend * direction} ${toY2}, ${toX2} ${toY2}`;
 }
 
 /**
@@ -94,17 +130,18 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
            * when the breakpoint itself flips.
            */
           const layout = () => {
-            const svgBounds = svgEl.getBoundingClientRect();
-            if (!svgBounds.width || !svgBounds.height) return;
+            const width = stageEl.clientWidth;
+            const height = stageEl.clientHeight;
+            if (!width || !height) return;
 
-            cards.slice(0, -1).forEach((card, index) => {
+            // Measured from the stage's own box, so the percentages the SVG
+            // draws in and the pixels the cards occupy are the same space.
+            const boxes = cards.map((card) => boxWithin(card, stageEl));
+
+            boxes.slice(0, -1).forEach((box, index) => {
               paths[index].setAttribute(
                 "d",
-                connector(
-                  card.getBoundingClientRect(),
-                  cards[index + 1].getBoundingClientRect(),
-                  svgBounds,
-                ),
+                connector(box, boxes[index + 1], width, height),
               );
             });
           };
