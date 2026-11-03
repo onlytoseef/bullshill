@@ -17,33 +17,69 @@ import { replayOnScroll } from "@/lib/scroll-replay";
  */
 const CARD_ROTATIONS = [-15, 5.85, -5.39, 5.67, -6.58];
 
-function toSvgPoint(point: { x: number; y: number }, bounds: DOMRect) {
+type Box = {
+  left: number;
+  top: number;
+  right: number;
+  width: number;
+  height: number;
+};
+
+/**
+ * Where `el` sits inside `root`, from layout offsets rather than its on-screen
+ * rectangle.
+ *
+ * The cards are rotated, and `getBoundingClientRect` reports the rotated card's
+ * axis-aligned box — wider and taller than the card — so connectors started and
+ * ended a dozen pixels away from it and read as floating arcs. `offsetLeft` and
+ * `offsetTop` ignore transforms, so both ends land on the card itself.
+ */
+function boxWithin(el: HTMLElement, root: HTMLElement): Box {
+  let left = 0;
+  let top = 0;
+  let node: HTMLElement | null = el;
+
+  while (node && node !== root) {
+    left += node.offsetLeft;
+    top += node.offsetTop;
+    node = node.offsetParent as HTMLElement | null;
+  }
+
   return {
-    x: ((point.x - bounds.left) / bounds.width) * 100,
-    y: ((point.y - bounds.top) / bounds.height) * 100,
+    left,
+    top,
+    right: left + el.offsetWidth,
+    width: el.offsetWidth,
+    height: el.offsetHeight,
   };
 }
 
-function connector(first: DOMRect, second: DOMRect, svgBounds: DOMRect) {
+/**
+ * A dotted S-curve from one card to the next.
+ *
+ * Both ends sit *inside* their card: the cards paint above the connector layer
+ * (`z-10` against `z-[1]`), so the overshoot is hidden and the line visibly
+ * meets the edge it belongs to at any rotation.
+ */
+const CONNECTOR_INSET = 24;
+
+function connector(first: Box, second: Box, w: number, h: number) {
   const movesRight = second.left >= first.left;
-  const from = toSvgPoint(
-    {
-      x: movesRight ? first.right : first.left,
-      y: first.top + first.height * 0.56,
-    },
-    svgBounds,
-  );
-  const to = toSvgPoint(
-    {
-      x: movesRight ? second.left : second.right,
-      y: second.top + second.height * 0.44,
-    },
-    svgBounds,
-  );
-  const bend = Math.max(Math.abs(to.x - from.x) * 0.55, 8);
   const direction = movesRight ? 1 : -1;
 
-  return `M ${from.x} ${from.y} C ${from.x + bend * direction} ${from.y}, ${to.x - bend * direction} ${to.y}, ${to.x} ${to.y}`;
+  const x1 = (movesRight ? first.right - CONNECTOR_INSET : first.left + CONNECTOR_INSET) / w;
+  const x2 = (movesRight ? second.left + CONNECTOR_INSET : second.right - CONNECTOR_INSET) / w;
+  const y1 = (first.top + first.height * 0.5) / h;
+  const y2 = (second.top + second.height * 0.5) / h;
+
+  const toX1 = x1 * 100;
+  const toX2 = x2 * 100;
+  const toY1 = y1 * 100;
+  const toY2 = y2 * 100;
+
+  const bend = Math.max(Math.abs(toX2 - toX1) * 0.5, 6);
+
+  return `M ${toX1} ${toY1} C ${toX1 + bend * direction} ${toY1}, ${toX2 - bend * direction} ${toY2}, ${toX2} ${toY2}`;
 }
 
 /**
@@ -72,7 +108,17 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
         "[data-process-card]",
         stageEl,
       );
+      // One charge, one trail, one flash — reused for every connector. The
+      // previous version kept five of each and gave every one a drop-shadow
+      // filter, so fifteen filtered elements repainted on each frame.
+      const trail = svgEl.querySelector<SVGPathElement>("[data-trail]");
+      const charge = svgEl.querySelector<SVGCircleElement>("[data-charge]");
+      const spark = svgEl.querySelector<SVGCircleElement>("[data-spark]");
       if (paths.length === 0 || cards.length === 0) return;
+
+      /** The single charge timeline, rebuilt only when the curves move. */
+      let master: gsap.core.Timeline | null = null;
+      let onScreen = false;
 
       const mm = gsap.matchMedia();
 
@@ -93,23 +139,138 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
            * window resizes, which never re-ran because matchMedia only fires
            * when the breakpoint itself flips.
            */
-          const layout = () => {
-            const svgBounds = svgEl.getBoundingClientRect();
-            if (!svgBounds.width || !svgBounds.height) return;
+          type Segment = { d: string; length: number; endX: number; endY: number };
 
-            cards.slice(0, -1).forEach((card, index) => {
-              paths[index].setAttribute(
-                "d",
-                connector(
-                  card.getBoundingClientRect(),
-                  cards[index + 1].getBoundingClientRect(),
-                  svgBounds,
-                ),
-              );
+          // Measured once per layout change and cached, so nothing recalculates
+          // a path or a box while the charge is moving.
+          let segments: Segment[] = [];
+
+          const layout = () => {
+            const width = stageEl.clientWidth;
+            const height = stageEl.clientHeight;
+            if (!width || !height || !trail) return;
+
+            // Measured from the stage's own box, so the percentages the SVG
+            // draws in and the pixels the cards occupy are the same space.
+            const boxes = cards.map((card) => boxWithin(card, stageEl));
+
+            segments = boxes.slice(0, -1).map((box, index) => {
+              const d = connector(box, boxes[index + 1], width, height);
+              paths[index].setAttribute("d", d);
+
+              // The trail element doubles as the measuring tool: set the curve
+              // once, read its length and end point, hand both to the timeline.
+              trail.setAttribute("d", d);
+              const length = trail.getTotalLength() || 1;
+              const end = trail.getPointAtLength(length);
+
+              return { d, length, endX: end.x, endY: end.y };
             });
           };
 
-          layout();
+          /**
+           * One timeline, one charge, one trail, one flash — reused for all four
+           * connections, in workflow order.
+           *
+           * Only `transform` (MotionPath) and `opacity` move, `force3D` hands
+           * them to the compositor, and the moving light itself is what brightens
+           * the dots it passes. The trail is the same path's dash over the same
+           * window and ease: dash offset and MotionPath progress are both arc
+           * length, so the tail cannot drift from the head.
+           */
+          const build = () => {
+            master?.kill();
+
+            const RUN = 2;
+            const GAP = 0.35;
+            const tl = gsap.timeline({
+              repeat: -1,
+              repeatDelay: 0.9,
+              paused: true,
+            });
+
+            segments.forEach((segment, index) => {
+              const at = index * (RUN + GAP);
+              const tail = segment.length * 0.06;
+
+              if (trail) {
+                tl.set(trail, { attr: { d: segment.d } }, at);
+                tl.set(
+                  trail,
+                  {
+                    opacity: 0.7,
+                    strokeDasharray: `${tail} ${segment.length}`,
+                  },
+                  at,
+                );
+                tl.fromTo(
+                  trail,
+                  { strokeDashoffset: segment.length },
+                  {
+                    strokeDashoffset: -tail,
+                    duration: RUN,
+                    ease: "power1.inOut",
+                  },
+                  at,
+                );
+                tl.to(trail, { opacity: 0, duration: 0.25 }, at + RUN - 0.25);
+              }
+
+              if (charge) {
+                tl.set(charge, { opacity: 0 }, at);
+                tl.to(charge, { opacity: 1, duration: 0.15, force3D: true }, at);
+                tl.to(
+                  charge,
+                  {
+                    motionPath: {
+                      path: segment.d,
+                      align: charge,
+                      alignOrigin: [0.5, 0.5],
+                    },
+                    duration: RUN,
+                    ease: "power1.inOut",
+                    force3D: true,
+                  },
+                  at,
+                );
+                tl.to(charge, { opacity: 0, duration: 0.2 }, at + RUN);
+              }
+
+              if (spark) {
+                tl.set(
+                  spark,
+                  { attr: { cx: segment.endX, cy: segment.endY } },
+                  at + RUN - 0.05,
+                );
+                tl.fromTo(
+                  spark,
+                  { opacity: 0, scale: 0.5 },
+                  {
+                    opacity: 0.7,
+                    scale: 1,
+                    duration: 0.12,
+                    transformOrigin: "center",
+                  },
+                  at + RUN - 0.05,
+                );
+                tl.to(
+                  spark,
+                  { opacity: 0, scale: 1.4, duration: 0.35 },
+                  at + RUN + 0.07,
+                );
+              }
+            });
+
+            master = tl;
+            if (onScreen) tl.play();
+          };
+
+          const refresh = () => {
+            layout();
+            build();
+          };
+
+          refresh();
 
           // Pin once the stage's top clears the sticky header, rather than when
           // it is centered: at `center center` the stage is tall enough that its
@@ -137,7 +298,10 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
               scrub: 0.5,
               anticipatePin: 1,
               invalidateOnRefresh: true,
-              onRefreshInit: layout,
+              // Re-measure and rebuild together: the timeline captures the
+              // curve it will follow, so a stale measurement would both draw
+              // and move along the previous layout.
+              onRefreshInit: refresh,
             },
           });
 
@@ -209,7 +373,33 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
         },
       );
 
-      return () => mm.revert();
+      /**
+       * The charge only runs while the section is on screen, and not in a hidden
+       * tab. Both are plain flags — no React state, so nothing re-renders while
+       * the animation plays.
+       */
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          onScreen = entry.isIntersecting;
+          if (onScreen) master?.play();
+          else master?.pause();
+        },
+        { rootMargin: "20% 0px" },
+      );
+      observer.observe(stageEl);
+
+      const onTabChange = () => {
+        if (document.hidden) master?.pause();
+        else if (onScreen) master?.play();
+      };
+      document.addEventListener("visibilitychange", onTabChange);
+
+      return () => {
+        observer.disconnect();
+        document.removeEventListener("visibilitychange", onTabChange);
+        master?.kill();
+        mm.revert();
+      };
     },
     { scope: stage },
   );
@@ -235,6 +425,40 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
             vectorEffect="non-scaling-stroke"
           />
         ))}
+
+        <defs>
+          {/* Warm white core, orange falloff, transparent rim: the charge reads
+              as light rather than a dot because only its centre is opaque. No
+              filter is involved, which is what keeps the frame cheap. */}
+          <radialGradient id="connector-charge">
+            <stop offset="0%" stopColor="#fffbe8" />
+            <stop offset="34%" stopColor="#ffd98f" />
+            <stop offset="68%" stopColor="#ff8a1f" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#ff7a00" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        {/* Three reused elements for every connection: the trail (a short dash of
+            the same path, driven in the path's own units so `getTotalLength()`
+            times it exactly), the head, and the landing flash. */}
+        <path
+          data-trail
+          className="connector-pulse"
+          fill="none"
+          strokeLinecap="round"
+          strokeWidth="0.5"
+          opacity="0"
+        />
+
+        <circle
+          data-charge
+          className="connector-charge"
+          r="1.8"
+          fill="url(#connector-charge)"
+          opacity="0"
+        />
+
+        <circle data-spark className="connector-spark" r="0.9" opacity="0" />
       </svg>
 
       {children}

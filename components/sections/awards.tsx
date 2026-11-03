@@ -7,32 +7,33 @@ import { AwardsCarousel } from "@/components/sections/awards-carousel";
 import { CarouselItem } from "@/components/ui/carousel";
 import { Container, Section } from "@/components/ui/section";
 import { awards } from "@/lib/content";
-import adnanImage from "../../app/assets/team-section/Adnan Hussain.webp";
-import faisalNoorImage from "../../app/assets/team-section/Faisal Noor.webp";
-import junaidImage from "../../app/assets/team-section/Junaid Muneer.webp";
-import saadImage from "../../app/assets/team-section/M. Saad Akhtar.webp";
-import bilalImage from "../../app/assets/team-section/Muhammad Bilal.webp";
-import faisalImage from "../../app/assets/team-section/Muhammad Faisal.webp";
-import jawadImage from "../../app/assets/team-section/Muhammad Jawad Nawaz.webp";
-import rehanImage from "../../app/assets/team-section/Muhammad Rehan (2).webp";
-import rizwanImage from "../../app/assets/team-section/Muhammad Rizwan.webp";
-import sadaqatImage from "../../app/assets/team-section/Sadaqat (2).webp";
-import saqibImage from "../../app/assets/team-section/Saqib Ijaz.webp";
-import usamaImage from "../../app/assets/team-section/Usama Abid (2).webp";
-import zaighamImage from "../../app/assets/team-section/Zaigham.webp";
-import zeeshanImage from "../../app/assets/team-section/zeeshan (2).webp";
+import adnanImage from "../../app/assets/bullshill-team/Adnan Hussain.webp";
+import faisalNoorImage from "../../app/assets/bullshill-team/Faisal Noor.webp";
+import junaidImage from "../../app/assets/bullshill-team/Junaid Muneer.webp";
+import saadImage from "../../app/assets/bullshill-team/M Saad Akhtar.webp";
+import bilalImage from "../../app/assets/bullshill-team/Muhammad Bilal.webp";
+import faisalImage from "../../app/assets/bullshill-team/Muhammad Faisal Bashir.webp";
+import jawadImage from "../../app/assets/bullshill-team/Muhammad Jawad Nawaz.webp";
+import rehanImage from "../../app/assets/bullshill-team/Muhammad Rehan.webp";
+import rizwanImage from "../../app/assets/bullshill-team/Muhammad Rizwan.webp";
+import zeeshanImage from "../../app/assets/bullshill-team/Muhammad Zeeshan.webp";
+import sadaqatImage from "../../app/assets/bullshill-team/Sadaqat.webp";
+import saqibImage from "../../app/assets/bullshill-team/Saqib Ijaz.webp";
+import usamaImage from "../../app/assets/bullshill-team/Usama Abid_.webp";
+import zaighamImage from "../../app/assets/bullshill-team/Zaigham.webp";
 
 type PersonName = (typeof awards.people)[number]["name"];
 
+/** Keyed by the name in `awards.people`, which mirrors the artwork's filename. */
 const teamImages: Record<PersonName, StaticImageData> = {
-  "Jawad Ahmad": jawadImage,
-  Zeeshan: zeeshanImage,
-  Bilal: bilalImage,
+  "Muhammad Jawad Nawaz": jawadImage,
+  "Muhammad Zeeshan": zeeshanImage,
+  "Muhammad Bilal": bilalImage,
   "Adnan Hussain": adnanImage,
   "Faisal Noor": faisalNoorImage,
   "Junaid Muneer": junaidImage,
-  "M. Saad Akhtar": saadImage,
-  "Muhammad Faisal": faisalImage,
+  "M Saad Akhtar": saadImage,
+  "Muhammad Faisal Bashir": faisalImage,
   "Muhammad Rehan": rehanImage,
   "Muhammad Rizwan": rizwanImage,
   Sadaqat: sadaqatImage,

@@ -23,7 +23,7 @@ export function CaseStudiesHero() {
           <Button
             href={caseStudiesPage.cta.href}
             variant="secondary"
-            className="page-hero-button page-hero-button--outline"
+            className="page-hero-button"
           >
             {caseStudiesPage.cta.label}
           </Button>

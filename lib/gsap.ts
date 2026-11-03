@@ -26,6 +26,7 @@ import { Draggable } from "gsap/Draggable";
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import { Flip } from "gsap/Flip";
 import { InertiaPlugin } from "gsap/InertiaPlugin";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 
@@ -37,6 +38,16 @@ gsap.registerPlugin(
   Flip,
   Draggable,
   InertiaPlugin,
+  MotionPathPlugin,
 );
 
-export { gsap, ScrollTrigger, SplitText, DrawSVGPlugin, Flip, Draggable, useGSAP };
+export {
+  gsap,
+  ScrollTrigger,
+  SplitText,
+  DrawSVGPlugin,
+  Flip,
+  Draggable,
+  MotionPathPlugin,
+  useGSAP,
+};

@@ -1,3 +1,21 @@
+export function ChatIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 20 20"
+      fill="none"
+      className={`shrink-0 ${className}`}
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17 12.4A2.6 2.6 0 0 1 14.4 15H8.4L4 17.6V6.6A2.6 2.6 0 0 1 6.6 4h7.8A2.6 2.6 0 0 1 17 6.6z" />
+      <path d="M7.4 8h5.2M7.4 10.6h3.2" />
+    </svg>
+  );
+}
+
 export function ArrowIcon({ className = "size-4" }: { className?: string }) {
   return (
     <svg

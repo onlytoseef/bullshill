@@ -115,7 +115,7 @@ export function Services() {
             href={services.cta.href}
             variant="light"
             size="md"
-            className="services-view-all cta-hover find-more-cta"
+            className="services-view-all"
           >
             {services.cta.label}
             <ArrowIcon className="size-4" />

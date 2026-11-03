@@ -28,6 +28,7 @@ export function ServiceDetail({ service, index }: Props) {
           service={service}
           index={index}
           href={servicesPage.cta.href}
+          variant="primary"
           titleAs="h1"
           eager
         />

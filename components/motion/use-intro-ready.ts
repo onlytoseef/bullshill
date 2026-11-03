@@ -11,11 +11,9 @@ import {
 } from "@/lib/intro-gate";
 
 /**
- * `false` until the page loader's panels start retracting, then `true` forever.
- *
- * Gate mount-triggered hero animations on this so they play into the loader's
- * wipe instead of behind it. Pass it through `useGSAP`'s `dependencies` and
- * return early while it is false.
+ * `false` while the page loader covers the viewport, including client route
+ * transitions. Entrances start once the cover is gone. GSAP consumers use
+ * `revertOnUpdate` so closing the gate also cleans up the previous entrance.
  *
  * Arms the fail-safe in `lib/intro-gate`, so the latch opens on its own if the
  * loader never gets round to it — gated content is never permanently hidden.

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { gsap } from "@/lib/gsap";
-import { releaseIntro } from "@/lib/intro-gate";
+import { holdIntro, releaseIntro } from "@/lib/intro-gate";
 
 /**
  * "BULL CHARGE" — the route transition.
@@ -21,7 +21,8 @@ import { releaseIntro } from "@/lib/intro-gate";
  * - The charge owns a minimum duration. A client navigation finishes in tens of
  *   milliseconds, and releasing the moment the pathname changed meant the
  *   streak and the wordmark were cut off mid-flight; `requestRelease` holds the
- *   reveal until the sequence has had its 620ms, then plays the shockwave.
+ *   reveal until the sequence has run, then plays the shockwave. Client route
+ *   transitions use a shorter version of the same sequence.
  *
  * Navigation itself is never delayed — the route swaps underneath the overlay
  * while it runs, and a 4s safety timer removes the overlay regardless so a
@@ -36,9 +37,10 @@ const SAFETY_MS = 4000;
  * How long the charge runs before it may hand over — matched to the duration the
  * old splash held for, so the site's first-load beat is unchanged.
  */
-const CHARGE_MS = 2300;
-/** How long the shockwave takes to clear the viewport; the old wipe was 850ms. */
-const WAVE_MS = 1000;
+const INITIAL_CHARGE_MS = 2300;
+const INITIAL_WAVE_MS = 1000;
+const NAV_CHARGE_MS = 450;
+const NAV_WAVE_MS = 350;
 
 type Phase = "idle" | "charge" | "reveal";
 
@@ -57,6 +59,11 @@ export function PageLoader() {
   const armed = useRef(false);
   const revealed = useRef(false);
   const startedAt = useRef(0);
+  const timing = useRef({
+    chargeMs: INITIAL_CHARGE_MS,
+    waveMs: INITIAL_WAVE_MS,
+    speed: 1,
+  });
   const floor = useRef<number | null>(null);
   const safety = useRef<number | null>(null);
 
@@ -81,28 +88,33 @@ export function PageLoader() {
    */
   const requestRelease = useCallback(() => {
     const elapsed = performance.now() - startedAt.current;
-    const wait = Math.max(0, CHARGE_MS - elapsed);
+    const wait = Math.max(0, timing.current.chargeMs - elapsed);
 
     if (floor.current) window.clearTimeout(floor.current);
     floor.current = window.setTimeout(release, wait);
   }, [release]);
 
   /** Begins a transition: first load, or a click on an internal link. */
-  const start = useCallback(() => {
+  const start = useCallback((firstLoad = false) => {
     if (!revealed.current && armed.current) return; // already charging
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    timing.current = {
+      chargeMs: reduced ? 0 : firstLoad ? INITIAL_CHARGE_MS : NAV_CHARGE_MS,
+      waveMs: firstLoad ? INITIAL_WAVE_MS : NAV_WAVE_MS,
+      speed: firstLoad ? 1 : INITIAL_CHARGE_MS / NAV_CHARGE_MS,
+    };
     armed.current = true;
     revealed.current = false;
     startedAt.current = performance.now();
     setPhase("charge");
 
-    // Let the page render underneath straight away rather than at the wipe, so
-    // its own content is already in place the moment the cover clears — waiting
-    // until the reveal made the text appear a beat after the transition ended.
-    releaseIntro();
+    holdIntro();
 
     clearTimers();
     safety.current = window.setTimeout(release, SAFETY_MS);
-    requestRelease();
+    // Client navigation confirms through `pathname`; a slow route stays
+    // covered until it arrives, with the safety timer as a backstop.
+    if (firstLoad) requestRelease();
   }, [clearTimers, release, requestRelease]);
 
   // ---- the charge sequence -------------------------------------------------
@@ -121,7 +133,7 @@ export function PageLoader() {
         return;
       }
 
-      const tl = gsap.timeline();
+      const tl = gsap.timeline().timeScale(timing.current.speed);
 
       // The bar is parked bottom-left and rotated onto the diagonal; travelling
       // +x / -y carries it across the centre and off the top-right corner.
@@ -194,14 +206,18 @@ export function PageLoader() {
     if (!root) return;
 
     const ctx = gsap.context(() => {
-      const done = () => setPhase("idle");
+      const done = () => {
+        armed.current = false;
+        setPhase("idle");
+        releaseIntro();
+      };
 
       if (reduced) {
         gsap.to(cover.current, { autoAlpha: 0, duration: 0.16, onComplete: done });
         return;
       }
 
-      const seconds = WAVE_MS / 1000;
+      const seconds = timing.current.waveMs / 1000;
 
       gsap
         .timeline({ onComplete: done })
@@ -257,8 +273,11 @@ export function PageLoader() {
 
   // ---- first load ----------------------------------------------------------
   useEffect(() => {
-    start();
-    return clearTimers;
+    start(true);
+    return () => {
+      clearTimers();
+      armed.current = false;
+    };
   }, [start, clearTimers]);
 
   if (phase === "idle") return null;

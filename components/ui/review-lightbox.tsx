@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 import type { Review } from "@/lib/reviews";
 import { EASE_OUT } from "@/lib/motion";
@@ -28,6 +29,7 @@ type Props = {
  */
 export function ReviewLightbox({ reviews, index, onClose, onNavigate }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const open = index !== null;
   const review = index === null ? null : reviews[index];
 
@@ -92,6 +94,7 @@ export function ReviewLightbox({ reviews, index, onClose, onNavigate }: Props) {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     panelRef.current?.focus();
+    contentRef.current?.scrollTo({ top: 0 });
 
     return () => {
       document.body.style.overflow = previousOverflow;
@@ -110,7 +113,10 @@ export function ReviewLightbox({ reviews, index, onClose, onNavigate }: Props) {
     }
   }, [open, index, reviews]);
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  // Render above the section's isolated particle layers and the sticky header.
+  return createPortal(
     <AnimatePresence>
       {open && review ? (
         <motion.div
@@ -135,20 +141,23 @@ export function ReviewLightbox({ reviews, index, onClose, onNavigate }: Props) {
             transition={{ duration: 0.3, ease: EASE_OUT }}
             onClick={(event) => event.stopPropagation()}
           >
-            <motion.div
-              className="review-lightbox-shot"
-              layoutId={`review-shot-${review.id}`}
-              transition={{ duration: 0.3, ease: EASE_OUT }}
-            >
-              <Image
-                src={review.src}
-                alt={`Client review from ${review.name}`}
-                width={review.src.width}
-                height={review.src.height}
-                sizes="90vw"
-                className="review-lightbox-image"
-              />
-            </motion.div>
+            <div ref={contentRef} className="review-lightbox-content" data-lenis-prevent>
+              <motion.div
+                className="review-lightbox-shot"
+                layoutId={`review-shot-${review.id}`}
+                transition={{ duration: 0.3, ease: EASE_OUT }}
+              >
+                <Image
+                  src={review.src}
+                  alt={`Client review from ${review.name}`}
+                  width={review.src.width}
+                  height={review.src.height}
+                  sizes="90vw"
+                  className="review-lightbox-image"
+                />
+              </motion.div>
+              <blockquote className="review-lightbox-quote">{review.quote}</blockquote>
+            </div>
 
             <div className="review-lightbox-bar">
               <button
@@ -206,6 +215,7 @@ export function ReviewLightbox({ reviews, index, onClose, onNavigate }: Props) {
           </motion.div>
         </motion.div>
       ) : null}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

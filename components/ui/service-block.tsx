@@ -35,6 +35,7 @@ type Props = {
   service: Service;
   index: number;
   href: string;
+  variant?: "primary" | "light";
   titleAs?: "h1" | "h2";
   eager?: boolean;
 };
@@ -43,6 +44,7 @@ export function ServiceBlock({
   service,
   index,
   href,
+  variant = "light",
   titleAs: Title = "h2",
   eager = false,
 }: Props) {
@@ -100,7 +102,11 @@ export function ServiceBlock({
 
         <div className="service-detail-aside">
           <p>{service.caption}</p>
-          <Button href={href} variant="light" className="services-image-cta cta-hover find-more-cta">
+          <Button
+            href={href}
+            variant={variant}
+            className="services-image-cta"
+          >
             {service.button}
             <Image src={findMoreIcon} alt="" width={20} height={20} />
           </Button>

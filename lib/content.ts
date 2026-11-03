@@ -193,31 +193,31 @@ export const process = {
     {
       title: "Discovery Call",
       body: "We start with a live call to understand your goals, target audience, and project scope. This is where we align on expectations, timelines, and what success looks like for your brand or project.",
-      x: 0,
+      x: 9,
       y: 0,
     },
     {
       title: "Strategy & Planning",
       body: "Based on the discovery call, we develop a tailored execution plan — covering content direction, platform strategy, milestones, and deliverables. You review and approve the plan before we move forward, so there are no surprises later.",
-      x: 54,
+      x: 63,
       y: 19,
     },
     {
       title: "Execution & Implementation",
       body: "Our team gets to work — content creation, campaign management, community engagement, or whatever the project calls for. We follow the approved plan closely while staying flexible to real-time market or platform shifts.",
-      x: 4,
+      x: 13,
       y: 38,
     },
     {
       title: "Weekly Reporting & Optimization",
       body: "Every week, you get a clear report on progress, performance, and next steps. We use this checkpoint to fine-tune the strategy based on what’s working, keeping the project on track toward your goals.",
-      x: 54,
+      x: 63,
       y: 57,
     },
     {
       title: "Ongoing Communication",
       body: "Beyond weekly reports, we stay reachable for quick calls or check-ins whenever needed — so you’re never left wondering where things stand.",
-      x: 8,
+      x: 17,
       y: 76,
     },
   ],
@@ -233,7 +233,7 @@ export const testimonials = {
   eyebrow: "Testimonials",
   title: "What Our Clients Say About Us",
   subtitle:
-    "Real stories from real clients. See why 250+ brands trust NinjaPromo to move their KPIs.",
+    "Real feedback from our clients on Fiverr and Upwork, in their own words.",
   items: [
     {
       quote:
@@ -648,36 +648,25 @@ export const awards = {
   title: "Award Winning",
   subtitle:
     "Led by Web3 founders and backed by a 40-person team that runs your marketing from first post to post-launch growth.",
+  /**
+   * The directory order, and the designation each person carries. Names match
+   * the artwork filenames in `app/assets/bullshill-team`.
+   */
   people: [
-    {
-      name: "Jawad Ahmad",
-      role: "CEO / Founder",
-      from: "#1e3a5f",
-      to: "#0a1727",
-    },
-    {
-      name: "Zeeshan",
-      role: "Team Lead | Business Manager",
-      from: "#1e3a5f",
-      to: "#0a1727",
-    },
-    {
-      name: "Bilal",
-      role: "Organic Growth Expert",
-      from: "#1e3a5f",
-      to: "#0a1727",
-    },
-    { name: "Adnan Hussain", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Faisal Noor", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Junaid Muneer", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "M. Saad Akhtar", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Muhammad Faisal", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Muhammad Rehan", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Muhammad Rizwan", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Sadaqat", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Saqib Ijaz", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Usama Abid", role: "", from: "#1e3a5f", to: "#0a1727" },
-    { name: "Zaigham", role: "", from: "#1e3a5f", to: "#0a1727" },
+    { name: "Muhammad Jawad Nawaz", role: "CEO / Founder" },
+    { name: "Muhammad Rizwan", role: "Head of Content" },
+    { name: "Junaid Muneer", role: "Senior Team Lead" },
+    { name: "Saqib Ijaz", role: "Social Media Head" },
+    { name: "Muhammad Rehan", role: "Senior AI Content Manager" },
+    { name: "M Saad Akhtar", role: "AI Content Manager" },
+    { name: "Zaigham", role: "Social Media Manager" },
+    { name: "Muhammad Bilal", role: "Organic Growth Expert" },
+    { name: "Muhammad Zeeshan", role: "Operations Manager" },
+    { name: "Adnan Hussain", role: "Senior Video Editor" },
+    { name: "Sadaqat", role: "2D & 3D Video Editor" },
+    { name: "Faisal Noor", role: "Community Manager" },
+    { name: "Muhammad Faisal Bashir", role: "Video Editor" },
+    { name: "Usama Abid", role: "Video Editor" },
   ],
 } as const;
 
@@ -685,8 +674,8 @@ export const faqs = {
   title: "Digital Marketing FAQs",
   body: "As a leading digital marketing agency, we are dedicated to providing comprehensive educational resources and answering frequently asked questions to help our clients.",
   ctas: [
-    { label: "More questions", href: "#contact", variant: "primary" },
-    { label: "Contact us", href: "#contact", variant: "secondary" },
+    { label: "More questions", href: "#contact", variant: "secondary" },
+    { label: "Contact us", href: "#contact", variant: "primary" },
   ],
   items: [
     {

@@ -385,46 +385,7 @@
 }
 
 .mobile-menu-cta {
-  display: flex;
   width: 100%;
-  min-height: 3.5rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem 1.375rem;
-  border-radius: 62.4375rem;
-  background: linear-gradient(180deg, #ff5700 0%, #e8750a 100%);
-  color: #ffffff;
-  font-family: Geist, sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  box-shadow: 0 0.625rem 1.875rem rgba(232, 117, 10, 0.28);
-  transition: box-shadow 200ms ease, transform 200ms ease;
-}
-
-.mobile-menu-cta-arrow {
-  transition: transform 200ms ease;
-}
-
-@media (hover: hover) {
-  .mobile-menu-cta:hover {
-    box-shadow: 0 0.875rem 2.5rem rgba(232, 117, 10, 0.42);
-    transform: translateY(-0.0625rem);
-  }
-
-  .mobile-menu-cta:hover .mobile-menu-cta-arrow {
-    transform: translateX(0.25rem);
-  }
-}
-
-.mobile-menu-cta:active {
-  transform: scale(0.99);
-}
-
-.mobile-menu-cta:focus-visible {
-  outline: 2px solid #ffffff;
-  outline-offset: 0.1875rem;
 }
 
 /* Short screens: tighten the rows so the CTA stays reachable rather than
@@ -467,11 +428,156 @@
    Held back from full strength so it reads as a backdrop to the call to action
    rather than competing with it.
 
-   Only the resting value is set here: the entrance tweens opacity up from 0 to
-   whatever this computes to, so the fade composes with the animation instead of
-   being overwritten by it. Tune this one number to fade it more or less. */
+   Apply opacity to the assembled group, so overlapping individual coins have
+   the same depth as the former collective image. */
 .hero-coin-stage [data-coin-image] {
   opacity: 0.75;
+}
+
+/* Preserve the former 760px, 16:6 wrapper. Its 1928:816 image was centered
+   with object-contain; the percentages below include those transparent margins
+   and the padding inside each extracted asset, rather than enlarging the arc. */
+.crypto-coins-scene {
+  position: relative;
+  isolation: isolate;
+  width: 88%;
+  max-width: 47.5rem;
+  aspect-ratio: 16 / 6;
+  margin-inline: auto;
+}
+
+.crypto-coins-scene[data-ready="false"] {
+  visibility: hidden;
+}
+
+.crypto-coins-scene .coin {
+  position: absolute;
+  height: auto;
+  aspect-ratio: 1;
+  transform-origin: center;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.crypto-coins-scene .bitcoin {
+  width: 22.52%;
+  left: 4.83%;
+  top: 26.84%;
+  z-index: 3;
+  --coin-pose: -8deg;
+}
+
+.crypto-coins-scene .ethereum-left {
+  width: 21.6%;
+  left: 19.16%;
+  top: 9.19%;
+  z-index: 5;
+  --coin-pose: -3deg;
+}
+
+.crypto-coins-scene .solana {
+  width: 19.07%;
+  left: 28.97%;
+  top: 49.36%;
+  aspect-ratio: 1261 / 1247;
+  z-index: 4;
+  --coin-pose: -2deg;
+}
+
+.crypto-coins-scene .tether {
+  width: 23.9%;
+  left: 39.71%;
+  top: 22.55%;
+  z-index: 8;
+  --coin-pose: -5deg;
+}
+
+.crypto-coins-scene .ethereum-right {
+  width: 20.91%;
+  left: 54.21%;
+  top: 10.6%;
+  z-index: 4;
+  --coin-pose: -6deg;
+}
+
+.crypto-coins-scene .xrp {
+  width: 19.99%;
+  left: 62.71%;
+  top: 47.91%;
+  aspect-ratio: 1261 / 1247;
+  z-index: 7;
+  --coin-pose: -1deg;
+}
+
+.crypto-coins-scene .dogecoin {
+  width: 20.45%;
+  left: 74.15%;
+  top: 27.27%;
+  z-index: 3;
+  --coin-pose: -6deg;
+}
+
+/* Separate transform layers keep entrance, floating, cursor depth and an
+   individual coin's interactions from overwriting each other's positions. */
+.coin-layer {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.coin-float {
+  perspective: 60rem;
+}
+
+.coin-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transform: rotate(var(--coin-pose));
+  transform-origin: center;
+  user-select: none;
+}
+
+.coin-glow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  box-shadow: 0 0.25rem 1.125rem rgba(116, 188, 255, 0.24);
+  opacity: 0;
+}
+
+/* Only the round hit area receives pointer events. Transparent image corners
+   therefore cannot block a neighboring coin, and lifting the visual does not
+   move the hover target under a stationary cursor. */
+.coin-hit-target {
+  position: absolute;
+  inset: 6%;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  clip-path: ellipse(50% 50% at 50% 50%);
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.coin-hit-target:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--color-orange);
+}
+
+.coin-hit-target:disabled {
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crypto-coins-scene .coin,
+  .coin-layer {
+    will-change: auto;
+  }
 }
 
 .hero-announcement {
@@ -579,124 +685,136 @@
   }
 }
 
-.hero-cta {
-  width: auto;
-  min-height: 2.875rem;
-  height: auto;
+/* Shared button hierarchy. Page classes handle placement; these variants
+   own appearance and interaction. Regular pills are 48px, compact pills 44px,
+   and long labels can wrap without clipping on narrow screens. */
+.site-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  max-width: 100%;
+  min-height: 3rem;
   padding: 0.625rem 1.25rem;
-  background: linear-gradient(180deg, #ff5700 0%, #ef5200 100%);
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-blue-light);
   font-family: Geist, sans-serif;
   font-size: 0.9375rem;
-  font-style: normal;
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: 1.5rem;
-  box-shadow:
-    0 0.23187rem 0.30312rem 0 #ff580027,
-    0 0.64187rem 0.8375rem 0 #ff580038,
-    0 1.545rem 2.01625rem 0 #ff580030,
-    0 2.625rem 6.6875rem 0 #ff580057,
-    0 0.0625rem 0.25rem 0.125rem #ffeddb inset,
-    0 0.0625rem 1.125rem 0.125rem #ffeddb inset;
-  /* `.cta-hover` look: the same six shadows, brighter and lower. */
-  --cta-glow:
-    0 0.3125rem 0.5rem 0 #ff580033,
-    0 0.875rem 1.25rem 0 #ff580047,
-    0 1.875rem 2.75rem 0 #ff58003d,
-    0 3rem 7.5rem 0 #ff58006e,
-    0 0.0625rem 0.25rem 0.125rem #ffeddb inset,
-    0 0.0625rem 1.125rem 0.125rem #ffeddb inset;
-  --cta-sheen: rgba(255, 237, 219, 0.5);
-}
-
-/* ---------------------------------------------------------------------------
-   `.cta-hover` — the shared hover for pill buttons: the pill lifts, its glow
-   brightens, a sheen sweeps across once and the icon moves forward. The
-   mechanics live here once; each button sets its own look:
-
-   --cta-glow   box-shadow while hovered. Give it as many shadows as the
-                button has at rest, or the change jumps instead of easing
-                (`none` at rest eases into any count).
-   --cta-sheen  colour of the band of light.
-   --cta-icon   transform for the icon while hovered.
---------------------------------------------------------------------------- */
-
-/* Positioned and clipped so the sheen sweeps inside the pill's rounded edge.
-   `overflow` never clips an element's own box-shadow, so the glow is untouched;
-   `isolation` lets the sheen sit above the background but beneath the label.
-   This `transition` replaces Tailwind's colour one from <Button>, so it has to
-   carry the background colour too, or the light pills' hover colour would
-   snap instead of easing. */
-.cta-hover {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  white-space: normal;
+  cursor: pointer;
   transition:
-    box-shadow 200ms ease,
-    transform 200ms ease,
-    background-color 200ms ease;
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease;
 }
 
-/* A soft band of light, parked off the left edge until hover. */
-.cta-hover::after {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(
-    110deg,
-    transparent 30%,
-    var(--cta-sheen, rgba(255, 255, 255, 0.6)) 50%,
-    transparent 70%
-  );
-  content: "";
-  pointer-events: none;
-  transform: translateX(-110%);
+.site-button--sm {
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
 }
 
-.cta-hover > :is(svg, img) {
+.site-button--lg {
+  min-height: 3.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.site-button--primary {
+  background: var(--color-orange);
+  color: #ffffff;
+  box-shadow: 0 0.25rem 0.75rem rgba(239, 121, 20, 0.14);
+}
+
+.site-button--light {
+  border-color: var(--color-blue-light);
+  background: var(--color-blue-light);
+  color: var(--color-blue-darker);
+}
+
+.site-button--secondary {
+  border-color: rgba(232, 235, 238, 0.45);
+  color: var(--color-blue-light);
+}
+
+.site-button--text {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0.25rem;
+  color: var(--color-orange);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.1875rem;
+}
+
+.site-button > :is(svg, img) {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  object-fit: contain;
   transition: transform 200ms ease;
 }
 
-/* Real pointers only — on touch, `:hover` latches after a tap and would leave
-   the button lifted. Keyboard focus gets the same treatment. */
+.site-button:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 0.1875rem;
+}
+
+/* Hover effects are limited to devices with a pointer so taps cannot leave
+   a persistent glow or shifted icon on touch screens. */
 @media (hover: hover) {
-  .cta-hover:is(:hover, :focus-visible) {
-    transform: translateY(-0.125rem);
-    box-shadow: var(--cta-glow, none);
+  .site-button--primary:hover {
+    background: var(--color-orange-hover);
+    box-shadow: 0 0.375rem 1rem rgba(239, 121, 20, 0.24);
   }
 
-  /* Sweeps on the way in only. The resting rule has no transition, so on the
-     way out the sheen jumps straight back off the left edge — out of sight,
-     since the pill clips it. */
-  .cta-hover:is(:hover, :focus-visible)::after {
-    transform: translateX(110%);
-    transition: transform 750ms cubic-bezier(0.22, 1, 0.36, 1);
+  .site-button--light:hover {
+    border-color: var(--color-blue-light-hover);
+    background: var(--color-blue-light-hover);
   }
 
-  .cta-hover:is(:hover, :focus-visible) > :is(svg, img) {
-    transform: var(--cta-icon, translateX(0.25rem));
+  .site-button--secondary:hover {
+    border-color: rgba(232, 235, 238, 0.75);
+    background: rgba(232, 235, 238, 0.08);
+    color: #ffffff;
+  }
+
+  .site-button--text:hover {
+    color: var(--color-orange-light-active);
+  }
+
+  .site-button:hover > :is(svg, img) {
+    transform: translateX(0.125rem);
   }
 }
 
-/* After the hover block: same specificity, so the press wins while held. */
-.cta-hover:active {
-  transform: translateY(0) scale(0.98);
+.site-button--primary:active {
+  background: var(--color-orange-active);
+  box-shadow: none;
 }
 
-/* The light pills that carry the paper-plane icon — "Find out more", "View all
-   services", the final "Contact us" and the rest. A soft light glow rather than
-   the hero's orange, a bright gloss for the sheen, and the plane takes off —
-   forward, up and nose-up, with a little overshoot. */
-.find-more-cta {
-  --cta-glow: 0 0.75rem 1.75rem rgba(232, 235, 238, 0.22);
-  --cta-sheen: rgba(255, 255, 255, 0.95);
-  --cta-icon: translate(0.25rem, -0.1875rem) rotate(-14deg);
+.site-button--light:active {
+  border-color: var(--color-blue-light-active);
+  background: var(--color-blue-light-active);
 }
 
-.find-more-cta > img {
-  transition-duration: 350ms;
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+.site-button--secondary:active {
+  background: rgba(232, 235, 238, 0.12);
+}
+
+.site-button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 @media (max-width: 767px) {
@@ -744,15 +862,6 @@
 
   .hero-content .mt-10 {
     margin-top: 1.75rem;
-  }
-
-  .hero-cta {
-    width: auto;
-    min-height: 2.75rem;
-    height: auto;
-    padding-inline: 1.125rem;
-    font-size: 0.875rem;
-    line-height: 1.375rem;
   }
 
   .hero-coin-stage {
@@ -1197,30 +1306,8 @@
   transform: scale(1.03);
 }
 
-.services-image-cta {
-  width: 13.9375rem;
-  height: 3.375rem;
-  gap: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 3.75rem;
-  font-family: Geist, sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-}
-
 .services-view-all {
-  width: auto;
   max-width: 100%;
-  min-height: 2.75rem;
-  height: auto;
-  gap: 0.625rem;
-  padding: 0.625rem 1.125rem;
-  border-radius: 3.75rem;
-  color: var(--color-blue-darker);
-  font-family: Geist, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.375rem;
 }
 
 .worried-heading {
@@ -1678,38 +1765,8 @@
   font-size: 0.875rem;
   line-height: 1.6;
 }
-
-/* Light pill, dark label: no orange, no glow. */
 .services-section .services-image-cta {
-  width: auto;
-  min-height: 2.75rem;
-  height: auto;
-  gap: 0.625rem;
   margin-top: 1.25rem;
-  padding: 0.625rem 1.25rem;
-  border: 0;
-  border-radius: 62.4375rem;
-  background: #e8ebee;
-  color: #0b1727;
-  font-family: Geist, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  box-shadow: none;
-  transition: background-color 200ms ease;
-}
-
-.services-image-cta svg {
-  transition: transform 200ms ease;
-}
-
-@media (hover: hover) {
-  .services-section .services-image-cta:hover {
-    background: #ffffff;
-  }
-
-  .services-section .services-image-cta:hover svg {
-    transform: translateX(0.25rem);
-  }
 }
 
 @media (min-width: 1024px) {
@@ -1902,8 +1959,9 @@
   }
 }
 
-.awards-dots {
+.carousel-dots {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 0.125rem;
@@ -1911,7 +1969,7 @@
   margin-top: 1.125rem;
 }
 
-.awards-dot {
+.carousel-dot {
   display: grid;
   width: 1.75rem;
   height: 1.75rem;
@@ -1919,7 +1977,7 @@
   border-radius: 62.4375rem;
 }
 
-.awards-dot::before {
+.carousel-dot::before {
   content: "";
   width: 0.5rem;
   height: 0.5rem;
@@ -1928,12 +1986,12 @@
   transition: width 0.2s, background-color 0.2s;
 }
 
-.awards-dot[aria-current="true"]::before {
+.carousel-dot[aria-current="true"]::before {
   width: 1.375rem;
   background: #ffffff;
 }
 
-.awards-dot:focus-visible {
+.carousel-dot:focus-visible {
   outline: 2px solid var(--color-orange);
   outline-offset: 0.25rem;
 }
@@ -2074,43 +2132,6 @@
   line-height: 1.75rem;
 }
 
-.faq-more-button {
-  width: 11rem;
-  height: 3.875rem;
-  gap: 2rem;
-  padding: 1.0625rem 1rem;
-  border: 1px solid var(--color-blue-light);
-  background: transparent;
-  color: var(--color-blue-light);
-  font-family: Geist, sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.faq-more-button:hover {
-  border-color: var(--color-orange);
-  background: #dce0e6;
-  color: var(--color-blue-darker);
-}
-
-.faq-contact-button {
-  height: 3.875rem;
-  padding: 1.0625rem 1rem;
-  border: 0;
-  border-radius: 3.125rem;
-  background: #dce0e6;
-  color: var(--color-blue-darker);
-  font-family: Geist, sans-serif;
-  font-size: 1.125rem;
-  font-weight: 500;
-  line-height: 1.75rem;
-}
-
-.faq-contact-button:hover {
-  background: #ffffff;
-  color: var(--color-blue-darker);
-}
-
 .faq-question-text {
   color: var(--color-blue-light);
   font-family: Geist, sans-serif;
@@ -2151,31 +2172,6 @@
 .faqs-section--page .faq-intro p {
   max-width: 32.5rem;
   font-weight: 400;
-}
-
-.faqs-section--page .faq-more-button,
-.faqs-section--page .faq-contact-button {
-  text-transform: capitalize;
-}
-
-.faqs-section--page .faq-more-button {
-  width: 10.75rem;
-  height: 3.75rem;
-  border-color: rgba(232, 235, 238, 0.55);
-}
-
-.faqs-section--page .faq-contact-button {
-  height: 3.75rem;
-  padding: 0 1.5rem;
-  background: transparent;
-  color: var(--color-blue-light-active);
-  font-size: 1rem;
-  line-height: 1.5rem;
-}
-
-.faqs-section--page .faq-contact-button:hover {
-  background: transparent;
-  color: #ffffff;
 }
 
 .faqs-section--page .faq-accordion ul,
@@ -2247,53 +2243,6 @@
 .faq-actions {
   margin-top: 1.5rem;
   gap: 1.5rem;
-}
-
-/* Thin outlined pill, hugging its label: no fixed height or width, and the
-   padding is in `em` so the border sits close to the text at any font size. */
-.faq-more-button {
-  width: fit-content;
-  min-width: 0;
-  height: auto;
-  min-height: 0;
-  padding: 0.7em 1.4em;
-  border: 1px solid rgba(232, 235, 238, 0.28);
-  border-radius: 62.4375rem;
-  background: transparent;
-  color: var(--color-blue-light);
-  font-size: 0.8125rem;
-  font-weight: 400;
-  line-height: 1.1;
-  box-shadow: none;
-}
-
-@media (hover: hover) {
-  .faq-more-button:hover {
-    border-color: rgba(232, 235, 238, 0.55);
-    background: transparent;
-    color: #ffffff;
-  }
-}
-
-/* Plain text link: no fill, no border, no pill. */
-.faq-contact-button {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: var(--color-blue-light);
-  font-size: 0.8125rem;
-  font-weight: 400;
-  box-shadow: none;
-}
-
-@media (hover: hover) {
-  .faq-contact-button:hover {
-    background: transparent;
-    color: #ffffff;
-    text-decoration: underline;
-    text-underline-offset: 0.25rem;
-  }
 }
 
 /* Separators: hairline and low contrast. */
@@ -2416,90 +2365,16 @@
   line-height: 1.2;
 }
 
-.final-cta-button {
-  width: auto;
-  min-height: 2.75rem;
-  height: auto;
-  gap: 0.625rem;
-  padding: 0.625rem 1.125rem;
-  border-radius: 3.75rem;
-  background: #e8ebee;
-  color: var(--color-blue-darker);
-  font-family: Geist, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1.375rem;
-}
-
-.final-cta-button:hover {
-  background: #dce0e6;
-  color: var(--color-blue-darker);
-}
-
-.contact-bubble {
-  /* Sized by its label rather than a fixed width. The root font-size is fluid
-     and reaches 19px on extra-large screens, where "Contact us" no longer fits
-     the 72px content box a hard 120px leaves — so the label wrapped onto two
-     lines. `min-width` keeps the designed size on the screens where it did fit. */
-  width: auto;
-  min-width: 7.5rem;
-  height: 4.25rem;
-  gap: 1rem;
-  padding: 1.5rem;
-  border-radius: 1.25rem;
-  background: #e8ebee;
-  color: var(--color-blue-darker);
-  font-family: Geist, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1.25rem;
-  box-shadow:
-    0 0.375rem 0.75rem #0000001a,
-    0 1.375rem 1.375rem #00000017,
-    0 3.1875rem 1.875rem #0000000d,
-    0 5.625rem 2.25rem #00000003,
-    0 8.75rem 2.4375rem #00000000;
-  transition: background-color 200ms ease, transform 200ms ease;
-}
-
-.contact-bubble-icon {
-  position: absolute;
-  top: -1.3125rem;
-  left: 50%;
-  width: 2.625rem;
-  height: 2.625rem;
-  transform: translateX(-50%);
-}
-
-/* The pill grows to fit, so the label must never break onto a second line. */
 .contact-bubble-label {
   white-space: nowrap;
 }
 
-/* `:hover` can latch on touch (iOS keeps it until the next tap), leaving this
-   fixed element floating 2px off its anchor. Only real pointers get it. */
-@media (hover: hover) {
-  .contact-bubble:hover {
-    background: #dce0e6;
-    transform: translateY(-0.125rem);
-  }
-}
-
-/* Below sm the pill collapses to a round icon-only button; the icon centers
-   instead of poking above the top edge, and the label is dropped. */
+/* The floating contact action uses the same primary pill. Its compact mobile
+   form keeps an accessible label and a 48px touch target. */
 @media (max-width: 640px) {
   .contact-bubble {
-    width: 3.5rem;
-    /* The base `min-width` would otherwise win over this width. */
-    min-width: 0;
-    height: 3.5rem;
+    width: 3rem;
     padding: 0;
-    border-radius: 50%;
-  }
-
-  .contact-bubble-icon {
-    position: static;
-    transform: none;
   }
 
   .contact-bubble-label {
@@ -2705,7 +2580,8 @@
 
 .footer-newsletter-row {
   width: 100%;
-  height: 3.5rem;
+  min-height: 3.75rem;
+  height: auto;
   gap: 5.5rem;
   padding: 0.25rem 0.25rem 0.25rem 1.5rem;
   border: 2px solid #163356;
@@ -2729,7 +2605,7 @@
 
 /* Side by side, the name field only needs room for a first name; the rest
    goes to the email so its placeholder is not cut off. */
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .footer-newsletter-row {
     gap: 2.9375rem;
   }
@@ -2737,31 +2613,6 @@
   .footer-newsletter-input:first-of-type {
     flex: 0 0 5.5rem;
   }
-}
-
-.footer-newsletter-button {
-  width: auto;
-  min-width: 10rem;
-  height: 3rem;
-  padding: 0.625rem 1.25rem;
-  border: 1px solid #dce0e6;
-  border-top-left-radius: 0.625rem;
-  border-top-right-radius: 3.75rem;
-  border-bottom-right-radius: 3.75rem;
-  border-bottom-left-radius: 0.625rem;
-  background: #dce0e6;
-  color: var(--color-blue-darker);
-  font-family: Geist, sans-serif;
-  font-size: 0.9375rem;
-  font-weight: 400;
-  line-height: 1.5rem;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.footer-newsletter-button:hover {
-  background: #e8750a;
-  color: #ffffff;
 }
 
 .footer-oversized-wordmark {
@@ -2817,12 +2668,7 @@
 
   .footer-newsletter-button {
     width: 100%;
-    min-width: 0;
-    min-height: 3rem;
     margin-top: 0.25rem;
-    padding-inline: 1rem;
-    border-radius: 0.75rem;
-    font-size: 0.9375rem;
   }
 
   .footer-oversized-wordmark {
@@ -3005,15 +2851,6 @@
   }
 }
 
-.project-study-button {
-  width: 12.625rem;
-  height: 3.375rem;
-  gap: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 3.75rem;
-  color: var(--color-blue-darker);
-}
-
 @media (max-width: 767px) {
   .projects-heading {
     margin-bottom: 2rem;
@@ -3071,7 +2908,6 @@
 
   .project-study-button {
     width: 100%;
-    max-width: 12.625rem;
     margin-right: auto;
     margin-left: auto;
   }
@@ -3138,13 +2974,7 @@
 }
 
 .projects-section .project-study-button {
-  width: auto;
-  min-height: 2.625rem;
-  height: auto;
-  gap: 0.625rem;
   margin-top: clamp(1.5rem, 2vw, 2rem);
-  padding: 0.5625rem 1.125rem;
-  font-size: 0.8125rem;
 }
 
 @media (min-width: 1024px) {
@@ -3181,12 +3011,96 @@
   }
 }
 
-.testimonials-grid {
-  display: grid;
+.testimonials-carousel {
+  --testimonials-gap: clamp(1rem, 1.5vw, 1.5rem);
+
   width: min(71.5625rem, 100%);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem;
   margin: 0 auto;
+}
+
+.testimonials-track {
+  align-items: stretch;
+  margin-left: calc(-1 * var(--testimonials-gap));
+  padding-block: 0.375rem;
+}
+
+.testimonials-slide {
+  flex-basis: calc((100% - 2 * var(--testimonials-gap)) / 3);
+  padding-left: var(--testimonials-gap);
+}
+
+/* Keep the original compact card proportions, regardless of quote length. */
+.testimonial-card--carousel {
+  height: 27rem;
+}
+
+.testimonial-card--carousel > :not(.testimonial-quote--carousel) {
+  flex-shrink: 0;
+}
+
+.testimonial-card--carousel .testimonial-rating {
+  margin-top: 0.75rem;
+}
+
+.testimonial-screenshot-button {
+  display: block;
+  width: 100%;
+  flex-shrink: 0;
+  cursor: zoom-in;
+}
+
+.testimonial-card--carousel:has(:focus-visible) {
+  background-image: linear-gradient(var(--color-orange), var(--color-orange));
+  outline: 0;
+}
+
+.testimonial-card--carousel:has(:focus-visible)::before {
+  inset: 0.1875rem;
+}
+
+.testimonial-card--carousel .testimonial-image--review {
+  display: block;
+  aspect-ratio: 366 / 200;
+}
+
+.testimonial-card--carousel .testimonial-author {
+  width: 100%;
+  padding-top: 0.75rem;
+}
+
+.testimonial-card--carousel .testimonial-quote--carousel {
+  display: -webkit-box;
+  min-height: 0;
+  margin-top: 0.625rem;
+  overflow: hidden;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.testimonial-read-more {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.testimonial-card--carousel .testimonial-author-text {
+  flex: 1;
+}
+
+.testimonial-card--carousel .testimonial-author-name {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.testimonial-avatar--fiverr {
+  background: linear-gradient(135deg, #ef7914, #7a3c08);
+}
+
+.testimonial-avatar--upwork {
+  background: linear-gradient(135deg, #2563eb, #132a5e);
 }
 
 /* ---------------------------------------------------------------------------
@@ -3361,6 +3275,36 @@
   height: 0.9375rem;
 }
 
+.testimonial-star {
+  position: relative;
+  display: block;
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+
+.testimonial-star-empty {
+  color: rgba(232, 235, 238, 0.25);
+}
+
+.testimonial-star svg {
+  display: block;
+}
+
+.testimonial-star-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.testimonial-rating-value {
+  margin-left: 0.375rem;
+  color: #cbd4df;
+  font-size: 0.8125rem;
+  line-height: 0.9375rem;
+}
+
 .testimonial-quote-mark {
   color: rgba(232, 117, 10, 0.55);
 }
@@ -3447,8 +3391,8 @@
 }
 
 @media (max-width: 1023px) {
-  .testimonials-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .testimonials-slide {
+    flex-basis: calc((100% - var(--testimonials-gap)) / 2);
   }
 }
 
@@ -3465,8 +3409,8 @@
     line-height: 1.5rem;
   }
 
-  .testimonials-grid {
-    grid-template-columns: 1fr;
+  .testimonials-slide {
+    flex-basis: 86%;
   }
 }
 
@@ -3495,6 +3439,34 @@
    `overflow: hidden` here, so nothing can clip a card on its way through. */
 .process-section {
   position: relative;
+}
+
+/* The electric charge running along a connector.
+   Every `drop-shadow` is gone on purpose: a filter on an element that moves each
+   frame forces the browser to re-run it and re-rasterise the region around it,
+   which is what made scrolling stutter. The glow now comes entirely from the
+   radial gradient on the head, so a frame costs one transform and one opacity —
+   compositor work only. */
+.connector-pulse {
+  stroke: #ffd2a1;
+}
+
+.connector-charge,
+.connector-spark {
+  will-change: transform, opacity;
+}
+
+.connector-spark {
+  fill: #ffe6bd;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Decorative motion only; the dotted line alone still reads as the flow. */
+  .connector-pulse,
+  .connector-charge,
+  .connector-spark {
+    display: none;
+  }
 }
 
 .process-card {
@@ -3797,21 +3769,7 @@
 
 .contact-submit {
   width: 100%;
-  height: 3rem;
   margin-top: 0.25rem;
-  border-radius: 0.5rem;
-  background: #e8ebee;
-  color: var(--color-blue-darker);
-  font-family: Geist, sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.5rem;
-  cursor: pointer;
-  transition: background-color 200ms ease;
-}
-
-.contact-submit:hover {
-  background: #ffffff;
 }
 
 .contact-schedule {
@@ -3884,33 +3842,13 @@
 }
 
 .contact-meet-button {
-  display: inline-flex;
-  width: 14.375rem;
   max-width: 100%;
-  height: 3rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
   margin-top: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 0.5rem;
-  background: rgba(20, 30, 58, 0.55);
-  color: var(--color-blue-light);
-  font-family: Geist, sans-serif;
-  font-size: 1.125rem;
-  font-weight: 600;
-  line-height: 1.625rem;
-  transition: background-color 200ms ease, border-color 200ms ease;
-}
-
-.contact-meet-button:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(30, 44, 84, 0.7);
 }
 
 .contact-meet-button svg {
   width: auto;
-  height: 1.375rem;
+  height: 1.125rem;
 }
 
 .contact-meet-card {
@@ -4103,38 +4041,13 @@
 }
 
 .page-hero-button {
-  height: 3.375rem;
-  gap: 1.5rem;
   margin-top: 2.625rem;
-  padding: 0 1.5rem;
-  background: var(--color-blue-light);
-  font-family: Geist, sans-serif;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-
-.page-hero-button:hover {
-  background: var(--color-blue-light-hover);
 }
 
 /* Case studies: outlined button sitting closer to the copy, and the list
    below starting sooner. */
 .page-hero--compact {
   padding-bottom: 3.1875rem;
-}
-
-.page-hero-button--outline {
-  height: 3.5rem;
-  margin-top: 1.5rem;
-  border: 1px solid #ffffff;
-  background: transparent;
-  color: #ffffff;
-}
-
-.page-hero-button--outline:hover {
-  border-color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
 }
 
 @media (max-width: 1023px) {
@@ -4174,10 +4087,7 @@
   }
 
   .page-hero-button {
-    height: 3rem;
-    gap: 0.75rem;
     margin-top: 2rem;
-    font-size: 1rem;
   }
 }
 
@@ -4318,8 +4228,6 @@
 }
 
 .service-detail-aside .services-image-cta {
-  width: auto;
-  gap: 1rem;
   margin-top: 2.5rem;
 }
 
@@ -4524,12 +4432,7 @@
 }
 
 .service-detail--list .service-detail-aside .services-image-cta {
-  min-height: 2.625rem;
-  height: auto;
-  gap: 0.625rem;
   margin-top: 1rem;
-  padding: 0.5625rem 1rem;
-  font-size: 0.8125rem;
 }
 
 @media (max-width: 1023px) {
@@ -4681,12 +4584,7 @@
 }
 
 .service-detail--single .service-detail-aside .services-image-cta {
-  min-height: 2.625rem;
-  height: auto;
-  gap: 0.625rem;
   margin-top: 1rem;
-  padding: 0.5625rem 1rem;
-  font-size: 0.8125rem;
 }
 
 @media (max-width: 1023px) {
@@ -5236,16 +5134,7 @@
 }
 
 .blog-page-hero .page-hero-button {
-  height: 2.75rem;
-  gap: 0.625rem;
   margin-top: 1.375rem;
-  padding: 0 1.125rem;
-  font-size: 0.875rem;
-}
-
-.blog-page-hero .page-hero-button img {
-  width: 1.125rem;
-  height: 1.125rem;
 }
 
 .blog-feature-card {
@@ -5910,23 +5799,7 @@
 }
 
 .case-row-button {
-  height: 3.375rem;
-  gap: 1.5rem;
   margin-top: 1.5rem;
-  padding: 0 1.5rem;
-  /* Orange rather than the light pill: on this page the copy around the button
-     is white, so a white button had nothing to stand against. The label and the
-     icon keep the dark navy the `light` variant gives them, so the two stay in
-     step — the same orange-on-navy pairing the process cards use. */
-  background: var(--color-orange);
-  font-family: Geist, sans-serif;
-  font-size: 1.125rem;
-  font-weight: 400;
-  line-height: 1.75rem;
-}
-
-.case-row-button:hover {
-  background: var(--color-orange-hover);
 }
 
 .case-row-visual {
@@ -6012,12 +5885,6 @@
     line-height: 1.25rem;
   }
 
-  .case-row-button {
-    height: 3rem;
-    gap: 0.75rem;
-    font-size: 1rem;
-  }
-
   .case-row-visual {
     border-radius: 1rem;
   }
@@ -6050,10 +5917,7 @@
 }
 
 .page-hero--compact .page-hero-button {
-  height: 2.75rem;
   margin-top: 1.375rem;
-  padding: 0 1.125rem;
-  font-size: 0.875rem;
 }
 
 /* ---------------------------------------------------------------------------
@@ -6269,6 +6133,28 @@
   max-height: calc(100vh - 12rem);
 }
 
+.review-lightbox-content {
+  width: 100%;
+  min-height: 0;
+  max-height: calc(100dvh - 12rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.review-lightbox-quote {
+  max-width: 48rem;
+  margin: 1.25rem auto 0;
+  padding: 1.25rem;
+  border: 1px solid rgba(232, 235, 238, 0.16);
+  border-radius: 1rem;
+  background: #0b1a2b;
+  color: #cbd4df;
+  font-family: Geist, sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
 .review-lightbox-image {
   display: block;
   width: 100%;
@@ -6387,12 +6273,7 @@
 }
 
 #case-studies .case-row-button {
-  height: 2.5rem;
-  gap: 0.625rem;
   margin-top: 1.125rem;
-  padding: 0 1.125rem;
-  font-size: 0.8125rem;
-  line-height: 1.25rem;
 }
 
 #case-studies .case-row-visual {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FooterMap } from "@/components/motion/footer-map";
 import { Parallax } from "@/components/motion/parallax";
 import { Reveal } from "@/components/motion/reveal";
+import { Button } from "@/components/ui/button";
 import { SocialIcon } from "@/components/ui/social-icons";
 import { Container } from "@/components/ui/section";
 import { Wordmark } from "@/components/ui/wordmark";
@@ -42,7 +43,7 @@ export function SiteFooter() {
           </ul>
 
           <form className="footer-newsletter mt-6 w-full">
-            <div className="footer-newsletter-row flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="footer-newsletter-row flex flex-col gap-2 md:flex-row md:items-center">
               <label htmlFor="footer-name" className="sr-only">
                 {footer.newsletter.name.label}
               </label>
@@ -56,7 +57,7 @@ export function SiteFooter() {
 
               <span
                 aria-hidden
-                className="footer-newsletter-divider hidden h-6 w-px shrink-0 sm:block"
+                className="footer-newsletter-divider hidden h-6 w-px shrink-0 md:block"
               />
 
               <label htmlFor="footer-email" className="sr-only">
@@ -71,12 +72,13 @@ export function SiteFooter() {
                 className="footer-newsletter-input h-11 min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-blue-light-active/70 focus:outline-none"
               />
 
-              <button
+              <Button
                 type="submit"
-                className="footer-newsletter-button shrink-0 transition-colors"
+                variant="primary"
+                className="footer-newsletter-button shrink-0"
               >
                 {footer.newsletter.button}
-              </button>
+              </Button>
             </div>
           </form>
         </div>

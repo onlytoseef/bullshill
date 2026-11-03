@@ -61,7 +61,11 @@ export function CaseStudyRow({ study, cta }: Props) {
           ))}
         </ul>
 
-        <Button href={cta.href} variant="light" className="case-row-button cta-hover find-more-cta">
+        <Button
+          href={cta.href}
+          variant="light"
+          className="case-row-button"
+        >
           {cta.label}
           <Image src={findMoreIcon} alt="" width={18} height={18} />
         </Button>

@@ -42,8 +42,7 @@ export function Hero() {
           <Reveal trigger="mount" delay={0.7} className="mt-10">
             <Button
               href={hero.cta.href}
-              size="lg"
-              className="hero-cta max-w-full rounded-full border"
+              variant="primary"
             >
               {hero.cta.label}
               <ArrowIcon />
