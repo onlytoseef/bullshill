@@ -15,19 +15,16 @@ const DPR_CAP = 2;
 /**
  * Squares sit on a fixed lattice, but a noise field decides which slots hold
  * one at all. That is what keeps it clustered and organic instead of reading as
- * uniform dotted wallpaper: the pitch is fine enough that the clusters look
- * dense, while the gaps between them stay genuinely empty.
+ * uniform dotted wallpaper. Wider spacing keeps the clusters light and leaves
+ * more empty space between the moving granules.
  *
  * The noise is indexed on normalized slot coordinates, not pixels, so pitch and
  * square size can be retuned here without disturbing the cluster pattern.
  */
-const GRID_PITCH = 10;
-const MAX_POINTS = 26000;
-/**
- * Pitch sits mid-range of the reference's, with the squares a step larger than
- * its dots. At this pair the field covers about the same area as before, so the
- * granules read chunkier without the field getting busier.
- */
+/** About 60% fewer slots than the original 10px grid. */
+const GRID_PITCH = 16;
+const MAX_POINTS = 10000;
+/** Keep individual granules the same size while reducing their number. */
 const SQUARE_MIN = 4;
 const SQUARE_MAX = 5.5;
 const ALPHA_MIN = 0.4;
@@ -70,8 +67,8 @@ const POINTER_LERP = 0.12;
 /** Where the cursor parks when it leaves the hero, i.e. far enough to be inert. */
 const POINTER_PARKED = 1e5;
 
-/** Ambient wander, in CSS pixels — small against the pitch, so rows breathe. */
-const SWAY = 1.6;
+/** Visible idle movement, in CSS pixels, independent of the cursor. */
+const SWAY = 11;
 
 const VERTEX = /* glsl */ `
   attribute float aSize;
@@ -142,8 +139,8 @@ const VERTEX = /* glsl */ `
       slot.y * ${NOISE_VERTICAL.toFixed(3)}
     );
     np.x += aPhase * ${NOISE_JITTER.toFixed(3)};
-    // Slow flow, so the clusters drift without ever looking animated.
-    np += vec2(uTime * 0.014, uTime * -0.009);
+    // The clusters flow continuously, even with the pointer parked off screen.
+    np += vec2(uTime * 0.035, uTime * -0.024);
 
     float cx = clamp(abs(slot.x - 0.5) * 2.0, 0.0, 1.0);
     float down = clamp(slot.y, 0.0, 1.0);
@@ -172,9 +169,11 @@ const VERTEX = /* glsl */ `
     // --- motion ------------------------------------------------------------
     vec2 p = base;
 
-    // Continuous ambient wander: two slow, out-of-step waves per square.
-    p.x += sin(uTime * 0.27 + aPhase * TAU) * uSway;
-    p.y += cos(uTime * 0.21 + aPhase * TAU) * uSway;
+    // Continuous floating: each square follows its own phase, with nearer
+    // granules moving further. This runs without any pointer interaction.
+    float wander = uSway * (0.5 + aDepth * 0.5);
+    p.x += sin(uTime * 0.85 + aPhase * TAU) * wander;
+    p.y += cos(uTime * 0.68 + aPhase * TAU * 1.3) * wander;
 
     // Depth parallax — squares nearer the viewer travel further with the cursor.
     p += uParallax * aDepth;
@@ -221,16 +220,17 @@ const FRAGMENT = /* glsl */ `
 `;
 
 /**
- * The hero's granule field: a dense lattice of very small squares.
+ * The hero's granule field: a light lattice of floating squares.
  *
  * Density is weighted by height — every slot is filled along the top, half of
  * them at the base — and the shader fades the survivors on the same curve, over
  * slow interference bands that give the field its clusters and waves. The middle
  * is held back so the headline keeps its contrast.
  *
- * The cursor only scatters, and the offset is derived from its live position
- * inside the shader, so squares drift back on their own as it moves away: there
- * is no per-square state, and the per-frame cost is two uniforms.
+ * Granules float continuously and the clusters flow with time. The cursor adds
+ * scatter and depth parallax on top, then releases them back to their ongoing
+ * floating motion when it leaves. Motion stays in the shader without per-square
+ * JavaScript updates.
  *
  * It degrades safely — no WebGL, a thrown context, or `prefers-reduced-motion`
  * all leave a single still frame — and the loop is paused while the hero is off

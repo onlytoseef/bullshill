@@ -1,12 +1,13 @@
 "use client";
 
 import { useLenis } from "lenis/react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useIsPresent, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-import { ArrowIcon } from "@/components/ui/icons";
+import { Button } from "@/components/ui/button";
+import { ArrowIcon, ChatIcon } from "@/components/ui/icons";
 import { nav, site } from "@/lib/content";
 import logo from "../../app/assets/images/logo.webp";
 
@@ -30,9 +31,11 @@ const LINKS = [...nav.left, ...nav.right];
  * navigation is duplicated here.
  */
 export function MobileMenu({ onClose }: { onClose: () => void }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const lenis = useLenis();
   const reduce = useReducedMotion();
+  const present = useIsPresent();
 
   // Delay + duration, collapsed under reduced motion so the stagger and the
   // travel are gone and only a quick fade remains.
@@ -45,40 +48,88 @@ export function MobileMenu({ onClose }: { onClose: () => void }) {
 
   // Lock the page behind the menu, and hand focus back to the trigger on close.
   useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog || !present) return;
+
     const previousOverflow = document.body.style.overflow;
+    const wasStopped = lenis?.isStopped;
     document.body.style.overflow = "hidden";
     lenis?.stop();
+
+    // The overlay is nested in the header. Isolate siblings at each level
+    // rather than making the whole header (and therefore the menu) inert.
+    const background = new Map<HTMLElement, boolean>();
+    let branch: HTMLElement = dialog;
+    while (branch.parentElement) {
+      for (const sibling of branch.parentElement.children) {
+        if (sibling !== branch && sibling instanceof HTMLElement) {
+          background.set(sibling, sibling.inert);
+          sibling.inert = true;
+        }
+      }
+      if (branch.parentElement === document.body) break;
+      branch = branch.parentElement;
+    }
 
     const trigger = document.querySelector<HTMLElement>(
       '[aria-controls="mobile-menu"]',
     );
-    closeRef.current?.focus();
+    closeRef.current?.focus({ preventScroll: true });
 
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      lenis?.start();
-      trigger?.focus();
-    };
-  }, [lenis]);
+    const focusable = () =>
+      Array.from(dialog.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )).filter((element) => element.getClientRects().length > 0);
 
-  // Escape closes, as with any dialog.
-  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
         onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const elements = focusable();
+      const first = elements[0] ?? dialog;
+      const last = elements.at(-1) ?? dialog;
+      const outside = !dialog.contains(document.activeElement);
+      if (event.shiftKey && (document.activeElement === first || outside)) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!event.shiftKey && (document.activeElement === last || outside)) {
+        event.preventDefault();
+        first.focus({ preventScroll: true });
       }
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
+    const onFocus = (event: FocusEvent) => {
+      if (event.target instanceof Node && !dialog.contains(event.target)) {
+        (focusable()[0] ?? dialog).focus({ preventScroll: true });
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("focusin", onFocus);
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("focusin", onFocus);
+      background.forEach((inert, element) => { element.inert = inert; });
+      document.body.style.overflow = previousOverflow;
+      if (!wasStopped) lenis?.start();
+      const focusTarget = trigger?.getClientRects().length
+        ? trigger
+        : document.querySelector<HTMLElement>('header a[aria-label="Bullshill home"]');
+      focusTarget?.focus({ preventScroll: true });
+    };
+  }, [lenis, onClose, present]);
 
   return (
     <motion.div
+      ref={dialogRef}
       id="mobile-menu"
       role="dialog"
       aria-modal="true"
       aria-label="Main menu"
+      tabIndex={-1}
       className="mobile-menu lg:hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: timing(0, 0.22) }}
@@ -86,6 +137,7 @@ export function MobileMenu({ onClose }: { onClose: () => void }) {
     >
       <motion.div
         className="mobile-menu-panel"
+        data-lenis-prevent
         initial={{ y: reduce ? 0 : "100%" }}
         animate={{ y: 0, transition: timing(0, 0.55) }}
         exit={{ y: reduce ? 0 : "100%", transition: timing(0, 0.34) }}
@@ -206,27 +258,16 @@ export function MobileMenu({ onClose }: { onClose: () => void }) {
             }}
             exit={{ opacity: 0, transition: timing(0, 0.18) }}
           >
-            <Link
+            <Button
               href={nav.cta.href}
+              variant="primary"
               onClick={onClose}
               className="mobile-menu-cta"
             >
-              <svg
-                aria-hidden
-                viewBox="0 0 20 20"
-                fill="none"
-                className="size-5 shrink-0"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 12.4A2.6 2.6 0 0 1 14.4 15H8.4L4 17.6V6.6A2.6 2.6 0 0 1 6.6 4h7.8A2.6 2.6 0 0 1 17 6.6z" />
-                <path d="M7.4 8h5.2M7.4 10.6h3.2" />
-              </svg>
+              <ChatIcon />
               {nav.cta.label}
-              <ArrowIcon className="mobile-menu-cta-arrow size-4" />
-            </Link>
+              <ArrowIcon />
+            </Button>
           </motion.div>
         </div>
       </motion.div>

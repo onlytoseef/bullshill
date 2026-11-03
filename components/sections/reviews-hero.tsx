@@ -100,8 +100,8 @@ export function ReviewsHero() {
 
           <Button
             href={reviewsPage.cta.href}
-            variant="secondary"
-            className="page-hero-button page-hero-button--outline"
+            variant="primary"
+            className="page-hero-button"
           >
             {reviewsPage.cta.label}
           </Button>

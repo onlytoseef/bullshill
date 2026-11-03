@@ -3,29 +3,8 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "secondary" | "ghost" | "inverse" | "light";
+type Variant = "primary" | "secondary" | "light" | "text";
 type Size = "sm" | "md" | "lg";
-
-const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-medium " +
-  "whitespace-nowrap transition-colors duration-200 " +
-  "disabled:pointer-events-none disabled:opacity-50";
-
-const variants: Record<Variant, string> = {
-  primary: "bg-orange text-white hover:bg-orange-hover active:bg-orange-active",
-  secondary:
-    "border border-surface-border text-blue-light hover:border-orange hover:text-orange",
-  ghost: "text-blue-light-active hover:text-white",
-  inverse: "bg-blue-darker text-white hover:bg-blue-dark",
-  light: "bg-white text-blue-darker hover:bg-blue-light",
-};
-
-const sizes: Record<Size, string> = {
-  // 40px minimum: below that a button is awkward to hit on a phone.
-  sm: "h-10 px-4 text-sm",
-  md: "h-11 px-6 text-sm",
-  lg: "h-14 px-8 text-base",
-};
 
 type BaseProps = {
   children: ReactNode;
@@ -51,7 +30,12 @@ export function Button({
   className,
   ...props
 }: ButtonProps) {
-  const classes = cn(base, variants[variant], sizes[size], className);
+  const classes = cn(
+    "site-button",
+    `site-button--${variant}`,
+    `site-button--${size}`,
+    className,
+  );
 
   if ("href" in props && props.href !== undefined) {
     const { href, ...rest } = props as ButtonAsLink;

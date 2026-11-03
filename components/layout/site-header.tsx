@@ -9,13 +9,13 @@ import {
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { ChatIcon } from "@/components/ui/icons";
 import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import logo from "../../app/assets/images/logo.webp";
-import headerContactIcon from "../../app/assets/contact -us/header-contact-icon.svg";
 
 const loadMobileMenu = () => import("./mobile-menu");
 
@@ -38,7 +38,16 @@ export function SiteHeader() {
 
   useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 24));
 
-  const close = () => setMenuOpen(false);
+  const close = useCallback(() => setMenuOpen(false), []);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => {
+      if (desktop.matches) close();
+    };
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, [close]);
 
   return (
     <header className="site-header sticky top-0 z-50 mx-auto w-[calc(100%-2rem)] max-w-[71.25rem] pt-5 md:w-[calc(100%-3.5rem)]">
@@ -91,12 +100,12 @@ export function SiteHeader() {
           </ul>
           <Button
             href={nav.cta.href}
-            variant="inverse"
+            variant="primary"
             size="sm"
             className="nav-contact-button"
           >
             {nav.cta.label}
-            <Image src={headerContactIcon} alt="" width={18} height={18} />
+            <ChatIcon />
           </Button>
         </div>
 

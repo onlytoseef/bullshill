@@ -35,7 +35,11 @@ export function SplitHeadline({ lines, className }: Props) {
   useGSAP(
     () => {
       const el = ref.current;
-      if (!el || !ready) return;
+      if (!el) return;
+      if (!ready) {
+        gsap.set(el, { opacity: 0 });
+        return;
+      }
 
       const mm = gsap.matchMedia();
 
@@ -87,7 +91,7 @@ export function SplitHeadline({ lines, className }: Props) {
 
       return () => mm.revert();
     },
-    { scope: ref, dependencies: [ready] },
+    { scope: ref, dependencies: [ready], revertOnUpdate: true },
   );
 
   /** Read out as one sentence, rather than as a pile of word fragments. */

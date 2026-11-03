@@ -30,8 +30,8 @@ export function CaseStudiesList() {
         <Reveal className="mt-10 flex justify-center">
           <Button
             href={caseStudiesPage.moreCta.href}
-            variant="light"
-            className="case-row-button case-rows-more cta-hover find-more-cta"
+            variant="primary"
+            className="case-row-button"
           >
             {caseStudiesPage.moreCta.label}
             <Image src={findMoreIcon} alt="" width={18} height={18} />

@@ -1,24 +1,12 @@
 "use client";
 
 /**
- * A one-way latch the page loader opens when its panels start retracting.
+ * The page loader holds entrances until its cover has cleared. It closes the
+ * gate again on client navigation, so returning to the hero also waits for
+ * that transition rather than playing underneath it.
  *
- * Without it every mount-triggered hero animation plays behind the loader and
- * nobody sees it: the panels only begin moving at 1720ms (1500ms `is-exiting`
- * plus the 220ms transition delay in `globals.css`), while the headline, coin
- * arc, subcopy and CTA are all finished by ~1300ms.
- *
- * Why a module-level latch rather than a delay prop on each animation: the
- * loader lives in the root layout, so it mounts once per *hard* load and not on
- * client navigations. A hardcoded delay would make the hero sit still for ~1.9s
- * after navigating from /contact back to /, waiting for a loader that isn't
- * there. Module state survives client navigation, so the latch stays open and
- * those visits animate immediately.
- *
- * SSR note: this module is evaluated on the server too (Client Components still
- * server-render), and module state there is shared across requests. Safe here
- * because `released` is only ever flipped from a timer, and timers don't run
- * during SSR — the server always reports a closed latch.
+ * Browser effects and click handlers are the only callers that change this
+ * state; the server snapshot always stays closed for hydration.
  */
 
 /**
@@ -31,12 +19,18 @@ export const INTRO_FAILSAFE_MS = 4000;
 let released = false;
 const waiters = new Set<() => void>();
 
+export function holdIntro() {
+  if (!released) return;
+  released = false;
+  for (const notify of waiters) notify();
+}
+
 export function releaseIntro() {
   if (released) return;
   released = true;
   for (const notify of waiters) notify();
-  // Terminal state — nothing will fire again, so drop the references.
-  waiters.clear();
+  // Keep subscriptions alive for the next route transition. Each consumer
+  // removes its own subscription when it unmounts.
 }
 
 export function isIntroReleased() {

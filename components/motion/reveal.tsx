@@ -26,9 +26,8 @@ type InnerProps = Omit<RevealProps, "trigger">;
  * Waits for the page loader before playing the first time, then replays like
  * any other entrance whenever it comes back into view.
  *
- * The loader lives in the root layout, so a hard load of *any* page covers the
- * viewport until ~1.7s — long enough for an ungated mount animation to finish
- * before anyone could see it.
+ * The gate closes on each route transition as well as the first load, so
+ * returning to a page does not spend its entrance behind the cover.
  */
 function RevealOnMount({
   children,
@@ -48,8 +47,8 @@ function RevealOnMount({
       ref={ref}
       className={className}
       initial={hidden}
-      animate={visible ? SHOWN : hidden}
-      transition={{ duration, delay, ease: EASE_OUT }}
+      animate={ready && visible ? SHOWN : hidden}
+      transition={{ duration: ready ? duration : 0, delay: ready ? delay : 0, ease: EASE_OUT }}
     >
       {children}
     </motion.div>

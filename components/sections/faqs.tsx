@@ -37,11 +37,6 @@ export function Faqs({ variant = "home" }: Props) {
                   href={cta.href}
                   variant={cta.variant}
                   size="md"
-                  className={
-                    cta.label === "More questions"
-                      ? "faq-more-button"
-                      : "faq-contact-button"
-                  }
                 >
                   {cta.label}
                 </Button>

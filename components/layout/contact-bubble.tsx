@@ -1,22 +1,16 @@
-import Link from "next/link";
-import Image from "next/image";
-
-import contactIcon from "../../app/assets/contact -us/contact-icon.svg";
+import { Button } from "@/components/ui/button";
+import { ChatIcon } from "@/components/ui/icons";
 
 export function ContactBubble() {
   return (
-    <Link
+    <Button
       href="/#contact"
-      className="contact-bubble fixed right-5 bottom-5 z-40 flex items-center justify-center"
+      variant="primary"
+      aria-label="Contact us"
+      className="contact-bubble fixed right-5 bottom-5 z-40"
     >
-      <Image
-        src={contactIcon}
-        alt="Contact us"
-        width={42}
-        height={42}
-        className="contact-bubble-icon"
-      />
+      <ChatIcon />
       <span className="contact-bubble-label">Contact us</span>
-    </Link>
+    </Button>
   );
 }

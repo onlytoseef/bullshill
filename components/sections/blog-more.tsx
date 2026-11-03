@@ -85,8 +85,8 @@ export function BlogMore({ title, cta, filters, posts }: Props) {
         <Reveal className="mt-14 flex justify-center">
           <Button
             href={cta.href}
-            variant="light"
-            className="case-row-button cta-hover find-more-cta"
+            variant="primary"
+            className="case-row-button"
           >
             {cta.label}
             <Image src={findMoreIcon} alt="" width={24} height={24} />

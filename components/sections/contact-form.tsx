@@ -2,6 +2,7 @@
 
 import type { FormEvent } from "react";
 
+import { Button } from "@/components/ui/button";
 import { contactPage } from "@/lib/content";
 
 export function ContactForm() {
@@ -33,9 +34,9 @@ export function ContactForm() {
         />
       </label>
 
-      <button type="submit" className="contact-submit">
+      <Button type="submit" variant="primary" className="contact-submit">
         {contactPage.submit}
-      </button>
+      </Button>
     </form>
   );
 }

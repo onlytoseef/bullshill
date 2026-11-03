@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/motion/reveal";
+import { Button } from "@/components/ui/button";
 import { GoogleMeetIcon } from "@/components/ui/google-meet-icon";
 import { Container } from "@/components/ui/section";
 import { contactPage } from "@/lib/content";
@@ -17,15 +18,16 @@ export function ContactSchedule() {
         <div className="contact-schedule-row">
           <Reveal x={-24} y={0} className="contact-schedule-copy">
             <h3>{schedule.label}</h3>
-            <a
+            <Button
               href={schedule.href}
+              variant="primary"
               target="_blank"
               rel="noopener noreferrer"
               className="contact-meet-button"
             >
               <GoogleMeetIcon className="h-7 w-auto" />
               {schedule.button}
-            </a>
+            </Button>
             <p>{schedule.note}</p>
           </Reveal>
 

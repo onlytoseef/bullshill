@@ -35,9 +35,8 @@ export function FinalCta({ variant = "home" }: Props) {
             </h2>
             <Button
               href={finalCta.cta.href}
-              variant="light"
-              size="lg"
-              className="final-cta-button relative mt-6"
+              variant="primary"
+              className="relative mt-6"
             >
               {finalCta.cta.label}
               <Image src={findMoreIcon} alt="" width={24} height={24} />

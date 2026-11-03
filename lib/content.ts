@@ -233,7 +233,7 @@ export const testimonials = {
   eyebrow: "Testimonials",
   title: "What Our Clients Say About Us",
   subtitle:
-    "Real stories from real clients. See why 250+ brands trust NinjaPromo to move their KPIs.",
+    "Real feedback from our clients on Fiverr and Upwork, in their own words.",
   items: [
     {
       quote:
@@ -674,8 +674,8 @@ export const faqs = {
   title: "Digital Marketing FAQs",
   body: "As a leading digital marketing agency, we are dedicated to providing comprehensive educational resources and answering frequently asked questions to help our clients.",
   ctas: [
-    { label: "More questions", href: "#contact", variant: "primary" },
-    { label: "Contact us", href: "#contact", variant: "secondary" },
+    { label: "More questions", href: "#contact", variant: "secondary" },
+    { label: "Contact us", href: "#contact", variant: "primary" },
   ],
   items: [
     {

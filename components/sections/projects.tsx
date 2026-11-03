@@ -215,8 +215,7 @@ export function Projects() {
               <Button
                 href={`/case-studies/${current.slug}`}
                 variant="light"
-                size="sm"
-                className="project-study-button cta-hover find-more-cta mt-8"
+                className="project-study-button mt-8"
               >
                 Study More
                 <Image src={findMoreIcon} alt="" width={20} height={20} />
