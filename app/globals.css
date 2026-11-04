@@ -530,6 +530,19 @@
   perspective: 60rem;
 }
 
+.coin-spin,
+.coin-spin > [data-coin-visual] {
+  transform-style: preserve-3d;
+}
+
+/* Hide the prepared entrance before hydration as well as while waiting for
+   the first downward scroll. Absolute placement keeps the scene box fixed. */
+@media (prefers-reduced-motion: no-preference) {
+  .crypto-coins-scene:not([data-motion]) .coin {
+    opacity: 0;
+  }
+}
+
 .coin-image {
   position: absolute;
   inset: 0;
@@ -539,6 +552,11 @@
   transform: rotate(var(--coin-pose));
   transform-origin: center;
   user-select: none;
+  backface-visibility: hidden;
+}
+
+.coin-image--reverse {
+  transform: rotateY(180deg) rotate(var(--coin-pose));
 }
 
 .coin-glow {

@@ -24,6 +24,7 @@ const COINS = [
 
 export function CoinArc() {
   const container = useRef<HTMLDivElement>(null);
+  const entered = useRef(false);
   const ready = useIntroReady();
 
   useGSAP(
@@ -50,6 +51,7 @@ export function CoinArc() {
             return {
               coin,
               root,
+              spin: root.querySelector<HTMLElement>("[data-coin-spin]")!,
               float: root.querySelector<HTMLElement>("[data-coin-float]")!,
               parallax: root.querySelector<HTMLElement>("[data-coin-parallax]")!,
               visual: root.querySelector<HTMLElement>("[data-coin-visual]")!,
@@ -66,14 +68,15 @@ export function CoinArc() {
 
           // Reduced motion gets the complete composition immediately, with no
           // entrance, idle motion, parallax, or animated coin controls.
+          stage.dataset.motion = motionOk ? "active" : "reduced";
+          cleanup.push(() => { delete stage.dataset.motion; });
           if (!motionOk) return () => cleanup.forEach((dispose) => dispose());
 
-          let assembled = false;
+          let assembled = entered.current;
           let onScreen = false;
           const travel = Math.min(1, stage.clientWidth / 760) * (compact ? 0.55 : 1);
           const idle = layers.map(({ coin, float }) => gsap.to(float, {
-            y: coin.float * (compact ? 0.65 : 1),
-            rotation: coin.tilt,
+            y: coin.float,
             duration: coin.duration,
             ease: "sine.inOut",
             repeat: -1,
@@ -89,11 +92,12 @@ export function CoinArc() {
             },
           });
 
-          for (const { coin, root } of layers) {
+          for (const { coin, root, spin } of layers) {
+            if (assembled) continue;
             entrance.fromTo(root, {
               x: coin.x * travel,
               y: coin.y * travel,
-              rotation: coin.rotation,
+              rotation: coin.rotation * 0.35,
               scale: coin.id === "tether" ? 0.45 : 0.94,
               opacity: 0,
             }, {
@@ -102,14 +106,41 @@ export function CoinArc() {
               rotation: 0,
               scale: 1,
               opacity: 1,
-              duration: 1.1,
-              ease: coin.id === "tether" ? "expo.out" : "power3.out",
+              duration: 1.25,
+              ease: "power3.out",
+            }, coin.delay);
+            entrance.fromTo(spin, {
+              rotationY: coin.id === "tether" ? -1080 : -720,
+            }, {
+              rotationY: 0,
+              duration: 1.25,
+              ease: "power3.out",
+              force3D: true,
             }, coin.delay);
           }
+          if (assembled) layers.forEach(({ button }) => { button.disabled = false; });
+
+          // Read the real scroll offset, never wheel intent or refresh callbacks.
+          // A resize/motion-preference change cannot replay a completed visit.
+          let previousScroll = window.scrollY;
+          const onScroll = () => {
+            const current = window.scrollY;
+            const down = current > previousScroll;
+            previousScroll = current;
+            const hero = stage.closest("section")?.getBoundingClientRect();
+            if (entered.current || !down || document.hidden || !hero ||
+              hero.bottom <= 0 || hero.top >= window.innerHeight) return;
+            entered.current = true;
+            syncPlayback();
+          };
+          window.addEventListener("scroll", onScroll, { passive: true });
+          cleanup.push(() => window.removeEventListener("scroll", onScroll));
 
           function syncPlayback() {
             const active = onScreen && !document.hidden;
-            if (active && !assembled) entrance.play();
+            // Once triggered, entry runs on its own clock even if the user
+            // scrolls beyond the scene. Only a hidden tab pauses assembly.
+            if (entered.current && !assembled && !document.hidden) entrance.play();
             else entrance.pause();
             idle.forEach((animation) => {
               if (active && assembled) animation.play();
@@ -239,6 +270,7 @@ export function CoinArc() {
         <div key={coin.id} className={`coin ${coin.id}`} data-coin={coin.id}>
           <div className="coin-layer" data-coin-parallax>
             <div className="coin-layer coin-float" data-coin-float>
+              <div className="coin-layer coin-spin" data-coin-spin>
               <div className="coin-layer" data-coin-visual>
                 <span aria-hidden className="coin-glow" data-coin-glow />
                 <Image
@@ -249,6 +281,18 @@ export function CoinArc() {
                   className="coin-image"
                   draggable={false}
                 />
+                {/* A separately facing reverse avoids mirrored logos during
+                    the turn; both faces reuse the original cached artwork. */}
+                <Image
+                  src={coin.image}
+                  alt=""
+                  aria-hidden
+                  loading="eager"
+                  sizes="(max-width: 767px) 22vw, (max-width: 1535px) 190px, 225px"
+                  className="coin-image coin-image--reverse"
+                  draggable={false}
+                />
+              </div>
               </div>
               <button type="button" className="coin-hit-target" aria-label={`${coin.label} coin`} />
             </div>
