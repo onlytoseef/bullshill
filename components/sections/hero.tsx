@@ -43,8 +43,9 @@ export function Hero() {
             <Button
               href={hero.cta.href}
               variant="primary"
+              className="hero-cta"
             >
-              {hero.cta.label}
+              <span>{hero.cta.label}</span>
               <ArrowIcon />
             </Button>
           </Reveal>

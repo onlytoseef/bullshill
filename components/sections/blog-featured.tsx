@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Reveal } from "@/components/motion/reveal";
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { Stagger } from "@/components/motion/stagger";
 import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { PostCard } from "@/components/ui/post-card";
@@ -19,7 +20,8 @@ type Props = {
  */
 export function BlogFeatured({ featured, secondary }: Props) {
   return (
-    <section className="blog-featured">
+    <section className="blog-featured has-particles inner-content-grains">
+      <ParticleBackground />
       <Container>
         <Reveal>
           <Link href={`/blog/${featured.slug}`} className="blog-feature-card">

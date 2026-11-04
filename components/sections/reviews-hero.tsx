@@ -1,18 +1,6 @@
-"use client";
-
-import Image from "next/image";
-import { useRef } from "react";
-
-import { Reveal } from "@/components/motion/reveal";
+import { PageHero } from "@/components/sections/page-hero";
 import { Button } from "@/components/ui/button";
-import { CoinCycleIcon } from "@/components/ui/icons";
-import { Container } from "@/components/ui/section";
 import { reviewsPage } from "@/lib/content";
-import { gsap, useGSAP } from "@/lib/gsap";
-import { reviews } from "@/lib/reviews";
-
-/** Three of the real screenshots, used only as out-of-focus scenery. */
-const floats = [reviews[1], reviews[12], reviews[22]] as const;
 
 function Stars() {
   return (
@@ -27,67 +15,8 @@ function Stars() {
 }
 
 export function ReviewsHero() {
-  const root = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      const scope = root.current;
-      if (!scope) return;
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-      // Scenery only: a slow drift that carries the blurred shots up and out of
-      // the way before the wall proper begins.
-      gsap.utils
-        .toArray<HTMLElement>("[data-float-shot]", scope)
-        .forEach((shot, index) => {
-          gsap.to(shot, {
-            yPercent: index % 2 === 0 ? 16 : -16,
-            ease: "none",
-            scrollTrigger: {
-              trigger: scope,
-              start: "top top",
-              end: "bottom top",
-              scrub: true,
-            },
-          });
-        });
-    },
-    { scope: root },
-  );
-
   return (
-    <section ref={root} className="page-hero page-hero--compact reviews-hero">
-      <div aria-hidden className="page-hero-backdrop" />
-
-      <div aria-hidden className="reviews-hero-floats">
-        {floats.map((review, index) => (
-          <span
-            key={review.id}
-            data-float-shot
-            className={`reviews-hero-float reviews-hero-float--${index + 1}`}
-          >
-            <Image
-              src={review.src}
-              alt=""
-              width={review.src.width}
-              height={review.src.height}
-              sizes="40vw"
-            />
-          </span>
-        ))}
-      </div>
-
-      <Container className="relative z-10">
-        <Reveal trigger="mount" className="page-hero-content">
-          <span className="page-hero-eyebrow">
-            <CoinCycleIcon />
-            {reviewsPage.eyebrow}
-          </span>
-
-          <h1 className="text-balance">{reviewsPage.title}</h1>
-
-          <p className="page-hero-subtitle">{reviewsPage.subtitle}</p>
-
+    <PageHero title={reviewsPage.title} eyebrow={reviewsPage.eyebrow} subtitle={reviewsPage.subtitle}>
           <ul className="reviews-trust">
             <li>
               <Stars />
@@ -105,8 +34,6 @@ export function ReviewsHero() {
           >
             {reviewsPage.cta.label}
           </Button>
-        </Reveal>
-      </Container>
-    </section>
+    </PageHero>
   );
 }

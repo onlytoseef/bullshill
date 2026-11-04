@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
-import { Reveal } from "@/components/motion/reveal";
+import { PageHero } from "@/components/sections/page-hero";
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { ArticleToc } from "@/components/ui/article-toc";
 import { Container } from "@/components/ui/section";
 import type { LegalBlock, LegalDocument } from "@/lib/legal";
@@ -65,27 +66,17 @@ export function LegalDoc({ doc }: { doc: LegalDocument }) {
 
   return (
     <>
-      <section className="legal-hero">
-        <div
-          aria-hidden
-          className="page-hero-backdrop page-hero-backdrop--image"
-        />
-
-        <Container className="relative z-10">
-          <Reveal trigger="mount" className="legal-head">
-            <h1>{doc.title}</h1>
+      <PageHero title={doc.title} eyebrow="Legal" subtitle={doc.intro}>
             <p className="legal-meta">
               <time>{doc.date}</time>
               <span aria-hidden>·</span>
               <span className="legal-author">@{doc.author}</span>
             </p>
-            <p className="legal-intro">{doc.intro}</p>
             <p className="legal-note">{withTokens(doc.editorNote)}</p>
-          </Reveal>
-        </Container>
-      </section>
+      </PageHero>
 
-      <section className="legal-body">
+      <section className="legal-body has-particles inner-content-grains">
+        <ParticleBackground />
         <Container>
           <div className="legal-grid">
             <div className="legal-article">

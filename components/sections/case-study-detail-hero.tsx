@@ -1,6 +1,8 @@
 import Image from "next/image";
 
 import { CaseHeroReveal } from "@/components/motion/case-study-reveal";
+import { ParticleBackground } from "@/components/motion/particle-background";
+import { PageHero } from "@/components/sections/page-hero";
 import { Container } from "@/components/ui/section";
 import { caseStudyDetail, type CaseStudy } from "@/lib/content";
 import { caseStudyImages } from "@/components/ui/case-study-row";
@@ -9,12 +11,10 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
   const image = caseStudyImages[study.slug];
 
   return (
-    <section className="case-detail-hero">
-      <div
-        aria-hidden
-        className="page-hero-backdrop page-hero-backdrop--image"
-      />
-
+    <>
+    <PageHero title={study.client} eyebrow="Case study" subtitle={`${study.summaryLead}${study.summaryRest}`} />
+    <section className="inner-page-content case-detail-hero has-particles inner-content-grains">
+      <ParticleBackground />
       <Container className="relative z-10">
         <CaseHeroReveal>
           <div data-case-cover className="case-detail-cover">
@@ -34,12 +34,6 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
           </div>
 
           <div className="case-detail-intro">
-            <h1 data-case-title>{study.client}</h1>
-            <p data-case-summary>
-              <span>{study.summaryLead}</span>
-              {study.summaryRest}
-            </p>
-
             <ul>
               {caseStudyDetail.metrics.map((metric) => {
                 // Split for styling only: the figure is what the landing page's
@@ -58,5 +52,6 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
         </CaseHeroReveal>
       </Container>
     </section>
+    </>
   );
 }

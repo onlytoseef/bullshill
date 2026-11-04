@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/motion/reveal";
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { ArticleToc } from "@/components/ui/article-toc";
 import { ArticleBody } from "@/components/ui/rich-text";
 import { Container } from "@/components/ui/section";
@@ -15,7 +16,8 @@ import type { BlogArticleView } from "@/lib/cms/types";
  */
 export function BlogDetailBody({ article }: { article: BlogArticleView }) {
   return (
-    <section className="blog-detail-body">
+    <section className="blog-detail-body has-particles inner-content-grains">
+      <ParticleBackground />
       <Container>
         <div className="blog-detail-grid">
           <Reveal className="blog-article">

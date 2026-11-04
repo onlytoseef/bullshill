@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { Reveal } from "@/components/motion/reveal";
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { Button } from "@/components/ui/button";
 import { CaseStudyRow } from "@/components/ui/case-study-row";
 import { Container } from "@/components/ui/section";
@@ -11,8 +12,9 @@ export function CaseStudiesList() {
   return (
     <section
       id="case-studies"
-      className="bubble-zone scroll-mt-24 pb-12 sm:pb-16"
+      className="bubble-zone scroll-mt-24 pb-12 sm:pb-16 has-particles inner-content-grains"
     >
+      <ParticleBackground />
       <Container>
         <ul className="case-rows">
           {caseStudiesPage.items.map((study) => (

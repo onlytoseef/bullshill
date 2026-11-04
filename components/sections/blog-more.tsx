@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Reveal } from "@/components/motion/reveal";
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { Stagger } from "@/components/motion/stagger";
 import { Button } from "@/components/ui/button";
 import { PostCard } from "@/components/ui/post-card";
@@ -35,7 +36,8 @@ export function BlogMore({ title, cta, filters, posts }: Props) {
       : posts.filter((post) => post.filters.includes(active));
 
   return (
-    <section id="more-to-read" className="scroll-mt-24 py-12 sm:py-16">
+    <section id="more-to-read" className="scroll-mt-24 py-12 sm:py-16 has-particles inner-content-grains">
+      <ParticleBackground />
       <Container>
         <Reveal className="text-center">
           <h2 className="blog-more-heading text-display-sm font-semibold text-white sm:text-display-md">

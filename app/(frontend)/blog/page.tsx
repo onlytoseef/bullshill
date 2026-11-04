@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ParticleBackground } from "@/components/motion/particle-background";
 
 import { BlogFeatured } from "@/components/sections/blog-featured";
 import { BlogHero } from "@/components/sections/blog-hero";
@@ -36,11 +37,14 @@ export default async function BlogPage() {
     return (
       <>
         <BlogHero />
+        <section className="has-particles inner-content-grains">
+        <ParticleBackground />
         <Container>
           <p className="py-16 text-center text-sm text-blue-light-active">
             No articles published yet — check back soon.
           </p>
         </Container>
+        </section>
         <Partners variant="strip" />
         <FinalCta variant="page" />
       </>

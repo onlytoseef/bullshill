@@ -1,19 +1,16 @@
-import { Reveal } from "@/components/motion/reveal";
+import { PageHero } from "@/components/sections/page-hero";
+import { ParticleBackground } from "@/components/motion/particle-background";
 import { Container } from "@/components/ui/section";
 import { ServiceBlock } from "@/components/ui/service-block";
 import { servicesPage } from "@/lib/content";
 
 export function ServicesList() {
   return (
-    <section className="service-detail service-detail--list">
+    <>
+    <PageHero title={servicesPage.title} eyebrow={servicesPage.eyebrow} />
+    <section className="service-detail service-detail--list has-particles inner-content-grains">
+      <ParticleBackground />
       <Container className="max-w-[75rem]">
-        <Reveal trigger="mount" className="service-detail-grid">
-          <h1 className="service-detail-heading">{servicesPage.title}</h1>
-          <div className="service-detail-eyebrow">
-            <span>{servicesPage.eyebrow}</span>
-          </div>
-        </Reveal>
-
         <ul>
           {servicesPage.items.map((service, index) => (
             <li key={service.slug}>
@@ -28,5 +25,6 @@ export function ServicesList() {
         </ul>
       </Container>
     </section>
+    </>
   );
 }

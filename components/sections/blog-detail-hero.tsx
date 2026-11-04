@@ -1,6 +1,8 @@
 import Image from "next/image";
 
 import { Reveal } from "@/components/motion/reveal";
+import { ParticleBackground } from "@/components/motion/particle-background";
+import { PageHero } from "@/components/sections/page-hero";
 import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { Container } from "@/components/ui/section";
 import { ShareLinksLazy } from "@/components/ui/share-links-lazy";
@@ -20,12 +22,10 @@ const SHARE = {
  */
 export function BlogDetailHero({ article }: { article: BlogArticleView }) {
   return (
-    <section className="blog-detail-hero">
-      <div
-        aria-hidden
-        className="page-hero-backdrop page-hero-backdrop--image"
-      />
-
+    <>
+    <PageHero title={article.title} eyebrow="Blog" />
+    <section className="inner-page-content blog-detail-hero has-particles inner-content-grains">
+      <ParticleBackground />
       <Container className="relative z-10">
         <Reveal trigger="mount" className="blog-detail-grid">
           <div className="blog-detail-cover">
@@ -49,7 +49,6 @@ export function BlogDetailHero({ article }: { article: BlogArticleView }) {
             )}
 
             <div className="blog-detail-cover-body">
-              <h1>{article.title}</h1>
               <p>
                 <time>{article.date}</time>
                 <span aria-hidden>•</span>
@@ -93,5 +92,6 @@ export function BlogDetailHero({ article }: { article: BlogArticleView }) {
         </Reveal>
       </Container>
     </section>
+    </>
   );
 }

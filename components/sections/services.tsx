@@ -1,6 +1,7 @@
 import { Reveal } from "@/components/motion/reveal";
 import { ParticleBackground } from "@/components/motion/particle-background";
 import { ServiceImage } from "@/components/motion/service-image";
+import { ServiceMedia } from "@/components/motion/service-media";
 import { StackingCards } from "@/components/motion/stacking-cards";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -78,7 +79,7 @@ export function Services() {
                       </div>
                     </Reveal>
 
-                    <Reveal x={32} y={0} delay={0.1} className="services-media">
+                    <ServiceMedia>
                       <div className="services-image relative">
                         <ServiceImage>
                           {image ? (
@@ -102,7 +103,7 @@ export function Services() {
                         Find out more
                         <ArrowIcon className="size-4" />
                       </Button>
-                    </Reveal>
+                    </ServiceMedia>
                   </div>
                 </div>
               </li>
