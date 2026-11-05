@@ -5879,6 +5879,67 @@
   line-height: 1.6;
 }
 
+/* Preserve the editor's rich-text semantics after Tailwind's list reset.
+   Keep these rules inside articles so navigation and UI lists are unaffected. */
+.blog-article .payload-richtext {
+  color: #8fa3bd;
+  font-family: Geist, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.blog-article :is(strong, b) {
+  color: var(--color-blue-light);
+  font-weight: 700;
+}
+
+.blog-article :is(em, i) {
+  font-style: italic;
+}
+
+.blog-article :is(ul, ol) {
+  margin-block: 1.25rem;
+  padding-inline-start: 1.5rem;
+  list-style-position: outside;
+}
+
+.blog-article ul {
+  list-style-type: disc;
+}
+
+.blog-article ol {
+  list-style-type: decimal;
+}
+
+.blog-article ul ul {
+  list-style-type: circle;
+}
+
+.blog-article ul ul ul {
+  list-style-type: square;
+}
+
+.blog-article li {
+  padding-inline-start: 0.25rem;
+}
+
+.blog-article li + li {
+  margin-top: 0.5rem;
+}
+
+.blog-article li :is(ul, ol) {
+  margin-block: 0.5rem;
+}
+
+.blog-article li p {
+  margin-top: 0;
+}
+
+.blog-article li p + p {
+  margin-top: 0.5rem;
+}
+
 @media (min-width: 1024px) {
   .blog-detail-grid {
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
