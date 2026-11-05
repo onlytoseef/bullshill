@@ -3638,7 +3638,7 @@
 }
 
 .process-card {
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: 1rem;
   background: #e8750a;
   box-shadow: 0 1rem 2rem rgba(8, 18, 30, 0.24);
@@ -3646,14 +3646,24 @@
 
 .process-card-icon {
   display: grid;
-  width: 1.875rem;
-  height: 1.875rem;
+  width: 1.625rem;
+  height: 1.625rem;
   place-items: center;
   border-radius: 0.375rem;
   background: #08121e;
   color: #e8ebee;
   font-family: Inter, sans-serif;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+}
+
+.process-card h3 {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.process-card p {
+  font-size: 0.8125rem;
+  line-height: 1.5;
 }
 
 /* The connectors are dotted rather than solid, and the dots travel toward the
@@ -3693,17 +3703,17 @@
   }
 
   .process-section .process-item {
-    width: 24.33312rem;
-    height: 16.25688rem;
+    width: 22rem;
+    height: 14.5rem;
   }
 
   .process-section .process-item:nth-child(2),
   .process-section .process-item:nth-child(3) {
-    height: 17.75688rem;
+    height: 16rem;
   }
 
   .process-section .process-item:nth-child(5) {
-    height: 14.75688rem;
+    height: 13.25rem;
   }
 
   .process-section .process-card {
@@ -3753,36 +3763,36 @@
 
   .process-card-icon {
     display: grid;
-    width: 1.875rem;
-    height: 1.875rem;
+    width: 1.625rem;
+    height: 1.625rem;
     place-items: center;
     border-radius: 0.375rem;
     background: #08121e;
     color: #e8ebee;
     font-family: Inter, sans-serif;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
   }
 
   .process-card h3 {
     margin-top: 0.625rem;
     color: #08121e;
     font-family: Geist, sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.3125rem;
     font-style: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 2.25rem;
+    line-height: 1.875rem;
   }
 
   .process-card p {
     margin-top: 0.5rem;
     color: #fff;
     font-family: Geist, sans-serif;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-style: normal;
     font-weight: 500;
     letter-spacing: 0;
-    line-height: 1.5rem;
+    line-height: 1.375rem;
   }
 }
 
