@@ -2,7 +2,6 @@ import Image from "next/image";
 
 import { CaseHeroReveal } from "@/components/motion/case-study-reveal";
 import { ParticleBackground } from "@/components/motion/particle-background";
-import { PageHero } from "@/components/sections/page-hero";
 import { Container } from "@/components/ui/section";
 import { caseStudyDetail, type CaseStudy } from "@/lib/content";
 import { caseStudyImages } from "@/components/ui/case-study-row";
@@ -11,31 +10,30 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
   const image = caseStudyImages[study.slug];
 
   return (
-    <>
-    <PageHero title={study.client} eyebrow="Case study" subtitle={`${study.summaryLead}${study.summaryRest}`} />
     <section className="inner-page-content case-detail-hero has-particles inner-content-grains">
       <ParticleBackground />
       <Container className="relative z-10">
         <CaseHeroReveal>
           <div data-case-cover className="case-detail-cover">
             <div className="case-detail-cover-image">
-              {image ? (
-                <Image
-                  src={image}
-                  alt={study.client}
-                  width={image.width}
-                  height={image.height}
-                  sizes="1140px"
-                  className="block h-auto w-full"
-                  priority
-                />
-              ) : null}
+              <Image
+                src={image}
+                alt={study.client}
+                width={image.width}
+                height={image.height}
+                sizes="1140px"
+                className="block h-auto w-full"
+                priority
+              />
             </div>
           </div>
 
           <div className="case-detail-intro">
+            <span className="case-detail-eyebrow">Case study</span>
+            <h1>{study.detailTitle ?? study.client}</h1>
+            <p>{study.summaryLead}{study.summaryRest}</p>
             <ul>
-              {caseStudyDetail.metrics.map((metric) => {
+              {(study.metrics ?? caseStudyDetail.metrics).map((metric) => {
                 // Split for styling only: the figure is what the landing page's
                 // stats paint in metallic orange. The counter counts this
                 // element (`data-case-figure`), so the label beside it is left
@@ -52,6 +50,5 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
         </CaseHeroReveal>
       </Container>
     </section>
-    </>
   );
 }

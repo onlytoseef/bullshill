@@ -17,6 +17,13 @@ import { cn } from "@/lib/utils";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+/** Landing "Our work" tabs, in order: case-study slug → the short tab label. */
+const LANDING_CASE_STUDIES = new Map<string, string>([
+  ["xera-token-launch-marketing", "XERA"],
+  ["amalas-token-launch-marketing", "AMALAS"],
+  ["avirvox-labs-ai-token-fundraising", "AVX"],
+  ["pcp-memecoin-launch-marketing", "PCP"],
+]);
 
 /**
  * The "Our work" tabs.
@@ -41,7 +48,10 @@ export function Projects() {
   const queued = useRef<number | null>(null);
   const baseId = useId();
   const panelId = `${baseId}-panel`;
-  const current = caseStudiesPage.items[shown];
+  const landingCaseStudies = caseStudiesPage.items.filter((study) =>
+    LANDING_CASE_STUDIES.has(study.slug),
+  );
+  const current = landingCaseStudies[shown];
   const image = caseStudyImages[current.slug];
 
   const { contextSafe } = useGSAP(
@@ -168,7 +178,7 @@ export function Projects() {
             aria-label="Case studies"
             className="project-tabs flex flex-wrap justify-center"
           >
-            {caseStudiesPage.items.map((study, index) => {
+            {landingCaseStudies.map((study, index) => {
               const isSelected = index === selected;
 
               return (
@@ -193,7 +203,9 @@ export function Projects() {
                       className="project-tab-active-fill absolute inset-0 rounded-full"
                     />
                   ) : null}
-                  <span className="relative">{study.slug.toUpperCase()}</span>
+                  <span className="relative">
+                    {LANDING_CASE_STUDIES.get(study.slug)}
+                  </span>
                 </button>
               );
             })}

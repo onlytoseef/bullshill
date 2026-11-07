@@ -108,15 +108,14 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
         "[data-process-card]",
         stageEl,
       );
-      // One charge, one trail, one flash — reused for every connector. The
-      // previous version kept five of each and gave every one a drop-shadow
-      // filter, so fifteen filtered elements repainted on each frame.
+      // One trail and one flash, reused for every connector. The previous
+      // version kept five of each and gave every one a drop-shadow filter, so
+      // ten filtered elements repainted on each frame.
       const trail = svgEl.querySelector<SVGPathElement>("[data-trail]");
-      const charge = svgEl.querySelector<SVGCircleElement>("[data-charge]");
       const spark = svgEl.querySelector<SVGCircleElement>("[data-spark]");
       if (paths.length === 0 || cards.length === 0) return;
 
-      /** The single charge timeline, rebuilt only when the curves move. */
+      /** The single connector timeline, rebuilt only when the curves move. */
       let master: gsap.core.Timeline | null = null;
       let onScreen = false;
 
@@ -142,7 +141,7 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
           type Segment = { d: string; length: number; endX: number; endY: number };
 
           // Measured once per layout change and cached, so nothing recalculates
-          // a path or a box while the charge is moving.
+          // a path or a box while the trail is moving.
           let segments: Segment[] = [];
 
           const layout = () => {
@@ -169,7 +168,7 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
           };
 
           /**
-           * One timeline, one charge, one trail, one flash — reused for all four
+           * One timeline, one trail, one flash — reused for all four
            * connections, in workflow order.
            *
            * Only `transform` (MotionPath) and `opacity` move, `force3D` hands
@@ -214,26 +213,6 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
                   at,
                 );
                 tl.to(trail, { opacity: 0, duration: 0.25 }, at + RUN - 0.25);
-              }
-
-              if (charge) {
-                tl.set(charge, { opacity: 0 }, at);
-                tl.to(charge, { opacity: 1, duration: 0.15, force3D: true }, at);
-                tl.to(
-                  charge,
-                  {
-                    motionPath: {
-                      path: segment.d,
-                      align: charge,
-                      alignOrigin: [0.5, 0.5],
-                    },
-                    duration: RUN,
-                    ease: "power1.inOut",
-                    force3D: true,
-                  },
-                  at,
-                );
-                tl.to(charge, { opacity: 0, duration: 0.2 }, at + RUN);
               }
 
               if (spark) {
@@ -374,9 +353,9 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
       );
 
       /**
-       * The charge only runs while the section is on screen, and not in a hidden
-       * tab. Both are plain flags — no React state, so nothing re-renders while
-       * the animation plays.
+       * The connector animation only runs while the section is on screen, and
+       * not in a hidden tab. Both are plain flags — no React state, so nothing
+       * re-renders while the animation plays.
        */
       const observer = new IntersectionObserver(
         ([entry]) => {
@@ -426,35 +405,15 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
           />
         ))}
 
-        <defs>
-          {/* Warm white core, orange falloff, transparent rim: the charge reads
-              as light rather than a dot because only its centre is opaque. No
-              filter is involved, which is what keeps the frame cheap. */}
-          <radialGradient id="connector-charge">
-            <stop offset="0%" stopColor="#fffbe8" />
-            <stop offset="34%" stopColor="#ffd98f" />
-            <stop offset="68%" stopColor="#ff8a1f" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#ff7a00" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-
-        {/* Three reused elements for every connection: the trail (a short dash of
+        {/* Two reused elements for every connection: the trail (a short dash of
             the same path, driven in the path's own units so `getTotalLength()`
-            times it exactly), the head, and the landing flash. */}
+            times it exactly) and the landing flash. */}
         <path
           data-trail
           className="connector-pulse"
           fill="none"
           strokeLinecap="round"
           strokeWidth="0.5"
-          opacity="0"
-        />
-
-        <circle
-          data-charge
-          className="connector-charge"
-          r="1.8"
-          fill="url(#connector-charge)"
           opacity="0"
         />
 

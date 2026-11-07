@@ -963,15 +963,7 @@
   }
 }
 
-/* ---------------------------------------------------------------------------
-   "BULL CHARGE" — the route transition.
-
-   Cover, a diagonal energy streak, a burst of square fragments, the wordmark,
-   then a shockwave that hands the viewport over. Only transform and opacity
-   move, and the fragments are DOM squares rather than a second canvas: the
-   whole thing has to stay cheap on a phone, where a WebGL context is the one
-   thing we cannot afford to add.
---------------------------------------------------------------------------- */
+/* THE CHARGE: centered identity, indeterminate activity, circular aperture. */
 .charge {
   position: fixed;
   inset: 0;
@@ -979,121 +971,120 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  background:
-    radial-gradient(120% 85% at 50% 0%, #0e2136 0%, #08121e 52%, #04090f 100%);
-  color: #ffffff;
-  will-change: opacity;
+  isolation: isolate;
+  color: #e8ebee;
+  touch-action: none;
 }
-
-/* A short bar rotated onto the diagonal; GSAP carries it across the viewport,
-   which is why the gradient's midpoint is the bright part. */
-.charge__streak {
-  position: absolute;
-  bottom: -8vmax;
-  left: -34vmax;
-  width: 46vmax;
-  height: 0.125rem;
-  border-radius: 62.4375rem;
-  transform: rotate(-45deg);
-  transform-origin: left center;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    #2f7fb8 20%,
-    #8fd8f2 46%,
-    var(--color-orange) 56%,
-    transparent 88%
-  );
-  box-shadow:
-    0 0 1.5rem rgba(143, 216, 242, 0.5),
-    0 0 4.5rem rgba(239, 121, 20, 0.24);
-  opacity: 0;
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-/* A zero-sized point at the centre: every fragment starts at 0,0 of this box
-   and GSAP carries it outward, so the burst originates where the streak crosses. */
-.charge__burst {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
-/* One square per fragment, laid on the centre and thrown outward by GSAP. */
-.charge__burst span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0.1875rem;
-  height: 0.1875rem;
-  background: #9fd8f0;
-  box-shadow: 0 0 0.375rem rgba(143, 216, 242, 0.75);
-  opacity: 0;
-  will-change: transform, opacity;
-}
-
-.charge__burst span:nth-child(3n) {
-  background: var(--color-orange);
-  box-shadow: 0 0 0.375rem rgba(239, 121, 20, 0.75);
-}
-
-.charge__burst span:nth-child(4n) {
-  width: 0.125rem;
-  height: 0.125rem;
-  background: #ffffff;
-  box-shadow: none;
-}
-
-.charge__burst span:nth-child(5n) {
-  width: 0.25rem;
-  height: 0.25rem;
-}
-
-.charge__word {
+.charge[hidden] { display: none; }
+.charge__veil { position: absolute; inset: 0; pointer-events: none; }
+.charge__identity {
   position: relative;
-  z-index: 1;
-  font-family: Geist, sans-serif;
-  font-size: clamp(1.375rem, 4.6vw, 2.5rem);
-  font-weight: 700;
-  letter-spacing: 0.26em;
-  /* The letter-spacing opens a gap after the last letter; pull it back so the
-     wordmark stays optically centred. */
-  text-indent: 0.26em;
-  color: #ffffff;
-  opacity: 0;
-  will-change: transform, opacity;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(90vw, 24rem);
+  text-align: center;
+  will-change: opacity, transform;
 }
-
-.charge__word span {
-  color: var(--color-orange);
+.charge__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(10rem, 22vw, 12rem);
+  aspect-ratio: 1;
+  margin-bottom: 2rem;
+  perspective: 650px;
+  perspective-origin: 50% 50%;
 }
-
-.charge__wave {
+.charge__ring {
   position: absolute;
-  width: min(120vmax, 120rem);
-  height: min(120vmax, 120rem);
-  border: 2px solid rgba(143, 216, 242, 0.75);
+  inset: 0;
+  border: 1px solid rgba(255, 125, 42, 0.45);
   border-radius: 50%;
-  box-shadow:
-    0 0 3rem rgba(143, 216, 242, 0.3),
-    inset 0 0 3rem rgba(239, 121, 20, 0.16);
-  opacity: 0;
-  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 114, 30, 0.035), transparent 68%);
+  opacity: 0.4;
   will-change: transform, opacity;
 }
-
-/* Reduced motion keeps the cover and the wordmark — the state change is still
-   announced — and drops everything that travels. */
+.charge__ring::before, .charge__ring::after {
+  content: "";
+  position: absolute;
+  top: 49%;
+  width: 5px;
+  height: 2px;
+  background: #f77c2b;
+}
+.charge__ring::before { left: -2px; }
+.charge__ring::after { right: -2px; }
+.charge__logo { position: relative; width: 78%; transform-origin: 50% 75%; will-change: transform; }
+.charge__logo img { display: block; width: 100%; height: auto; user-select: none; }
+.charge__ground {
+  position: absolute;
+  width: 4.5rem;
+  height: 2px;
+  left: 28%;
+  bottom: 15%;
+  background: linear-gradient(90deg, transparent, #ff9a45 35%, #f56c22 70%, transparent);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.charge__wake { position: absolute; left: 66%; top: 43%; width: 2.5rem; height: 2rem; }
+.charge__wake i {
+  position: absolute;
+  display: block;
+  width: 1.1rem;
+  height: 1px;
+  background: linear-gradient(90deg, #f78b39, transparent);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.charge__wake i:nth-child(2) { top: 0.6rem; width: 1.5rem; }
+.charge__wake i:nth-child(3) { top: 1.2rem; width: 0.8rem; }
+.charge__brand {
+  font-family: var(--font-geist), sans-serif;
+  font-size: clamp(1.125rem, 3vw, 1.375rem);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  line-height: 1.3;
+}
+.charge__brand span { color: #f58a46; }
+.charge__label {
+  margin-top: 0.875rem;
+  color: #8795a7;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+}
+.charge__indicator {
+  width: 8rem;
+  height: 3px;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(159, 178, 201, 0.2);
+}
+.charge__segment {
+  display: block;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #ff9a4c 35%, #f58a46 70%, transparent);
+  transform: translateX(-110%);
+  will-change: transform;
+}
+.charge__recovery {
+  margin-top: 1.5rem;
+  border: 1px solid #344356;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  color: #b1bfce;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.charge__recovery[hidden] { display: none; }
+.charge__recovery:focus-visible { outline: 2px solid #f58a46; outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) {
-  .charge__streak,
-  .charge__burst,
-  .charge__wave {
-    display: none;
-  }
+  .charge__indicator, .charge__ground, .charge__wake { display: none; }
+  .charge__identity, .charge__logo, .charge__ring { will-change: auto; }
 }
 
 .about-section {
@@ -3609,29 +3600,23 @@
   position: relative;
 }
 
-/* The electric charge running along a connector.
+/* The electric pulse running along a connector.
    Every `drop-shadow` is gone on purpose: a filter on an element that moves each
    frame forces the browser to re-run it and re-rasterise the region around it,
-   which is what made scrolling stutter. The glow now comes entirely from the
-   radial gradient on the head, so a frame costs one transform and one opacity —
-   compositor work only. */
+   which is what made scrolling stutter. A frame now costs one transform and one
+   opacity — compositor work only. */
 .connector-pulse {
   stroke: #ffd2a1;
 }
 
-.connector-charge,
 .connector-spark {
   will-change: transform, opacity;
-}
-
-.connector-spark {
   fill: #ffe6bd;
 }
 
 @media (prefers-reduced-motion: reduce) {
   /* Decorative motion only; the dotted line alone still reads as the flow. */
   .connector-pulse,
-  .connector-charge,
   .connector-spark {
     display: none;
   }
@@ -6674,10 +6659,6 @@
     border-radius: 1rem;
   }
 
-  .case-detail-cover-image {
-    aspect-ratio: 4 / 3;
-  }
-
   .case-detail-intro {
     margin-top: 2.5rem;
   }
@@ -6758,6 +6739,19 @@
   margin-top: 2.5rem;
 }
 
+.case-detail-eyebrow {
+  color: #f4a84f;
+  font-family: Geist, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inner-page-content.case-detail-hero {
+  padding-top: clamp(6rem, 12vw, 9.375rem);
+}
+
 .case-detail-intro h1 {
   max-width: 45rem;
   font-size: clamp(1.75rem, 3vw, 2.375rem);
@@ -6784,6 +6778,278 @@
   padding: 0.5rem 0.875rem;
   font-size: 1rem;
   line-height: 1.4;
+}
+
+.xera-case-story {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(3.5rem, 7vw, 6.5rem) 0 5rem;
+  color: #e8ebee;
+}
+
+.xera-story-section {
+  max-width: 54rem;
+  margin: 0 auto clamp(3rem, 6vw, 5rem);
+  text-align: center;
+}
+
+.xera-story-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(232, 235, 238, 0.34);
+  border-radius: 999px;
+  color: #d6e0ed;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.xera-story-section > h2,
+.xera-results-section > h2 {
+  margin: 1.1rem auto 0.9rem;
+  color: #e8ebee;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.xera-story-section > p,
+.xera-approach-list p,
+.xera-story-cta p {
+  color: #aab8c8;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.xera-story-section > p + p {
+  margin-top: 0.85rem;
+}
+
+.xera-story-section::after {
+  content: "";
+  display: block;
+  width: min(31rem, 82%);
+  height: 1px;
+  margin: 1.2rem auto 0;
+  background: linear-gradient(90deg, transparent, rgba(179, 194, 212, 0.42), transparent);
+}
+
+.xera-story-intro {
+  max-width: 45rem;
+  margin: 0 auto 1.5rem;
+}
+
+.xera-approach-list {
+  display: grid;
+  gap: 0;
+  max-width: 57rem;
+  margin: 2rem auto 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(160, 181, 204, 0.6);
+  border-radius: 1.1rem;
+  background: rgba(20, 43, 69, 0.88);
+  list-style: none;
+  text-align: left;
+}
+
+.xera-approach-list > li {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.2rem 1.35rem;
+}
+
+.xera-approach-list > li + li {
+  border-top: 1px solid rgba(160, 181, 204, 0.48);
+}
+
+.xera-approach-number {
+  padding-top: 0.1rem;
+  color: #ff9c47;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.xera-approach-list h3 {
+  margin-bottom: 0.4rem;
+  color: #e8ebee;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.xera-approach-bullets {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+  padding-left: 1.1rem;
+  color: #aab8c8;
+  list-style: disc;
+}
+
+.xera-approach-bullets li {
+  display: list-item;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.xera-approach-bullets li + li {
+  border-top: 0;
+}
+
+.xera-results-section {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(2.75rem, 5vw, 4rem) 0;
+  text-align: center;
+}
+
+.xera-results-section::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  height: 100%;
+  transform: translateX(-50%);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 7px, rgba(112, 57, 142, 0.14) 8px 9px),
+    radial-gradient(ellipse at 50% 42%, rgba(91, 49, 118, 0.35), transparent 58%);
+  content: "";
+  pointer-events: none;
+}
+
+.xera-results-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  max-width: 38rem;
+  margin: 1.75rem auto 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.xera-results-grid li {
+  display: flex;
+  min-height: 7rem;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid rgba(176, 191, 208, 0.16);
+  border-radius: 0.65rem;
+  background: linear-gradient(140deg, rgba(48, 55, 68, 0.94), rgba(31, 39, 50, 0.96));
+}
+
+.xera-results-grid .about-stat-value {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.xera-results-grid span {
+  color: #c1cbd7;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.xera-takeaways-title {
+  margin: 2.7rem 0 1rem;
+  color: #e8ebee;
+  font-size: 1.25rem;
+}
+
+.xera-takeaways-list {
+  max-width: 45rem;
+  margin: 0 auto;
+  padding-left: 1.25rem;
+  color: #b7c4d2;
+  text-align: left;
+}
+
+.xera-takeaways-list li {
+  padding-left: 0.25rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.xera-takeaways-list li + li {
+  margin-top: 0.55rem;
+}
+
+.xera-takeaways-list strong {
+  color: #e8ebee;
+}
+
+.xera-case-cta-section {
+  /* The card's own margin only covered the space above it, so it sat almost
+     flush against the next section — give it matching room underneath. */
+  padding-bottom: 3.75rem;
+}
+
+.xera-story-cta {
+  max-width: 50rem;
+  margin: 3.75rem auto 0;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid rgba(166, 184, 205, 0.28);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(16, 34, 55, 0.96), rgba(8, 19, 32, 0.98));
+  text-align: center;
+}
+
+.xera-story-cta h2 {
+  color: #e8ebee;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 600;
+}
+
+.xera-story-cta p {
+  max-width: 40rem;
+  margin: 0.75rem auto 1.2rem;
+}
+
+.xera-story-cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+  background: linear-gradient(100deg, #ff5700, #ef5200);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+@media (max-width: 520px) {
+  .xera-approach-list li {
+    grid-template-columns: 1.7rem minmax(0, 1fr);
+    gap: 0.65rem;
+    padding: 1rem;
+  }
+
+  .xera-story-section > p,
+  .xera-approach-list p,
+  .xera-story-cta p {
+    font-size: 0.9rem;
+  }
+
+  .xera-results-grid li {
+    min-height: 6rem;
+    padding: 0.85rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .inner-page-content.case-detail-hero {
+    padding-top: 5.5rem;
+  }
 }
 
 /* The figure wears the same metallic orange the landing page's stats do; the

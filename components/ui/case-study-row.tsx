@@ -6,14 +6,23 @@ import type { CaseStudy } from "@/lib/content";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 import amalasImage from "../../app/assets/case-studies/AMALAS case.webp";
 import avxImage from "../../app/assets/case-studies/AVX case.webp";
+import dmtImage from "../../app/assets/case-studies/DMT Tikabit & Noderocks.webp";
 import pcpImage from "../../app/assets/case-studies/PCP case.webp";
+import redditImage from "../../app/assets/case-studies/Reddit-marketing.webp";
+import xMarketingImage from "../../app/assets/case-studies/X Marketing.webp";
 import xeraImage from "../../app/assets/case-studies/Xera case.webp";
 
 export const caseStudyImages: Record<string, StaticImageData> = {
   xera: xeraImage,
+  "xera-token-launch-marketing": xeraImage,
+  "amalas-token-launch-marketing": amalasImage,
   amalas: amalasImage,
-  avx: avxImage,
+  "avirvox-labs-ai-token-fundraising": avxImage,
+  "pcp-memecoin-launch-marketing": pcpImage,
   pcp: pcpImage,
+  "dmt-tikabit-noderocks-bitcoin-ordinals": dmtImage,
+  "reddit-marketing-aeo-geo-web3-ai": redditImage,
+  "crypto-x-marketing-grow-x-followers": xMarketingImage,
 };
 
 type Props = {
@@ -37,16 +46,14 @@ export function CaseStudyRow({ study, cta }: Props) {
       </Reveal>
 
       <Reveal x={24} y={0} delay={0.1} className="case-row-visual">
-        {image ? (
-          <Image
-            src={image}
-            alt={study.client}
-            width={image.width}
-            height={image.height}
-            sizes="(min-width: 1280px) 440px, (min-width: 1024px) 40vw, (min-width: 768px) 560px, 100vw"
-            className="block h-auto w-full"
-          />
-        ) : null}
+        <Image
+          src={image}
+          alt={study.client}
+          width={image.width}
+          height={image.height}
+          sizes="(min-width: 1280px) 440px, (min-width: 1024px) 40vw, (min-width: 768px) 560px, 100vw"
+          className="block h-auto w-full"
+        />
       </Reveal>
 
       <Reveal x={-24} y={0} delay={0.05} className="case-row-copy">

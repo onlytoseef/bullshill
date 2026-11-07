@@ -1,311 +1,269 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useId, useLayoutEffect, useRef, useTransition } from "react";
 
+import bullLogo from "../../app/assets/images/logo.webp";
 import { gsap } from "@/lib/gsap";
 import { holdIntro, releaseIntro } from "@/lib/intro-gate";
 
-/**
- * "BULL CHARGE" — the route transition.
- *
- * A cover, a diagonal energy streak, a burst of square fragments, the wordmark,
- * then a shockwave that hands the viewport to the new route. Everything is
- * transform/opacity only, and no canvas: the fragments are DOM squares, which
- * keeps this cheap enough for a phone and impossible to blow a WebGL context on.
- *
- * Two things make it read as intentional rather than as a flicker:
- *
- * - The cover is opaque in the server HTML. It is not faded in and does not wait
- *   for hydration, so the real page never paints first and then get covered.
- * - The charge owns a minimum duration. A client navigation finishes in tens of
- *   milliseconds, and releasing the moment the pathname changed meant the
- *   streak and the wordmark were cut off mid-flight; `requestRelease` holds the
- *   reveal until the sequence has run, then plays the shockwave. Client route
- *   transitions use a shorter version of the same sequence.
- *
- * Navigation itself is never delayed — the route swaps underneath the overlay
- * while it runs, and a 4s safety timer removes the overlay regardless so a
- * failed navigation cannot trap the page.
- */
+type Controller = { begin: () => void; ready: () => void };
 
-/** Fragments thrown from the centre when the streak crosses it. */
-const FRAGMENTS = 16;
-/** Longest the overlay may stay up if a route never confirms. */
-const SAFETY_MS = 4000;
-/**
- * How long the charge runs before it may hand over — matched to the duration the
- * old splash held for, so the site's first-load beat is unchanged.
- */
-const INITIAL_CHARGE_MS = 2300;
-const INITIAL_WAVE_MS = 1000;
-const NAV_CHARGE_MS = 450;
-const NAV_WAVE_MS = 350;
-
-type Phase = "idle" | "charge" | "reveal";
-
+/** One persistent overlay. React owns navigation; GSAP owns the motion. */
 export function PageLoader() {
   const pathname = usePathname();
-  // Starts covered: the overlay is part of the first paint, so the page can
-  // never appear before it.
-  const [phase, setPhase] = useState<Phase>("charge");
+  const router = useRouter();
+  const [pending, navigate] = useTransition();
+  const maskId = useId().replace(/:/g, "");
+  const root = useRef<HTMLDivElement>(null);
+  const controller = useRef<Controller | null>(null);
+  const target = useRef("");
+  const ownedNavigation = useRef(false);
+  const committedPath = useRef(pathname);
 
-  const cover = useRef<HTMLDivElement>(null);
-  const streak = useRef<HTMLDivElement>(null);
-  const burst = useRef<HTMLDivElement>(null);
-  const word = useRef<HTMLDivElement>(null);
-  const wave = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    const stage = el.querySelector<HTMLElement>(".charge__stage")!;
+    const logo = el.querySelector<HTMLElement>(".charge__logo")!;
+    const content = el.querySelector<HTMLElement>(".charge__identity")!;
+    const ring = el.querySelector<HTMLElement>(".charge__ring")!;
+    const ground = el.querySelector<HTMLElement>(".charge__ground")!;
+    const wake = el.querySelectorAll<HTMLElement>(".charge__wake i");
+    const indicator = el.querySelector<HTMLElement>(".charge__indicator")!;
+    const segment = el.querySelector<HTMLElement>(".charge__segment")!;
+    const hole = el.querySelector<SVGCircleElement>(".charge__aperture")!;
+    const edge = el.querySelector<SVGCircleElement>(".charge__edge")!;
+    const recovery = el.querySelector<HTMLElement>(".charge__recovery")!;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let context: gsap.Context | undefined;
+    let loops: gsap.core.Animation[] = [];
+    let running: gsap.core.Timeline | undefined;
+    let state: "idle" | "waiting" | "revealing" = "idle";
+    let started = 0;
+    let ready = false;
+    let disposed = false;
+    let finishTimer: ReturnType<typeof setTimeout> | undefined;
+    let recoveryTimer: ReturnType<typeof setTimeout> | undefined;
+    let previousOverflow: string | null = null;
 
-  const armed = useRef(false);
-  const revealed = useRef(false);
-  const startedAt = useRef(0);
-  const timing = useRef({
-    chargeMs: INITIAL_CHARGE_MS,
-    waveMs: INITIAL_WAVE_MS,
-    speed: 1,
-  });
-  const floor = useRef<number | null>(null);
-  const safety = useRef<number | null>(null);
+    const unlock = () => {
+      if (previousOverflow !== null) document.body.style.overflow = previousOverflow;
+      previousOverflow = null;
+    };
+    const preventScroll = (event: Event) => {
+      if (state !== "idle") event.preventDefault();
+    };
+    window.addEventListener("wheel", preventScroll, { passive: false });
+    window.addEventListener("touchmove", preventScroll, { passive: false });
 
-  const clearTimers = useCallback(() => {
-    for (const timer of [floor, safety]) {
-      if (timer.current) window.clearTimeout(timer.current);
-      timer.current = null;
-    }
+    const done = () => {
+      state = "idle";
+      el.hidden = true;
+      el.setAttribute("aria-hidden", "true");
+      el.dataset.state = "idle";
+      unlock();
+      releaseIntro();
+    };
+
+    const finish = () => {
+      if (disposed || !ready || state !== "waiting") return;
+      state = "revealing";
+      el.dataset.state = "revealing";
+      clearTimeout(recoveryTimer);
+      recovery.hidden = true;
+      loops.filter((animation) => preference.matches || animation !== running)
+        .forEach((animation) => animation.kill());
+      context?.add(() => {
+        if (preference.matches) {
+          gsap.to(el, { opacity: 0, duration: 0.12, onComplete: done });
+          return;
+        }
+        const bounds = stage.getBoundingClientRect();
+        const cx = bounds.left + bounds.width / 2;
+        const cy = bounds.top + bounds.height / 2;
+        const radius = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) + 24;
+        gsap.set([hole, edge], { attr: { cx, cy, r: 0 } });
+        gsap.set(edge, { opacity: 0.45 });
+        const completion = gsap.timeline({ onComplete: done });
+        if (running) completion.to(running, { timeScale: 1.9, duration: 0.2, ease: "power2.in" }, 0);
+        completion
+          .call(() => { running?.pause(); }, [], 0.22)
+          .to([ground, ...wake], { opacity: 0, duration: 0.1 }, 0.22)
+          // Uniform scale plus depth preserves the original flattened artwork.
+          .to(logo, { x: 0, y: -5, z: 105, scale: 1.35, rotation: 0, duration: 0.3, ease: "power3.in" }, 0.24)
+          .to(ring, { scale: 1.38, opacity: 0.85, duration: 0.3, ease: "power2.out" }, 0.3)
+          .to(indicator, { opacity: 0, duration: 0.12 }, 0)
+          .to(content, { opacity: 0, duration: 0.24 }, 0.52)
+          .to([hole, edge], { attr: { r: radius }, duration: 0.65, ease: "power3.inOut" }, 0.49)
+          .to(edge, { opacity: 0, duration: 0.3 }, 0.85);
+      });
+    };
+
+    const markReady = () => {
+      if (state !== "waiting") return;
+      ready = true;
+      clearTimeout(finishTimer);
+      clearTimeout(recoveryTimer);
+      // Enough time to finish the introduction, without a fixed loading delay.
+      finishTimer = setTimeout(finish, preference.matches ? 0 : Math.max(0, 380 - (performance.now() - started)));
+    };
+
+    const begin = () => {
+      ready = false;
+      clearTimeout(finishTimer);
+      clearTimeout(recoveryTimer);
+      recovery.hidden = true;
+      holdIntro();
+      if (state !== "waiting") {
+        context?.revert();
+        state = "waiting";
+        started = performance.now();
+        el.hidden = false;
+        el.setAttribute("aria-hidden", "false");
+        el.dataset.state = "waiting";
+        if (previousOverflow === null) {
+          previousOverflow = document.body.style.overflow;
+          document.body.style.overflow = "hidden";
+        }
+        context = gsap.context(() => {
+          gsap.set(el, { opacity: 1 });
+          gsap.set(hole, { attr: { r: 0 } });
+          gsap.set(edge, { opacity: 0 });
+          gsap.set(content, { opacity: 1 });
+          gsap.set(logo, { x: 5, y: 0, z: 0, scale: 1, rotation: 0 });
+          gsap.set([ground, ...wake], { opacity: 0 });
+          gsap.set(indicator, { opacity: 1 });
+          gsap.set(ring, { opacity: 0.22, scale: 1 });
+          loops = [];
+          running = undefined;
+          if (preference.matches) return;
+          gsap.fromTo(content, { opacity: 0, y: 7 }, { opacity: 1, y: 0, duration: 0.32, ease: "power2.out" });
+          // One deterministic stride: drive, lift, contact, recovery. The logo
+          // faces left; the short ground and wake streaks travel rightward.
+          running = gsap.timeline({ repeat: -1 })
+            .to(logo, { x: -10, y: -6, rotation: -0.8, duration: 0.18, ease: "power2.in" }, 0)
+            .to(logo, { x: -13, y: -4, rotation: -0.4, duration: 0.1, ease: "power1.out" }, 0.18)
+            .to(logo, { x: -2, y: 2, rotation: 0.4, duration: 0.14, ease: "power2.in" }, 0.28)
+            .to(logo, { x: 5, y: 0, rotation: 0, duration: 0.2, ease: "power2.out" }, 0.42)
+            .fromTo(ground, { x: -28, scaleX: 0.65, opacity: 0 }, { x: -12, scaleX: 1, opacity: 0.85, duration: 0.1 }, 0.02)
+            .to(ground, { x: 52, scaleX: 0.5, opacity: 0, duration: 0.32, ease: "power2.in" }, 0.12)
+            .fromTo(wake, { x: -4, opacity: 0 }, { x: 4, opacity: 0.65, duration: 0.08, stagger: 0.06 }, 0.08)
+            .to(wake, { x: 38, opacity: 0, duration: 0.24, stagger: 0.06, ease: "power2.in" }, 0.28);
+          loops.push(
+            running,
+            gsap.fromTo(segment, { xPercent: -110 }, { xPercent: 350, duration: 1.25, repeat: -1, ease: "power1.inOut" }),
+          );
+        }, el);
+      }
+      // A slow/failed request stays covered; recovery is explicit, never a fake completion.
+      recoveryTimer = setTimeout(() => { recovery.hidden = false; }, 15000);
+    };
+
+    const onPreference = () => {
+      if (state === "idle") return;
+      const wasReady = ready;
+      context?.revert();
+      state = "idle";
+      begin();
+      if (wasReady) markReady();
+    };
+    preference.addEventListener("change", onPreference);
+    controller.current = { begin, ready: markReady };
+    begin();
+    const image = el.querySelector("img");
+    void (image?.decode().catch(() => {}) ?? Promise.resolve()).then(() => {
+      if (!disposed && !target.current) markReady();
+    });
+
+    return () => {
+      disposed = true;
+      clearTimeout(finishTimer);
+      clearTimeout(recoveryTimer);
+      context?.revert();
+      controller.current = null;
+      unlock();
+      releaseIntro();
+      preference.removeEventListener("change", onPreference);
+      window.removeEventListener("wheel", preventScroll);
+      window.removeEventListener("touchmove", preventScroll);
+    };
   }, []);
 
-  /** Open the viewport. Only ever runs once per transition. */
-  const release = useCallback(() => {
-    if (revealed.current || !armed.current) return;
-    revealed.current = true;
-    clearTimers();
-    setPhase("reveal");
-  }, [clearTimers]);
-
-  /**
-   * Asks for the reveal, but never before the charge has run its course.
-   * Called both when a route confirms and when the intro's own beat is up.
-   */
-  const requestRelease = useCallback(() => {
-    const elapsed = performance.now() - startedAt.current;
-    const wait = Math.max(0, timing.current.chargeMs - elapsed);
-
-    if (floor.current) window.clearTimeout(floor.current);
-    floor.current = window.setTimeout(release, wait);
-  }, [release]);
-
-  /** Begins a transition: first load, or a click on an internal link. */
-  const start = useCallback((firstLoad = false) => {
-    if (!revealed.current && armed.current) return; // already charging
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    timing.current = {
-      chargeMs: reduced ? 0 : firstLoad ? INITIAL_CHARGE_MS : NAV_CHARGE_MS,
-      waveMs: firstLoad ? INITIAL_WAVE_MS : NAV_WAVE_MS,
-      speed: firstLoad ? 1 : INITIAL_CHARGE_MS / NAV_CHARGE_MS,
-    };
-    armed.current = true;
-    revealed.current = false;
-    startedAt.current = performance.now();
-    setPhase("charge");
-
-    holdIntro();
-
-    clearTimers();
-    safety.current = window.setTimeout(release, SAFETY_MS);
-    // Client navigation confirms through `pathname`; a slow route stays
-    // covered until it arrives, with the safety timer as a backstop.
-    if (firstLoad) requestRelease();
-  }, [clearTimers, release, requestRelease]);
-
-  // ---- the charge sequence -------------------------------------------------
   useEffect(() => {
-    if (phase !== "charge") return;
+    if (ownedNavigation.current && !pending) {
+      ownedNavigation.current = false;
+      controller.current?.ready();
+    }
+  }, [pending, pathname]);
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const root = cover.current?.parentElement;
-    if (!root) return;
-
-    const ctx = gsap.context(() => {
-      // The cover is already opaque from the markup; it only settles.
-      if (reduced) {
-        gsap.set([streak.current, burst.current], { autoAlpha: 0 });
-        gsap.set(word.current, { autoAlpha: 1 });
-        return;
-      }
-
-      const tl = gsap.timeline().timeScale(timing.current.speed);
-
-      // The bar is parked bottom-left and rotated onto the diagonal; travelling
-      // +x / -y carries it across the centre and off the top-right corner.
-      // Stretched to the longer hold: at the old 0.42s pace the sequence was
-      // over by 0.7s and the wordmark then sat still for the rest of the beat.
-      tl.fromTo(
-        streak.current,
-        { x: "0vmax", y: "0vmax", autoAlpha: 0 },
-        {
-          x: "108vmax",
-          y: "-108vmax",
-          autoAlpha: 1,
-          duration: 0.92,
-          ease: "power2.in",
-        },
-        0.12,
-      )
-        .to(streak.current, { autoAlpha: 0, duration: 0.18 }, 0.96)
-        // The wordmark lands with the cover, not after the sweep: the brand is
-        // the first thing on screen, and it then holds for the rest of the beat.
-        .fromTo(
-          word.current,
-          { autoAlpha: 0, yPercent: 12 },
-          { autoAlpha: 1, yPercent: 0, duration: 0.3, ease: "power2.out" },
-          0.12,
-        );
-
-      // Burst: each square flies from the centre on its own vector.
-      const squares = burst.current?.children;
-      if (squares && squares.length > 0) {
-        tl.fromTo(
-          squares,
-          { autoAlpha: 0.9, scale: 0.4, x: 0, y: 0 },
-          {
-            autoAlpha: 0,
-            scale: 1,
-            x: (_i, el) => Number((el as HTMLElement).dataset.dx),
-            y: (_i, el) => Number((el as HTMLElement).dataset.dy),
-            duration: 1,
-            ease: "power2.out",
-            stagger: 0.012,
-          },
-          0.5,
-        );
-
-        // Ambient: once the charge settles, the fragments keep drifting so a
-        // slower route reads as "still charging" rather than frozen. The burst
-        // wrapper is a zero-sized point, so the drift belongs on the squares.
-        gsap
-          .timeline({ repeat: -1, yoyo: true })
-          .to(squares, {
-            x: "+=2",
-            y: "-=2",
-            duration: 1.2,
-            ease: "sine.inOut",
-            stagger: 0.03,
-          });
-      }
-    }, root);
-
-    return () => ctx.revert();
-  }, [phase]);
-
-  // ---- the reveal ----------------------------------------------------------
   useEffect(() => {
-    if (phase !== "reveal") return;
+    if (committedPath.current !== pathname) {
+      committedPath.current = pathname;
+      if (!ownedNavigation.current) controller.current?.ready();
+    }
+  }, [pathname]);
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const root = cover.current?.parentElement;
-    if (!root) return;
-
-    const ctx = gsap.context(() => {
-      const done = () => {
-        armed.current = false;
-        setPhase("idle");
-        releaseIntro();
-      };
-
-      if (reduced) {
-        gsap.to(cover.current, { autoAlpha: 0, duration: 0.16, onComplete: done });
-        return;
-      }
-
-      const seconds = timing.current.waveMs / 1000;
-
-      gsap
-        .timeline({ onComplete: done })
-        .to(word.current, { autoAlpha: 0, duration: 0.12, ease: "none" }, 0)
-        .fromTo(
-          wave.current,
-          { autoAlpha: 0.9, scale: 0.05 },
-          { autoAlpha: 0, scale: 1.8, duration: seconds, ease: "power2.out" },
-          0,
-        )
-        // The cover clears *with* the wave, not before it, so the new page
-        // materialises through the ring instead of appearing ahead of it.
-        .to(
-          cover.current,
-          { autoAlpha: 0, duration: seconds - 0.08, ease: "power2.in" },
-          0.08,
-        );
-      // Never the wrapper: fading that took the whole page to opacity 0 for a
-      // frame, and the cleanup restored it — the flash that followed the
-      // transition.
-    }, root);
-
-    return () => ctx.revert();
-  }, [phase]);
-
-  // ---- navigation start: a click on an internal link -----------------------
   useEffect(() => {
-    const onClick = (event: MouseEvent) => {
-      if (event.defaultPrevented || event.button !== 0) return;
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-
+    const click = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const anchor = (event.target as Element | null)?.closest?.("a[href]");
-      if (!(anchor instanceof HTMLAnchorElement)) return;
-      if (anchor.target && anchor.target !== "_self") return;
-      if (anchor.hasAttribute("download")) return;
-
-      const url = new URL(anchor.href, window.location.href);
-      if (url.origin !== window.location.origin) return;
-      // Same page, hash only, or the route we are already on: nothing to cover.
-      if (url.pathname === window.location.pathname) return;
-
-      start();
+      if (!(anchor instanceof HTMLAnchorElement) || anchor.hasAttribute("download") || (anchor.target && anchor.target !== "_self")) return;
+      const url = new URL(anchor.href, location.href);
+      if (url.origin !== location.origin || !/^https?:$/.test(url.protocol)) return;
+      if (/^\/(admin|api)(\/|$)/.test(url.pathname)) return;
+      if (url.pathname === location.pathname && url.search === location.search) return;
+      event.preventDefault();
+      target.current = url.href;
+      ownedNavigation.current = true;
+      controller.current?.begin();
+      // This site's internal links use push navigation. Next's concurrent
+      // transition settles with the committed route (including redirect/error UI).
+      navigate(() => router.push(url.pathname + url.search + url.hash));
     };
-
-    document.addEventListener("click", onClick, true);
-    return () => document.removeEventListener("click", onClick, true);
-  }, [start]);
-
-  // ---- navigation complete -------------------------------------------------
-  useEffect(() => {
-    if (armed.current && !revealed.current) requestRelease();
-  }, [pathname, requestRelease]);
-
-  // ---- first load ----------------------------------------------------------
-  useEffect(() => {
-    start(true);
+    const pop = () => {
+      if (location.pathname === committedPath.current) return;
+      target.current = location.href;
+      ownedNavigation.current = false;
+      controller.current?.begin();
+    };
+    document.addEventListener("click", click, true);
+    window.addEventListener("popstate", pop);
     return () => {
-      clearTimers();
-      armed.current = false;
+      document.removeEventListener("click", click, true);
+      window.removeEventListener("popstate", pop);
     };
-  }, [start, clearTimers]);
-
-  if (phase === "idle") return null;
+  }, [router, navigate]);
 
   return (
-    <div ref={cover} className="charge" aria-hidden>
-      <div className="charge__streak" ref={streak} />
-
-      <div className="charge__burst" ref={burst}>
-        {Array.from({ length: FRAGMENTS }, (_, index) => {
-          const angle = (index / FRAGMENTS) * Math.PI * 2;
-          const distance = 90 + ((index * 37) % 130);
-
-          return (
-            <span
-              key={index}
-              data-dx={Math.cos(angle) * distance}
-              data-dy={Math.sin(angle) * distance}
-            />
-          );
-        })}
+    <div ref={root} className="charge" data-state="waiting" data-lenis-prevent>
+      <svg className="charge__veil" width="100%" height="100%" aria-hidden="true">
+        <defs>
+          <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+            <rect width="100%" height="100%" fill="white" />
+            <circle className="charge__aperture" cx="50%" cy="50%" r="0" fill="black" />
+          </mask>
+        </defs>
+        <rect width="100%" height="100%" fill="#06111f" mask={`url(#${maskId})`} />
+        <circle className="charge__edge" r="0" fill="none" stroke="#ff8a38" strokeWidth="1.5" opacity="0" />
+      </svg>
+      <div className="charge__identity">
+        <div className="charge__stage">
+          <span className="charge__ring" aria-hidden="true" />
+          <span className="charge__ground" aria-hidden="true" />
+          <span className="charge__wake" aria-hidden="true"><i /><i /><i /></span>
+          <div className="charge__logo">
+            <Image src={bullLogo} alt="" width={bullLogo.width} height={bullLogo.height} sizes="160px" priority unoptimized draggable={false} />
+          </div>
+        </div>
+        <div className="charge__brand">BULL<span>SHILL</span></div>
+        <p className="charge__label" role="status" aria-live="polite">Preparing your experience</p>
+        <div className="charge__indicator" aria-hidden="true"><span className="charge__segment" /></div>
+        <button type="button" className="charge__recovery" hidden onClick={() => location.assign(target.current || location.href)}>
+          Taking longer than expected. Retry navigation
+        </button>
       </div>
-
-      <div className="charge__word" ref={word}>
-        BULL<span>SHILL</span>
-      </div>
-
-      <div className="charge__wave" ref={wave} />
     </div>
   );
 }
