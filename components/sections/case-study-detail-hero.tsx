@@ -21,7 +21,7 @@ export function CaseStudyDetailHero({ study }: { study: CaseStudy }) {
                 alt={study.client}
                 width={image.width}
                 height={image.height}
-                sizes="1140px"
+                sizes="(min-width: 1008px) 960px, calc(100vw - 3rem)"
                 className="block h-auto w-full"
                 priority
               />

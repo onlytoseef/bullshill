@@ -51,10 +51,9 @@ function splitHeading(el: Element, chars = false) {
 }
 
 /**
- * The cover opens like a window — clipped in from its edges while the artwork
- * settles out of a zoom — then the client's name rises a character at a time,
- * the summary follows and the metric chips stagger in, counting up. On desktop
- * the artwork then drifts slowly as the cover scrolls past.
+ * The cover opens like a window — clipped in from its edges — then the client's
+ * name rises a character at a time, the summary follows and the metric chips
+ * stagger in, counting up.
  *
  * Markup hooks:
  * - `[data-case-cover]`   — the framed cover; its first child is the artwork.
@@ -72,7 +71,6 @@ export function CaseHeroReveal({ children, className }: Props) {
       if (!root || !ready) return;
 
       const cover = root.querySelector<HTMLElement>("[data-case-cover]");
-      const art = cover?.firstElementChild ?? null;
       const title = root.querySelector("[data-case-title]");
       const summary = root.querySelector("[data-case-summary]");
       const metrics = gsap.utils.toArray<HTMLElement>("[data-case-metric]", root);
@@ -82,15 +80,9 @@ export function CaseHeroReveal({ children, className }: Props) {
       mm.add(
         { desktop: "(min-width: 768px)", motionOk: MOTION_OK },
         (context) => {
-          const { desktop, motionOk } = context.conditions as {
-            desktop: boolean;
-            motionOk: boolean;
-          };
+          const { motionOk } = context.conditions as { motionOk: boolean };
           if (!motionOk) return;
 
-          // Left zoomed in a touch on desktop, so the drift below has artwork
-          // to travel into instead of opening a gap at the frame's edge.
-          const settle = desktop ? 1.12 : 1;
           const split = title ? splitHeading(title, true) : null;
           const counters = metrics.map((metric) =>
             // The figure, when the chip splits it out for styling — otherwise
@@ -123,14 +115,6 @@ export function CaseHeroReveal({ children, className }: Props) {
               0,
             );
           }
-          if (art) {
-            intro.fromTo(
-              art,
-              { scale: 1.3 },
-              { scale: settle, duration: 1.4, ease: "expo.out" },
-              0,
-            );
-          }
           if (split) {
             intro.from(
               split.chars,
@@ -157,23 +141,6 @@ export function CaseHeroReveal({ children, className }: Props) {
               counters.forEach((counter) => counter?.reset());
             },
           });
-
-          if (desktop && cover && art) {
-            gsap.fromTo(
-              art,
-              { yPercent: -5 },
-              {
-                yPercent: 5,
-                ease: "none",
-                scrollTrigger: {
-                  trigger: cover,
-                  start: "top bottom",
-                  end: "bottom top",
-                  scrub: true,
-                },
-              },
-            );
-          }
 
           return () => {
             stop();
