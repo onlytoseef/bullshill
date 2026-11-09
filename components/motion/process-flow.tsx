@@ -108,15 +108,16 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
         "[data-process-card]",
         stageEl,
       );
-      // One trail and one flash, reused for every connector. The previous
-      // version kept five of each and gave every one a drop-shadow filter, so
-      // ten filtered elements repainted on each frame.
-      const trail = svgEl.querySelector<SVGPathElement>("[data-trail]");
-      const spark = svgEl.querySelector<SVGCircleElement>("[data-spark]");
+      // A particle (trail + landing flash) per connector, so every card-to-card
+      // link carries its own moving pulse rather than one pulse touring the
+      // whole chain. No drop-shadow filters — only dash offset, opacity and
+      // scale move, so each frame stays cheap.
+      const trails = gsap.utils.toArray<SVGPathElement>("[data-trail]", svgEl);
+      const sparks = gsap.utils.toArray<SVGCircleElement>("[data-spark]", svgEl);
       if (paths.length === 0 || cards.length === 0) return;
 
-      /** The single connector timeline, rebuilt only when the curves move. */
-      let master: gsap.core.Timeline | null = null;
+      /** One looping timeline per connector, rebuilt only when curves move. */
+      let pulses: gsap.core.Timeline[] = [];
       let onScreen = false;
 
       const mm = gsap.matchMedia();
@@ -147,7 +148,7 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
           const layout = () => {
             const width = stageEl.clientWidth;
             const height = stageEl.clientHeight;
-            if (!width || !height || !trail) return;
+            if (!width || !height) return;
 
             // Measured from the stage's own box, so the percentages the SVG
             // draws in and the pixels the cards occupy are the same space.
@@ -156,70 +157,68 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
             segments = boxes.slice(0, -1).map((box, index) => {
               const d = connector(box, boxes[index + 1], width, height);
               paths[index].setAttribute("d", d);
+              // Keep each trail on its own connector's curve.
+              trails[index]?.setAttribute("d", d);
 
-              // The trail element doubles as the measuring tool: set the curve
-              // once, read its length and end point, hand both to the timeline.
-              trail.setAttribute("d", d);
-              const length = trail.getTotalLength() || 1;
-              const end = trail.getPointAtLength(length);
+              // Measure the path's own length and end point to drive the dash
+              // distance and the landing flash at the far card.
+              const length = paths[index].getTotalLength() || 1;
+              const end = paths[index].getPointAtLength(length);
 
               return { d, length, endX: end.x, endY: end.y };
             });
           };
 
           /**
-           * One timeline, one trail, one flash — reused for all four
-           * connections, in workflow order.
+           * A looping timeline per connector, so every link has its own pulse
+           * travelling from one card to the next at the same time. Each is
+           * staggered a little so the flow reads as continuous rather than
+           * perfectly synced.
            *
-           * Only `transform` (MotionPath) and `opacity` move, `force3D` hands
-           * them to the compositor, and the moving light itself is what brightens
-           * the dots it passes. The trail is the same path's dash over the same
-           * window and ease: dash offset and MotionPath progress are both arc
-           * length, so the tail cannot drift from the head.
+           * Only opacity, scale and dash offset move. The trail is a short dash
+           * of the same path measured in the path's own units, so the tail can't
+           * drift from the head.
            */
           const build = () => {
-            master?.kill();
+            pulses.forEach((pulse) => pulse.kill());
+            pulses = [];
 
             const RUN = 2;
-            const GAP = 0.35;
-            const tl = gsap.timeline({
-              repeat: -1,
-              repeatDelay: 0.9,
-              paused: true,
-            });
+            const STAGGER = 0.55;
 
             segments.forEach((segment, index) => {
-              const at = index * (RUN + GAP);
-              const tail = segment.length * 0.06;
+              const trail = trails[index];
+              const spark = sparks[index];
+              if (!trail) return;
 
-              if (trail) {
-                tl.set(trail, { attr: { d: segment.d } }, at);
-                tl.set(
-                  trail,
-                  {
-                    opacity: 0.7,
-                    strokeDasharray: `${tail} ${segment.length}`,
-                  },
-                  at,
-                );
-                tl.fromTo(
-                  trail,
-                  { strokeDashoffset: segment.length },
-                  {
-                    strokeDashoffset: -tail,
-                    duration: RUN,
-                    ease: "power1.inOut",
-                  },
-                  at,
-                );
-                tl.to(trail, { opacity: 0, duration: 0.25 }, at + RUN - 0.25);
-              }
+              const tail = segment.length * 0.06;
+              const tl = gsap.timeline({
+                repeat: -1,
+                repeatDelay: 0.9,
+                paused: true,
+                delay: index * STAGGER,
+              });
+
+              tl.set(trail, {
+                opacity: 0.7,
+                strokeDasharray: `${tail} ${segment.length}`,
+              });
+              tl.fromTo(
+                trail,
+                { strokeDashoffset: segment.length },
+                {
+                  strokeDashoffset: -tail,
+                  duration: RUN,
+                  ease: "power1.inOut",
+                },
+              );
+              tl.to(trail, { opacity: 0, duration: 0.25 }, RUN - 0.25);
 
               if (spark) {
                 tl.set(
                   spark,
                   { attr: { cx: segment.endX, cy: segment.endY } },
-                  at + RUN - 0.05,
+                  RUN - 0.05,
                 );
                 tl.fromTo(
                   spark,
@@ -230,18 +229,18 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
                     duration: 0.12,
                     transformOrigin: "center",
                   },
-                  at + RUN - 0.05,
+                  RUN - 0.05,
                 );
                 tl.to(
                   spark,
                   { opacity: 0, scale: 1.4, duration: 0.35 },
-                  at + RUN + 0.07,
+                  RUN + 0.07,
                 );
               }
-            });
 
-            master = tl;
-            if (onScreen) tl.play();
+              pulses.push(tl);
+              if (onScreen) tl.play();
+            });
           };
 
           const refresh = () => {
@@ -357,26 +356,29 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
        * not in a hidden tab. Both are plain flags — no React state, so nothing
        * re-renders while the animation plays.
        */
+      const playAll = () => pulses.forEach((pulse) => pulse.play());
+      const pauseAll = () => pulses.forEach((pulse) => pulse.pause());
+
       const observer = new IntersectionObserver(
         ([entry]) => {
           onScreen = entry.isIntersecting;
-          if (onScreen) master?.play();
-          else master?.pause();
+          if (onScreen) playAll();
+          else pauseAll();
         },
         { rootMargin: "20% 0px" },
       );
       observer.observe(stageEl);
 
       const onTabChange = () => {
-        if (document.hidden) master?.pause();
-        else if (onScreen) master?.play();
+        if (document.hidden) pauseAll();
+        else if (onScreen) playAll();
       };
       document.addEventListener("visibilitychange", onTabChange);
 
       return () => {
         observer.disconnect();
         document.removeEventListener("visibilitychange", onTabChange);
-        master?.kill();
+        pulses.forEach((pulse) => pulse.kill());
         mm.revert();
       };
     },
@@ -405,19 +407,30 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
           />
         ))}
 
-        {/* Two reused elements for every connection: the trail (a short dash of
-            the same path, driven in the path's own units so `getTotalLength()`
-            times it exactly) and the landing flash. */}
-        <path
-          data-trail
-          className="connector-pulse"
-          fill="none"
-          strokeLinecap="round"
-          strokeWidth="0.5"
-          opacity="0"
-        />
+        {/* A trail (short dash) and a landing flash for every connection, so each
+            card-to-card link carries its own pulse. Driven in each path's own
+            units so `getTotalLength()` times the dash exactly. */}
+        {process.steps.slice(0, -1).map((step) => (
+          <path
+            key={step.title}
+            data-trail
+            className="connector-pulse"
+            fill="none"
+            strokeLinecap="round"
+            strokeWidth="0.5"
+            opacity="0"
+          />
+        ))}
 
-        <circle data-spark className="connector-spark" r="0.9" opacity="0" />
+        {process.steps.slice(0, -1).map((step) => (
+          <circle
+            key={step.title}
+            data-spark
+            className="connector-spark"
+            r="0.9"
+            opacity="0"
+          />
+        ))}
       </svg>
 
       {children}
