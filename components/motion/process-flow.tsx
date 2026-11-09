@@ -243,11 +243,8 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
 
           refresh();
 
-          // Pin once the stage's top clears the sticky header, rather than when
-          // it is centered: at `center center` the stage is tall enough that its
-          // first card sits up under the header, and the connectors only start
-          // drawing from there — so the line appeared *behind* the header. From
-          // here the cards are in view when the draws run.
+          // Pin once the stage's top clears the sticky header, so the cards are
+          // in view while the reveal scrubs through under a held section.
           const header = document.querySelector<HTMLElement>(".site-header");
           const headerOffset = (header?.offsetHeight ?? 88) + 16;
 
@@ -259,8 +256,9 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
 
           const timeline = gsap.timeline({
             scrollTrigger: {
-              // The stage, not the SVG — the SVG is `absolute inset-0` inside
-              // it and has no height of its own to pin.
+              // Pin the stage once its top clears the sticky header, then scrub
+              // the reveal as the user scrolls through the held section: card →
+              // line → next card, and so on.
               trigger: stageEl,
               start: `top top+=${headerOffset}`,
               end: "+=60%",
