@@ -7,15 +7,14 @@ import {
   useScroll,
 } from "motion/react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ChatIcon } from "@/components/ui/icons";
+import { LogoMark } from "@/components/ui/logo-mark";
 import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
-import logo from "../../app/assets/images/logo.webp";
 
 const loadMobileMenu = () => import("./mobile-menu");
 
@@ -74,14 +73,7 @@ export function SiteHeader() {
           aria-label="Bullshill home"
         >
           <span className="flex items-center gap-2">
-            <Image
-              src={logo}
-              alt=""
-              width={29}
-              height={29}
-              preload
-              className="size-7 object-contain"
-            />
+            <LogoMark className="size-9 shrink-0" />
             <span className="header-wordmark">
               {site.name}
             </span>

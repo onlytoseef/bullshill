@@ -200,6 +200,63 @@
   line-height: 2.25rem;
 }
 
+/* Animated header brand mark (`components/ui/logo-mark.tsx`): a short golden
+   highlight sweeps the lightning bolt from its lower-left tip, behind the bull,
+   to the upper-right tip. Offsets are in the path's normalised length space
+   (pathLength = 1635). 800ms pulse + 5s pause = 5.8s cycle. */
+.bullshill-logo__pulse {
+  opacity: 0;
+  animation: bullshill-logo-pulse 5.8s linear infinite;
+}
+
+.bullshill-logo__tip {
+  opacity: 0;
+  animation: bullshill-logo-tip 5.8s linear infinite;
+}
+
+@keyframes bullshill-logo-pulse {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  13.8% {
+    stroke-dashoffset: -1600;
+    opacity: 1;
+  }
+  14.6% {
+    stroke-dashoffset: -1600;
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: -1600;
+    opacity: 0;
+  }
+}
+
+@keyframes bullshill-logo-tip {
+  0%,
+  9% {
+    opacity: 0;
+  }
+  13.8% {
+    opacity: 1;
+  }
+  22% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bullshill-logo__pulse,
+  .bullshill-logo__tip {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* ---------------------------------------------------------------------------
    Mobile menu — full-screen editorial overlay.
 

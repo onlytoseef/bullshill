@@ -9,7 +9,7 @@ import { SocialIcon } from "@/components/ui/social-icons";
 import { Container } from "@/components/ui/section";
 import { Wordmark } from "@/components/ui/wordmark";
 import { footer } from "@/lib/content";
-import logo from "../../app/assets/images/logo.webp";
+import logo from "../../app/assets/images/logo.svg";
 
 export function SiteFooter() {
   return (

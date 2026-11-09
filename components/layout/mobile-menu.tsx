@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowIcon, ChatIcon } from "@/components/ui/icons";
 import { nav, site } from "@/lib/content";
-import logo from "../../app/assets/images/logo.webp";
+import logo from "../../app/assets/images/logo.svg";
 
 /** Same navy and brand orange the rest of the site uses. */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
