@@ -8,7 +8,7 @@ import {
 } from "motion/react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ChatIcon } from "@/components/ui/icons";
@@ -27,8 +27,38 @@ const preloadMobileMenu = () => {
   void loadMobileMenu();
 };
 
-const linkClass =
-  "text-[0.8125rem] font-medium text-blue-darker transition-colors hover:text-blue";
+/**
+ * Nav link with an automatic shine sweep and an orange hover/focus state.
+ *
+ * The dark label is the base; the second (arial-hidden) copy sits on top and
+ * carries the gradient-clipped shine band. `--shine-index` staggers its sweep
+ * across the nav (180ms per link).
+ */
+function NavLink({
+  href,
+  label,
+  index,
+}: {
+  href: string;
+  label: string;
+  index: number;
+}) {
+  return (
+    <Link
+      href={href}
+      className="nav-link"
+      style={{ "--shine-index": index } as CSSProperties}
+    >
+      <span className="nav-link__text">
+        <span className="nav-link__label">{label}</span>
+        <span className="nav-link__shine" aria-hidden="true">
+          {label}
+        </span>
+      </span>
+      <span className="nav-link__underline" aria-hidden="true" />
+    </Link>
+  );
+}
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -58,11 +88,9 @@ export function SiteHeader() {
         )}
       >
         <ul className="hidden flex-1 items-center gap-7 lg:flex">
-          {nav.left.map((link) => (
+          {nav.left.map((link, index) => (
             <li key={link.href}>
-              <Link href={link.href} className={linkClass}>
-                {link.label}
-              </Link>
+              <NavLink href={link.href} label={link.label} index={index} />
             </li>
           ))}
         </ul>
@@ -73,7 +101,7 @@ export function SiteHeader() {
           aria-label="Bullshill home"
         >
           <span className="flex items-center gap-2">
-            <LogoMark className="size-9 shrink-0" />
+            <LogoMark className="size-[3.25rem] shrink-0" />
             <span className="header-wordmark">
               {site.name}
             </span>
@@ -82,11 +110,13 @@ export function SiteHeader() {
 
         <div className="hidden flex-1 items-center justify-end gap-7 lg:flex">
           <ul className="flex items-center gap-7">
-            {nav.right.map((link) => (
+            {nav.right.map((link, index) => (
               <li key={link.href}>
-                <Link href={link.href} className={linkClass}>
-                  {link.label}
-                </Link>
+                <NavLink
+                  href={link.href}
+                  label={link.label}
+                  index={nav.left.length + index}
+                />
               </li>
             ))}
           </ul>

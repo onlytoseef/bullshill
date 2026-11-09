@@ -14,6 +14,13 @@ const ACCENT_COLOR = new THREE.Color("#d6f4ff");
 const MAX_POINTS = 3200;
 
 /**
+ * Global multiplier on the field's internal clock. Higher = the grains drift /
+ * breathe faster. One knob so every section that mounts the field (landing
+ * sections and every other page's background) moves at the same pace.
+ */
+const TIME_SCALE = 2.5;
+
+/**
  * The field is built from overlapping streams rather than random scatter.
  *
  * Each one has its own tilt, origin, curvature and weight, so no two run the
@@ -512,7 +519,7 @@ export function ParticleBackground() {
     const loop = (now: number) => {
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
-      time += dt;
+      time += dt * TIME_SCALE;
 
       draw();
       renderer.render(scene, camera);

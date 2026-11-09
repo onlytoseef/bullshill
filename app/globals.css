@@ -257,6 +257,163 @@
   }
 }
 
+/* Header nav links — automatic shine sweep + orange hover/focus.
+
+   The dark label is the base. A duplicate (aria-hidden) "shine" layer on top
+   carries a narrow golden-orange band, clipped to the glyphs, that sweeps
+   left→right once every 3s. Each link is staggered by 180ms (`--shine-index`)
+   so the sweep travels across the nav. Hover / keyboard focus takes priority:
+   the shine is hidden and the label turns brand orange with a 2px underline. */
+.nav-link {
+  position: relative;
+  display: inline-block;
+  color: var(--color-blue-darker);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.nav-link__text {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.nav-link__label {
+  display: block;
+  white-space: nowrap;
+  color: var(--color-blue-darker);
+  transition: color 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Gradient clipped to the glyphs. Transparent everywhere except the narrow
+   golden band, so the dark base label shows through between sweeps. */
+.nav-link__shine {
+  position: absolute;
+  inset: 0;
+  display: block;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    100deg,
+    transparent 43%,
+    #ffb347 48%,
+    #ff8a1f 50%,
+    #ffb347 52%,
+    transparent 57%
+  );
+  background-repeat: no-repeat;
+  background-size: 220% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  pointer-events: none;
+  animation: nav-link-shine 3s linear infinite;
+  animation-delay: calc(var(--shine-index, 0) * 180ms);
+}
+
+/* 650ms (21.67% of 3s) carries the band across; it then waits off to the
+   right until the next cycle, so the label returns to its base look. */
+@keyframes nav-link-shine {
+  0% {
+    background-position: 100% 0;
+  }
+  21.67% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+.nav-link__underline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.1875rem;
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--color-orange);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .nav-link:hover .nav-link__label {
+    color: var(--color-orange);
+  }
+
+  .nav-link:hover .nav-link__underline {
+    transform: scaleX(1);
+  }
+
+  /* Hover wins over the automatic shine on that link. */
+  .nav-link:hover .nav-link__shine {
+    opacity: 0;
+  }
+}
+
+.nav-link:focus-visible .nav-link__label {
+  color: var(--color-orange);
+}
+
+.nav-link:focus-visible .nav-link__underline {
+  transform: scaleX(1);
+}
+
+.nav-link:focus-visible .nav-link__shine {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No automatic motion; keep the hover/focus colour + underline feedback. */
+  .nav-link__shine {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* Contact button — deepen the orange, soften the shadow, nudge the icon. */
+.nav-contact-button {
+  transition:
+    filter 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-button.nav-contact-button > :is(svg, img) {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .site-button.nav-contact-button:hover {
+    filter: brightness(0.93) saturate(1.03);
+    box-shadow: 0 0.5rem 1.25rem rgba(216, 72, 0, 0.32);
+  }
+
+  .site-button.nav-contact-button:hover > :is(svg, img) {
+    transform: translateX(0.1875rem);
+  }
+}
+
+.nav-contact-button:focus-visible > :is(svg, img) {
+  transform: translateX(0.1875rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-link__label,
+  .nav-link__underline,
+  .nav-contact-button,
+  .site-button.nav-contact-button > :is(svg, img) {
+    transition-duration: 0.01ms;
+  }
+
+  .site-button.nav-contact-button:hover > :is(svg, img) {
+    transform: none;
+  }
+}
+
 /* ---------------------------------------------------------------------------
    Mobile menu — full-screen editorial overlay.
 
@@ -3666,15 +3823,9 @@
   stroke: #ffd2a1;
 }
 
-.connector-spark {
-  will-change: transform, opacity;
-  fill: #ffe6bd;
-}
-
 @media (prefers-reduced-motion: reduce) {
   /* Decorative motion only; the dotted line alone still reads as the flow. */
-  .connector-pulse,
-  .connector-spark {
+  .connector-pulse {
     display: none;
   }
 }

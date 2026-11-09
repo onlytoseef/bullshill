@@ -108,17 +108,37 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
         "[data-process-card]",
         stageEl,
       );
-      // A particle (trail + landing flash) per connector, so every card-to-card
-      // link carries its own moving pulse rather than one pulse touring the
-      // whole chain. No drop-shadow filters — only dash offset, opacity and
-      // scale move, so each frame stays cheap.
+      // One travelling pulse (trail) per connector, so every card-to-card link
+      // carries its own charge. No drop-shadow filters — only dash offset and
+      // opacity move, so each frame stays cheap.
       const trails = gsap.utils.toArray<SVGPathElement>("[data-trail]", svgEl);
-      const sparks = gsap.utils.toArray<SVGCircleElement>("[data-spark]", svgEl);
       if (paths.length === 0 || cards.length === 0) return;
 
       /** One looping timeline per connector, rebuilt only when curves move. */
       let pulses: gsap.core.Timeline[] = [];
       let onScreen = false;
+      let pageHidden = false;
+
+      /**
+       * A connector's pulse may only run once its line is actually revealed
+       * (and the section is on screen, tab visible). This is what keeps the
+       * order correct: cards reveal first, then their line, and only then does
+       * the charge appear on that line — never before it.
+       */
+      const sync = () => {
+        pulses.forEach((pulse, index) => {
+          const lineOpacity =
+            Number(gsap.getProperty(paths[index], "opacity")) || 0;
+          const visible = onScreen && !pageHidden && lineOpacity >= 0.75;
+          if (visible) {
+            if (pulse.paused()) pulse.restart();
+          } else {
+            if (!pulse.paused()) pulse.pause();
+            const trail = trails[index];
+            if (trail) gsap.set(trail, { opacity: 0 });
+          }
+        });
+      };
 
       const mm = gsap.matchMedia();
 
@@ -139,7 +159,7 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
            * window resizes, which never re-ran because matchMedia only fires
            * when the breakpoint itself flips.
            */
-          type Segment = { d: string; length: number; endX: number; endY: number };
+          type Segment = { d: string; length: number };
 
           // Measured once per layout change and cached, so nothing recalculates
           // a path or a box while the trail is moving.
@@ -160,24 +180,21 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
               // Keep each trail on its own connector's curve.
               trails[index]?.setAttribute("d", d);
 
-              // Measure the path's own length and end point to drive the dash
-              // distance and the landing flash at the far card.
+              // Measure the path's own length to drive the dash distance.
               const length = paths[index].getTotalLength() || 1;
-              const end = paths[index].getPointAtLength(length);
 
-              return { d, length, endX: end.x, endY: end.y };
+              return { d, length };
             });
           };
 
           /**
-           * A looping timeline per connector, so every link has its own pulse
-           * travelling from one card to the next at the same time. Each is
-           * staggered a little so the flow reads as continuous rather than
-           * perfectly synced.
+           * A looping timeline per connector, so each link has its own pulse.
+           * `sync()` starts a pulse only once its line is revealed, so the
+           * particles never run ahead of the lines they belong to.
            *
-           * Only opacity, scale and dash offset move. The trail is a short dash
-           * of the same path measured in the path's own units, so the tail can't
-           * drift from the head.
+           * Only opacity and dash offset move. The trail is a short dash of the
+           * same path measured in the path's own units, so the tail can't drift
+           * from the head.
            */
           const build = () => {
             pulses.forEach((pulse) => pulse.kill());
@@ -188,7 +205,6 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
 
             segments.forEach((segment, index) => {
               const trail = trails[index];
-              const spark = sparks[index];
               if (!trail) return;
 
               const tail = segment.length * 0.06;
@@ -214,33 +230,10 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
               );
               tl.to(trail, { opacity: 0, duration: 0.25 }, RUN - 0.25);
 
-              if (spark) {
-                tl.set(
-                  spark,
-                  { attr: { cx: segment.endX, cy: segment.endY } },
-                  RUN - 0.05,
-                );
-                tl.fromTo(
-                  spark,
-                  { opacity: 0, scale: 0.5 },
-                  {
-                    opacity: 0.7,
-                    scale: 1,
-                    duration: 0.12,
-                    transformOrigin: "center",
-                  },
-                  RUN - 0.05,
-                );
-                tl.to(
-                  spark,
-                  { opacity: 0, scale: 1.4, duration: 0.35 },
-                  RUN + 0.07,
-                );
-              }
-
               pulses.push(tl);
-              if (onScreen) tl.play();
             });
+
+            sync();
           };
 
           const refresh = () => {
@@ -280,35 +273,43 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
               // curve it will follow, so a stale measurement would both draw
               // and move along the previous layout.
               onRefreshInit: refresh,
+              // Re-evaluate which pulses may run as the reveal scrubs forward.
+              onUpdate: sync,
             },
+          });
+
+          // The first card appears first.
+          timeline.from(cards[0], {
+            opacity: 0,
+            scale: 0.92,
+            y: 24,
+            duration: 0.45,
+            ease: "power2.out",
           });
 
           paths.forEach((path, index) => {
             /**
-             * Reveal by opacity rather than a draw.
+             * Reveal the line by opacity rather than a draw: DrawSVG would set
+             * `stroke-dasharray` — now the dot pattern itself — and erase the
+             * dots, whereas fading the whole connector leaves it free.
              *
-             * DrawSVG works by setting `stroke-dasharray` — which is now the dot
-             * pattern itself, so it would erase the dots. Masking the dots and
-             * drawing the mask instead rendered nothing at all. Fading the whole
-             * connector is the one reveal that leaves `stroke-dasharray` free
-             * for the pattern, and it keeps the same scrub timing, so a line is
-             * still fully in place before its card passes under the header.
+             * Order per step: this card (already up) → its line → (charge beat)
+             * → the next card, so the whole chain reads card, line, card, line…
              */
             timeline.from(path, { opacity: 0, duration: 0.5, ease: "none" });
+            // A short beat so the charge runs the line before the next card
+            // arrives (the pulse is gated on this line being visible).
+            timeline.to({}, { duration: 0.4 });
             // `from`, not set-then-to: the resting state is the visible one, so
             // if this timeline never builds the cards are simply not animated
             // rather than stuck at opacity 0 forever.
-            timeline.from(
-              cards[index + 1],
-              {
-                opacity: 0,
-                scale: 0.92,
-                y: 24,
-                duration: 0.45,
-                ease: "power2.out",
-              },
-              ">-0.08",
-            );
+            timeline.from(cards[index + 1], {
+              opacity: 0,
+              scale: 0.92,
+              y: 24,
+              duration: 0.45,
+              ease: "power2.out",
+            });
           });
         },
       );
@@ -352,26 +353,22 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
       );
 
       /**
-       * The connector animation only runs while the section is on screen, and
-       * not in a hidden tab. Both are plain flags — no React state, so nothing
-       * re-renders while the animation plays.
+       * The connector animation only runs while the section is on screen, the
+       * tab is visible, and the relevant line is revealed. `sync()` is the one
+       * place that decides which pulses may play.
        */
-      const playAll = () => pulses.forEach((pulse) => pulse.play());
-      const pauseAll = () => pulses.forEach((pulse) => pulse.pause());
-
       const observer = new IntersectionObserver(
         ([entry]) => {
           onScreen = entry.isIntersecting;
-          if (onScreen) playAll();
-          else pauseAll();
+          sync();
         },
         { rootMargin: "20% 0px" },
       );
       observer.observe(stageEl);
 
       const onTabChange = () => {
-        if (document.hidden) pauseAll();
-        else if (onScreen) playAll();
+        pageHidden = document.hidden;
+        sync();
       };
       document.addEventListener("visibilitychange", onTabChange);
 
@@ -407,9 +404,9 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
           />
         ))}
 
-        {/* A trail (short dash) and a landing flash for every connection, so each
-            card-to-card link carries its own pulse. Driven in each path's own
-            units so `getTotalLength()` times the dash exactly. */}
+        {/* A trail (short dash) for every connection, so each card-to-card link
+            carries its own pulse. Driven in each path's own units so
+            `getTotalLength()` times the dash exactly. */}
         {process.steps.slice(0, -1).map((step) => (
           <path
             key={step.title}
@@ -418,16 +415,6 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
             fill="none"
             strokeLinecap="round"
             strokeWidth="0.5"
-            opacity="0"
-          />
-        ))}
-
-        {process.steps.slice(0, -1).map((step) => (
-          <circle
-            key={step.title}
-            data-spark
-            className="connector-spark"
-            r="0.9"
             opacity="0"
           />
         ))}
