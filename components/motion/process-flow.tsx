@@ -3,7 +3,7 @@
 import { useRef, type ReactNode } from "react";
 
 import { process } from "@/lib/content";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { replayOnScroll } from "@/lib/scroll-replay";
 
 /**
@@ -243,38 +243,16 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
 
           refresh();
 
-          // Pin once the stage's top clears the sticky header, so the cards are
-          // in view while the reveal scrubs through under a held section.
-          const header = document.querySelector<HTMLElement>(".site-header");
-          const headerOffset = (header?.offsetHeight ?? 88) + 16;
-
           // GSAP takes ownership of the transform so its scale/y tweens below
           // compose with the tilt instead of flattening it.
           gsap.set(cards, {
             rotation: (index: number) => CARD_ROTATIONS[index] ?? 0,
           });
 
-          const timeline = gsap.timeline({
-            scrollTrigger: {
-              // Pin the stage once its top clears the sticky header, then scrub
-              // the reveal as the user scrolls through the held section: card →
-              // line → next card, and so on.
-              trigger: stageEl,
-              start: `top top+=${headerOffset}`,
-              end: "+=60%",
-              pin: true,
-              pinSpacing: true,
-              scrub: 0.5,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-              // Re-measure and rebuild together: the timeline captures the
-              // curve it will follow, so a stale measurement would both draw
-              // and move along the previous layout.
-              onRefreshInit: refresh,
-              // Re-evaluate which pulses may run as the reveal scrubs forward.
-              onUpdate: sync,
-            },
-          });
+          // Driven by hand so the reveal can latch forward: once a card has
+          // appeared it stays, even when scrolling back up (a scrubbed timeline
+          // would glide it back out of view again).
+          const timeline = gsap.timeline({ paused: true });
 
           // The first card appears first.
           timeline.from(cards[0], {
@@ -309,6 +287,37 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
               ease: "power2.out",
             });
           });
+
+          // Spread the reveal across the stage's whole scroll-through, but only
+          // ever advance it: `revealed` remembers the deepest progress reached,
+          // so scrolling back up never un-reveals the cards.
+          let revealed = 0;
+          const revealTrigger = ScrollTrigger.create({
+            trigger: stageEl,
+            start: "top bottom",
+            end: "bottom 60%",
+            invalidateOnRefresh: true,
+            // Re-measure and rebuild the connectors from the current layout.
+            onRefreshInit: refresh,
+            onUpdate: (self) => {
+              const next = Math.max(revealed, self.progress);
+              if (next !== revealed) {
+                revealed = next;
+                timeline.progress(revealed);
+              }
+              // Re-evaluate which pulses may run as their lines reveal.
+              sync();
+            },
+          });
+
+          // Reflect the current scroll position if the page opens partway down.
+          revealed = Math.max(revealed, revealTrigger.progress);
+          timeline.progress(revealed);
+
+          return () => {
+            revealTrigger.kill();
+            timeline.kill();
+          };
         },
       );
 
