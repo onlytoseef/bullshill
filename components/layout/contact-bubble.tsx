@@ -4,7 +4,7 @@ import { ChatIcon } from "@/components/ui/icons";
 export function ContactBubble() {
   return (
     <Button
-      href="/#contact"
+      href="/contact"
       variant="primary"
       aria-label="Contact us"
       className="contact-bubble fixed right-5 bottom-5 z-40"

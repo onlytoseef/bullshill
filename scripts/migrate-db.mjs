@@ -11,6 +11,28 @@ nextRequire("@next/env").loadEnvConfig(root, process.env.NODE_ENV !== "productio
 const pgRequire = createRequire(require.resolve("@payloadcms/db-postgres"));
 const { Client } = pgRequire("pg");
 const migrationName = "20261105_094052_initial_cms";
+const contactMigrationName = "20261112_075413_contact_submissions";
+
+async function migrateContactSubmissions(client, checkOnly = false) {
+  const { rows } = await client.query(
+    "SELECT 1 FROM public.payload_migrations WHERE name = $1",
+    [contactMigrationName],
+  );
+  if (rows.length) return;
+  if (checkOnly) {
+    console.log("Contact submissions migration is pending.");
+    return;
+  }
+  const source = readFileSync(path.join(root, "migrations", contactMigrationName + ".ts"), "utf8");
+  const upSql = source.match(/await db\.execute\(sql`([\s\S]*?)`\)/)?.[1];
+  if (!upSql) throw new Error("Contact submissions migration SQL is missing.");
+  await client.query(upSql);
+  await client.query(
+    "INSERT INTO public.payload_migrations (name, batch) VALUES ($1, (SELECT COALESCE(MAX(batch), 0) + 1 FROM public.payload_migrations))",
+    [contactMigrationName],
+  );
+  console.log("Contact submissions table and dashboard relations created.");
+}
 
 async function existingSchemaMatches(client) {
   const snapshot = JSON.parse(readFileSync(path.join(root, "migrations/20261105_094052_initial_cms.json"), "utf8"));
@@ -78,6 +100,7 @@ async function migrate() {
     }
     if (process.argv.includes("--check")) {
       const matches = applied || await existingSchemaMatches(client);
+      if (rows[0].existing) await migrateContactSubmissions(client, true);
       await client.query("ROLLBACK");
       console.log(matches ? "Existing CMS schema verified. No database changes made." : "No CMS tables found; initial migration can be applied.");
       return;
@@ -95,6 +118,7 @@ async function migrate() {
       await client.query(sql);
       console.log("CMS tables created successfully.");
     }
+    await migrateContactSubmissions(client);
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK").catch(() => {});

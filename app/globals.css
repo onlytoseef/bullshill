@@ -2448,6 +2448,34 @@
   line-height: 1.45;
 }
 
+/* Optional per-person social links, e.g. under the CEO's name. */
+.awards-socials {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.awards-social {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #e8ebee;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+@media (hover: hover) {
+  a.awards-social:hover {
+    background: var(--color-orange);
+    color: #ffffff;
+  }
+}
+
 /* Real pointers only — on touch `:hover` latches after a tap and would strand
    a card lifted with nothing to un-lift it. */
 @media (hover: hover) {
@@ -2896,6 +2924,9 @@
 .footer-brand img {
   width: 3rem;
   height: 3rem;
+  /* The SVG's transparent padding + the wordmark's cap centre sit their
+     optical centres ~4px apart; raise the bull so it is level with the text. */
+  transform: translateY(-0.3rem);
 }
 
 .footer-description {
@@ -4141,6 +4172,31 @@
 .contact-submit {
   width: 100%;
   margin-top: 0.25rem;
+}
+
+/* Honeypot — off-screen for humans and screen readers, filled by bots. */
+.contact-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact-feedback {
+  margin-top: 0.25rem;
+  font-family: Geist, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.contact-feedback[data-state="success"] {
+  color: #6ee7a8;
+}
+
+.contact-feedback[data-state="error"] {
+  color: #ff9a8a;
 }
 
 .contact-schedule {

@@ -152,16 +152,25 @@ export function ReviewsWall() {
 
       // One paused tween per card, replayed as it reaches the trigger zone, so
       // a wall of 27 never animates in one go — only the ones being scrolled to.
+      //
+      // `fromTo` with an explicit end (not `from`): `columns` re-inits this on
+      // mount, and a `from` tween would read the card's current opacity (already
+      // 0 from the first pass) as its destination — animating 0→0 and leaving
+      // cards stranded invisible. The explicit `opacity: 1` end can't do that.
       const entrances = new Map(
         cards.map((card) => [
           card,
-          gsap.from(card, {
-            opacity: 0,
-            y: 25,
-            duration: 0.6,
-            ease: EASE_OUT_GSAP,
-            paused: true,
-          }),
+          gsap.fromTo(
+            card,
+            { opacity: 0, y: 25 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.6,
+              ease: EASE_OUT_GSAP,
+              paused: true,
+            },
+          ),
         ]),
       );
 
@@ -174,7 +183,7 @@ export function ReviewsWall() {
           left.forEach((card) => entrances.get(card)?.pause(0)),
       });
     },
-    { scope: root, dependencies: [columns] },
+    { scope: root, dependencies: [columns], revertOnUpdate: true },
   );
 
   /**

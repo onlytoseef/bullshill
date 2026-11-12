@@ -6,7 +6,7 @@ import type { CaseStudy } from "@/lib/content";
 import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 import amalasImage from "../../app/assets/case-studies/AMALAS case.webp";
 import avxImage from "../../app/assets/case-studies/AVX case.webp";
-import dmtImage from "../../app/assets/case-studies/DMT Tikabit & Noderocks.webp";
+import dmtImage from "../../app/assets/case-studies/DMT-Tikabit-Noderocks.webp";
 import pcpImage from "../../app/assets/case-studies/PCP case.webp";
 import redditImage from "../../app/assets/case-studies/Reddit-marketing.webp";
 import xMarketingImage from "../../app/assets/case-studies/X Marketing.webp";

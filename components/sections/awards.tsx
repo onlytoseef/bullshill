@@ -6,7 +6,8 @@ import { StaggerHeading } from "@/components/motion/stagger-heading";
 import { AwardsCarousel } from "@/components/sections/awards-carousel";
 import { CarouselItem } from "@/components/ui/carousel";
 import { Container, Section } from "@/components/ui/section";
-import { awards } from "@/lib/content";
+import { SocialIcon } from "@/components/ui/social-icons";
+import { awards, teamSocials } from "@/lib/content";
 import adnanImage from "../../app/assets/bullshill-team/Adnan Hussain.webp";
 import faisalNoorImage from "../../app/assets/bullshill-team/Faisal Noor.webp";
 import junaidImage from "../../app/assets/bullshill-team/Junaid Muneer.webp";
@@ -57,27 +58,56 @@ export function Awards() {
 
         <Reveal>
           <AwardsCarousel>
-            {awards.people.map((person) => (
-              <CarouselItem key={person.name} className="awards-slide">
-                <figure className="awards-card relative isolate overflow-hidden">
-                  <div className="awards-image relative">
-                    <Image
-                      src={teamImages[person.name]}
-                      alt={person.name}
-                      fill
-                      sizes="(max-width: 767px) 86vw, (max-width: 1023px) 46vw, 30vw"
-                      className="object-contain object-bottom"
-                    />
-                  </div>
-                  <figcaption className="awards-caption">
-                    <span className="awards-name">{person.name}</span>
-                    {person.role ? (
-                      <span className="awards-role">{person.role}</span>
-                    ) : null}
-                  </figcaption>
-                </figure>
-              </CarouselItem>
-            ))}
+            {awards.people.map((person) => {
+              const socials = teamSocials[person.name];
+              return (
+                <CarouselItem key={person.name} className="awards-slide">
+                  <figure className="awards-card relative isolate overflow-hidden">
+                    <div className="awards-image relative">
+                      <Image
+                        src={teamImages[person.name]}
+                        alt={person.name}
+                        fill
+                        sizes="(max-width: 767px) 86vw, (max-width: 1023px) 46vw, 30vw"
+                        className="object-contain object-bottom"
+                      />
+                    </div>
+                    <figcaption className="awards-caption">
+                      <span className="awards-name">{person.name}</span>
+                      {person.role ? (
+                        <span className="awards-role">{person.role}</span>
+                      ) : null}
+                      {socials ? (
+                        <span className="awards-socials">
+                          {socials.map((social) =>
+                            social.href ? (
+                              <a
+                                key={social.label}
+                                href={social.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`${person.name} on ${social.label}`}
+                                className="awards-social"
+                              >
+                                <SocialIcon name={social.label} />
+                              </a>
+                            ) : (
+                              <span
+                                key={social.label}
+                                className="awards-social"
+                                aria-hidden="true"
+                              >
+                                <SocialIcon name={social.label} />
+                              </span>
+                            ),
+                          )}
+                        </span>
+                      ) : null}
+                    </figcaption>
+                  </figure>
+                </CarouselItem>
+              );
+            })}
           </AwardsCarousel>
         </Reveal>
       </Container>

@@ -1170,6 +1170,23 @@ export const awards = {
   ],
 } as const;
 
+/**
+ * Optional social links shown under a team member's name in the carousel.
+ * An empty `href` still renders the icon but as a non-link (pending the URL).
+ */
+export const teamSocials: Record<
+  string,
+  readonly { label: "X" | "LinkedIn" | "Instagram"; href: string }[]
+> = {
+  "Muhammad Jawad Nawaz": [
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/in/muhammad-jawad-nawaz/",
+    },
+    { label: "X", href: "" },
+  ],
+};
+
 export const faqs = {
   title: "Digital Marketing FAQs",
   body: "As a leading digital marketing agency, we are dedicated to providing comprehensive educational resources and answering frequently asked questions to help our clients.",
@@ -1243,7 +1260,7 @@ export const faqs = {
 
 export const finalCta = {
   title: "Ready to work with us ?",
-  cta: { label: "Contact us", href: "/#contact" },
+  cta: { label: "Contact us", href: "/contact" },
 } as const;
 
 export const footer = {

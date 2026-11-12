@@ -77,7 +77,7 @@ export function CaseStudyStoryCta({ story }: { story: CaseStudyStoryData }) {
         <div className="xera-story-cta" aria-labelledby="case-study-cta-title">
           <h2 id="case-study-cta-title">{story.ctaTitle}</h2>
           <p>{story.ctaBody}</p>
-          <a href="/#contact">Contact our team</a>
+          <a href="/contact">Contact our team</a>
         </div>
       </Container>
     </section>

@@ -7,6 +7,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { BlogPosts } from "./lib/payload/collections/BlogPosts";
+import { ContactSubmissions } from "./lib/payload/collections/ContactSubmissions";
 import { Media } from "./lib/payload/collections/Media";
 import { Users } from "./lib/payload/collections/Users";
 
@@ -28,7 +29,7 @@ export default buildConfig({
   admin: {
     user: "users",
   },
-  collections: [Users, Media, BlogPosts],
+  collections: [Users, Media, BlogPosts, ContactSubmissions],
   editor: lexicalEditor(),
   secret,
   typescript: {
