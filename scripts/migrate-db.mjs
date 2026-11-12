@@ -23,14 +23,7 @@ async function migrateContactSubmissions(client, checkOnly = false) {
     console.log("Contact submissions migration is pending.");
     return;
   }
-  const source = readFileSync(path.join(root, "migrations", contactMigrationName + ".ts"), "utf8");
-  const upSql = source.match(/await db\.execute\(sql`([\s\S]*?)`\)/)?.[1];
-  if (!upSql) throw new Error("Contact submissions migration SQL is missing.");
-  await client.query(upSql);
-  await client.query(
-    "INSERT INTO public.payload_migrations (name, batch) VALUES ($1, (SELECT COALESCE(MAX(batch), 0) + 1 FROM public.payload_migrations))",
-    [contactMigrationName],
-  );
+  await client.query(readFileSync(path.join(root, "migrations/002_contact_submissions.sql"), "utf8"));
   console.log("Contact submissions table and dashboard relations created.");
 }
 

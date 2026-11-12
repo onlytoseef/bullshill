@@ -13,6 +13,18 @@ import { Users } from "./lib/payload/collections/Users";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Cookie-authenticated admin POSTs must allow the browser's exact origin.
+// Normalize configured URLs so paths or trailing slashes cannot break matching.
+const serverURL = new URL(
+  process.env.NEXT_PUBLIC_SERVER_URL?.trim() ||
+    (process.env.NODE_ENV === "production"
+      ? "https://bullshill.com"
+      : "http://localhost:3000"),
+).origin;
+const adminOrigins = Array.from(
+  new Set([serverURL, "https://bullshill.com", "https://www.bullshill.com"]),
+);
+
 /**
  * Signs auth cookies and encrypts stored secrets. There is deliberately no
  * fallback: a missing value must fail at boot rather than quietly run with a
@@ -41,5 +53,6 @@ export default buildConfig({
     },
   }),
   sharp,
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
+  serverURL,
+  csrf: adminOrigins,
 });
