@@ -27,6 +27,8 @@ export type BlogPostView = {
 
 /** Everything the article page needs. */
 export type BlogArticleView = BlogPostView & {
+  publishedAt: string | null;
+  updatedAt: string | null;
   readTime: string;
   /** Per-post SEO overrides; both fall back to the title/excerpt. */
   seo: {

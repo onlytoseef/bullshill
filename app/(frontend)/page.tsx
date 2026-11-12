@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
 
 import { Awards } from "@/components/sections/awards";
 import { Blog } from "@/components/sections/blog";
@@ -35,6 +36,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
+      <PageJsonLd path="/" name="Bullshill — Marketing Built for Web3 Success" description={metadata.description ?? undefined} />
       <Hero />
       <Intro />
       <Services />

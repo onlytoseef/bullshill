@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
+import { organizationId } from "@/lib/structured-data";
 import { notFound } from "next/navigation";
 
 import { FinalCta } from "@/components/sections/final-cta";
@@ -34,9 +36,11 @@ export default async function ServicePage({ params }: Props) {
   const { slug } = await params;
   const index = findIndex(slug);
   if (index === -1) notFound();
+  const service = servicesPage.items[index];
 
   return (
     <>
+      <PageJsonLd path={`/services/${slug}`} name={service.title} description={service.body} parents={[{ name: "Services", path: "/services" }]} entity={{ "@type": "Service", name: service.title, description: service.body, serviceType: service.title, provider: { "@id": organizationId } }} />
       <ServiceDetail service={servicesPage.items[index]} index={index + 1} />
       <Partners variant="strip" />
       <FinalCta variant="page" />

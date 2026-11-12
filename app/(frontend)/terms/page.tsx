@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
 
 import { FinalCta } from "@/components/sections/final-cta";
 import { LegalDoc } from "@/components/sections/legal-doc";
@@ -15,6 +16,7 @@ export const metadata: Metadata = pageMetadata({
 export default function TermsPage() {
   return (
     <>
+      <PageJsonLd path="/terms" name={termsOfService.title} description={termsOfService.intro} />
       <LegalDoc doc={termsOfService} />
       <FinalCta variant="page" />
     </>

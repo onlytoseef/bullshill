@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
+import { servicesPage } from "@/lib/content";
 
 import { FinalCta } from "@/components/sections/final-cta";
 import { Partners } from "@/components/sections/partners";
@@ -15,6 +17,7 @@ export const metadata: Metadata = pageMetadata({
 export default function ServicesPage() {
   return (
     <>
+      <PageJsonLd path="/services" name="Services" type="CollectionPage" description={metadata.description ?? undefined} items={servicesPage.items.map((service) => ({ name: service.title, path: `/services/${service.slug}` }))} />
       <ServicesList />
       <Partners variant="strip" />
       <FinalCta variant="page" />

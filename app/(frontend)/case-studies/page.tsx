@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
+import { caseStudiesPage } from "@/lib/content";
 
 import { CaseStudiesHero } from "@/components/sections/case-studies-hero";
 import { CaseStudiesList } from "@/components/sections/case-studies-list";
@@ -17,6 +19,7 @@ export const metadata: Metadata = pageMetadata({
 export default function CaseStudiesPage() {
   return (
     <>
+      <PageJsonLd path="/case-studies" name="Case Studies" type="CollectionPage" description={metadata.description ?? undefined} items={caseStudiesPage.items.map((study) => ({ name: study.detailTitle ?? study.client, path: `/case-studies/${study.slug}` }))} />
       <CaseStudiesHero />
       <CaseStudiesList />
       <Partners variant="strip" />

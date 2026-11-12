@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
 
 import { ContactHero } from "@/components/sections/contact-hero";
 import { ContactSchedule } from "@/components/sections/contact-schedule";
@@ -16,6 +17,7 @@ export const metadata: Metadata = pageMetadata({
 export default function ContactPage() {
   return (
     <>
+      <PageJsonLd path="/contact" name="Contact us" type="ContactPage" description={metadata.description ?? undefined} />
       <ContactHero />
       <ContactSchedule />
       <Partners variant="strip" />

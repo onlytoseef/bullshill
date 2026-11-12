@@ -49,6 +49,7 @@ type PostDoc = {
   excerpt?: string | null;
   publishedAt?: string | null;
   createdAt?: string | null;
+  updatedAt?: string | null;
   coverImage?: MediaDoc;
   content?: unknown;
   featured?: boolean | null;
@@ -136,6 +137,8 @@ function toArticleView(doc: PostDoc): BlogArticleView {
 
   return {
     ...base,
+    publishedAt: doc.publishedAt ?? doc.createdAt ?? null,
+    updatedAt: doc.updatedAt ?? null,
     readTime: `${Math.max(1, Math.round(words / 200))} min read`,
     seo: {
       title: doc.seo?.title?.trim() || null,

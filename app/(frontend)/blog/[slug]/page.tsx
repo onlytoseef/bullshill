@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
+import { absoluteUrl, isoDate, organizationId } from "@/lib/structured-data";
 import { notFound } from "next/navigation";
 
 import { BlogDetailBody } from "@/components/sections/blog-detail-body";
@@ -55,6 +57,26 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <>
+      <PageJsonLd
+        path={`/blog/${slug}`}
+        name={post.title}
+        description={post.excerpt}
+        parents={[{ name: "Blog", path: "/blog" }]}
+        entity={{
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.excerpt,
+          inLanguage: "en",
+          datePublished: isoDate(post.publishedAt),
+          dateModified: isoDate(post.updatedAt),
+          ...(post.cover ? { image: absoluteUrl(post.cover.url) } : {}),
+          ...(post.author ? { author: {
+            "@type": "Person", name: post.author.name,
+            ...(post.author.linkedin.startsWith("https://") ? { url: post.author.linkedin } : {}),
+          } } : {}),
+          publisher: { "@id": organizationId },
+        }}
+      />
       <BlogDetailHero article={post} />
       <BlogDetailBody article={post} />
       <Partners variant="strip" />

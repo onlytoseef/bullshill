@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
 
 import { ParticleBackground } from "@/components/motion/particle-background";
 import { FinalCta } from "@/components/sections/final-cta";
@@ -18,6 +19,7 @@ export default function TestimonialsPage() {
     // One particle canvas for the whole page, following the same opt-in
     // contract the home sections use — never one scene per review.
     <div className="has-particles reviews-page">
+      <PageJsonLd path="/testimonials" name="Client Reviews" type="CollectionPage" description={metadata.description ?? undefined} />
       <ParticleBackground />
 
       <div className="reviews-page-content">

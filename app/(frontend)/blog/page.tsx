@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
 import { ParticleBackground } from "@/components/motion/particle-background";
 
 import { BlogFeatured } from "@/components/sections/blog-featured";
@@ -31,11 +32,13 @@ const ALL = "All articles";
 
 export default async function BlogPage() {
   const posts = await getPublishedPosts();
+  const structuredData = <PageJsonLd path="/blog" name="Blog" type="CollectionPage" description={metadata.description ?? undefined} items={posts.map((post) => ({ name: post.title, path: `/blog/${post.slug}` }))} />;
 
   // Nothing published yet — the hero stays, the listing does not invent posts.
   if (posts.length === 0) {
     return (
       <>
+        {structuredData}
         <BlogHero />
         <section className="has-particles inner-content-grains">
         <ParticleBackground />
@@ -70,6 +73,7 @@ export default async function BlogPage() {
 
   return (
     <>
+      {structuredData}
       <BlogHero />
       <BlogFeatured featured={featured} secondary={secondary} />
       {more.length > 0 ? (

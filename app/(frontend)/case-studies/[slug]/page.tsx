@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { PageJsonLd } from "@/components/seo/page-json-ld";
+import { organizationId } from "@/lib/structured-data";
 import { notFound, permanentRedirect } from "next/navigation";
 
 import { CaseStudyDetailHero } from "@/components/sections/case-study-detail-hero";
@@ -80,6 +82,7 @@ export default async function CaseStudyPage({ params }: Props) {
 
   return (
     <>
+      <PageJsonLd path={`/case-studies/${slug}`} name={study.detailTitle ?? study.client} description={study.seoDescription ?? `${study.summaryLead}${study.summaryRest}`} parents={[{ name: "Case Studies", path: "/case-studies" }]} entity={{ "@type": "CreativeWork", name: study.detailTitle ?? study.client, description: study.seoDescription ?? `${study.summaryLead}${study.summaryRest}`, genre: "Case study", author: { "@id": organizationId } }} />
       <CaseStudyDetailHero study={study} />
       {story ? <CaseStudyStory story={story} /> : null}
       <Partners variant="strip" />
