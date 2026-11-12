@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 import { withPayload } from "@payloadcms/next/withPayload";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    globalNotFound: true,
+  },
   /**
    * Lets a phone on the same Wi-Fi open the dev server at this machine's LAN
    * address. `next dev` blocks its dev resources for any host but localhost —

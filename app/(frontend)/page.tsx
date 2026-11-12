@@ -19,13 +19,18 @@ import { pageMetadata } from "@/lib/seo";
  * it gets a self-referencing canonical like every other route. `absolute`
  * because the default title already carries the brand.
  */
-export const metadata: Metadata = pageMetadata({
+export const metadata: Metadata = {
+  ...pageMetadata({
   title: "Bullshill — Marketing Built for Web3 Success",
   description:
     "Data-driven, end-to-end marketing for crypto and Web3 projects. Token launches, community building, and campaigns that convert.",
   path: "/",
   absolute: true,
-});
+  }),
+  verification: {
+    google: "T82o5OSdxv5-lSkXmLto_MXLISO-4G8Gi6GbOR1zk0o",
+  },
+};
 
 export default function Page() {
   return (
