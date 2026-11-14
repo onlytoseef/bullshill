@@ -13,6 +13,7 @@ import type {
  * slug are cleared, because renaming a post leaves the old path cached too.
  */
 const blogPaths = (slug?: string | null): string[] => [
+  "/",
   "/blog",
   "/sitemap.xml",
   ...(slug ? [`/blog/${slug}`] : []),

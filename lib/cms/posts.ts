@@ -164,7 +164,7 @@ function toArticleView(doc: PostDoc): BlogArticleView {
  * `_status` is filtered here *and* enforced by the collection's `access.read`,
  * so a draft cannot reach the site even if this query is ever changed.
  */
-export async function getPublishedPosts(): Promise<BlogPostView[]> {
+export async function getPublishedPosts(limit = 200): Promise<BlogPostView[]> {
   const cms = await getCms();
   if (!cms) return [];
 
@@ -172,8 +172,8 @@ export async function getPublishedPosts(): Promise<BlogPostView[]> {
     const result = await cms.find({
       collection: "blog-posts",
       depth: 1,
-      limit: 200,
-      sort: "-publishedAt",
+      limit,
+      sort: ["-publishedAt", "-createdAt"],
       where: { _status: { equals: "published" } },
     });
 

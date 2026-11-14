@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { ParticleBackground } from "@/components/motion/particle-background";
 import { Stagger } from "@/components/motion/stagger";
@@ -6,8 +7,13 @@ import { StaggerHeading } from "@/components/motion/stagger-heading";
 import { PlaceholderVisual } from "@/components/ui/placeholder-visual";
 import { Container, Section } from "@/components/ui/section";
 import { blog } from "@/lib/content";
+import { getPublishedPosts } from "@/lib/cms/posts";
+import { Button } from "@/components/ui/button";
 
-export function Blog() {
+export async function Blog() {
+  const posts = await getPublishedPosts(6);
+  if (posts.length === 0) return null;
+
   return (
     <Section id="blog" className="bubble-zone has-particles">
       <ParticleBackground />
@@ -24,18 +30,28 @@ export function Blog() {
           className="blog-grid"
           stagger={0.07}
         >
-          {blog.posts.map((post) => (
-            <article key={post.title} className="blog-card-wrapper h-full">
+          {posts.map((post) => (
+            <article key={post.slug} className="blog-card-wrapper h-full">
               <Link
-                href="#blog"
+                href={`/blog/${post.slug}`}
                 className="blog-card group flex h-full flex-col overflow-hidden transition-colors hover:border-orange/50"
               >
                 <div className="blog-card-media overflow-hidden">
-                  <PlaceholderVisual
+                  {post.cover ? (
+                    <div className="blog-card-image relative w-full overflow-hidden rounded-3xl">
+                      <Image
+                        src={post.cover.url}
+                        alt={post.cover.alt || post.title}
+                        fill
+                        sizes="(max-width: 767px) 92vw, (max-width: 1023px) 46vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                  ) : <PlaceholderVisual
                     from={post.from}
                     to={post.to}
                     className="blog-card-image w-full rounded-3xl ring-0 transition-transform duration-500 group-hover:scale-105"
-                  />
+                  />}
                 </div>
 
                 <div className="blog-card-content flex flex-1 flex-col">
@@ -44,7 +60,7 @@ export function Blog() {
                       {post.category}
                     </span>
                     <span aria-hidden>-</span>
-                    <span>{post.readTime}</span>
+                    <time>{post.date}</time>
                   </div>
 
                   <h3 className="blog-card-title text-balance">{post.title}</h3>
@@ -53,6 +69,9 @@ export function Blog() {
             </article>
           ))}
         </Stagger>
+        <div className="mt-10 flex justify-center">
+          <Button href="/blog" variant="secondary">View all articles</Button>
+        </div>
       </Container>
     </Section>
   );

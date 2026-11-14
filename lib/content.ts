@@ -304,10 +304,10 @@ export const projects = {
 } as const;
 
 export const blog = {
-  eyebrow: "Blog section",
-  title: "Check Our Company Inside Story",
+  eyebrow: "Latest insights",
+  title: "Insights from Bullshill",
   subtitle:
-    "Exchange Your Products With Founders and In Return Use Their Products For FREE!",
+    "Explore our latest insights on Web3 marketing, token launches and community growth.",
   posts: [
     {
       title: "How to price a token launch campaign",

@@ -15,6 +15,8 @@ import { Testimonials } from "@/components/sections/testimonials";
 import { Worried } from "@/components/sections/worried";
 import { pageMetadata } from "@/lib/seo";
 
+export const revalidate = 60;
+
 /**
  * The home page sets its own metadata rather than inheriting the layout's, so
  * it gets a self-referencing canonical like every other route. `absolute`
