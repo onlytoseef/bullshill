@@ -12,14 +12,8 @@ import { getPublishedPosts } from "@/lib/cms/posts";
 import { blogPage } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
-/**
- * Literal, not imported: Next reads segment config by static analysis at build
- * time, and an imported binding fails that check with "Invalid segment
- * configuration export detected" — a dev-only warning that is a hard build
- * error in production. Keep this number in step with `REVALIDATE` in
- * `lib/cms/posts.ts`.
- */
-export const revalidate = 60;
+// Do not serve a stale list while regenerating it in the background.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = pageMetadata({
   title: "Blog",

@@ -9,6 +9,7 @@ import { Container, Section } from "@/components/ui/section";
 import { blog } from "@/lib/content";
 import { getPublishedPosts } from "@/lib/cms/posts";
 import { Button } from "@/components/ui/button";
+import styles from "./blog-card.module.css";
 
 export async function Blog() {
   const posts = await getPublishedPosts(6);
@@ -34,36 +35,46 @@ export async function Blog() {
             <article key={post.slug} className="blog-card-wrapper h-full">
               <Link
                 href={`/blog/${post.slug}`}
-                className="blog-card group flex h-full flex-col overflow-hidden transition-colors hover:border-orange/50"
+                className={styles.card}
               >
-                <div className="blog-card-media overflow-hidden">
+                <div className={styles.thumbnail}>
                   {post.cover ? (
-                    <div className="blog-card-image relative w-full overflow-hidden rounded-3xl">
                       <Image
                         src={post.cover.url}
                         alt={post.cover.alt || post.title}
                         fill
                         sizes="(max-width: 767px) 92vw, (max-width: 1023px) 46vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className={styles.image}
                       />
-                    </div>
                   ) : <PlaceholderVisual
                     from={post.from}
                     to={post.to}
-                    className="blog-card-image w-full rounded-3xl ring-0 transition-transform duration-500 group-hover:scale-105"
+                    className={styles.placeholder}
                   />}
                 </div>
 
-                <div className="blog-card-content flex flex-1 flex-col">
-                  <div className="blog-card-meta flex items-center gap-2">
-                    <span className="blog-card-category font-medium">
+                <div className={styles.content}>
+                  <div className={styles.meta}>
+                    <span className={styles.category}>
                       {post.category}
                     </span>
-                    <span aria-hidden>-</span>
-                    <time>{post.date}</time>
+                    <span className={styles.date}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+                        <rect x="3" y="5" width="18" height="16" rx="3" />
+                        <path d="M16 3v4M8 3v4M3 11h18" />
+                      </svg>
+                      <time>{post.date}</time>
+                    </span>
                   </div>
 
-                  <h3 className="blog-card-title text-balance">{post.title}</h3>
+                  <h3 className={styles.title}>{post.title}</h3>
+                  {post.excerpt?.trim() ? <p className={styles.excerpt}>{post.excerpt}</p> : null}
+                  <span className={styles.readMore}>
+                    Read more
+                    <svg className={styles.arrow} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+                      <path d="M4 12h15m-6-6 6 6-6 6" />
+                    </svg>
+                  </span>
                 </div>
               </Link>
             </article>

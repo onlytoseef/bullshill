@@ -66,17 +66,6 @@ type PostDoc = {
   } | null;
 };
 
-/**
- * How long a fetched blog payload stays fresh.
- *
- * NOT exported on purpose: the pages that set `revalidate` have to write the
- * number as a literal, because Next reads segment config by static analysis at
- * build time. An imported binding fails that check with "Invalid segment
- * configuration export detected" — which is a hard production build error. If
- * this changes, change those two pages with it.
- */
-const REVALIDATE = 60;
-
 /** Payload serves uploads from here, on this same origin. */
 const UPLOAD_PATH = "/api/media/";
 
@@ -164,7 +153,7 @@ function toArticleView(doc: PostDoc): BlogArticleView {
  * `_status` is filtered here *and* enforced by the collection's `access.read`,
  * so a draft cannot reach the site even if this query is ever changed.
  */
-export async function getPublishedPosts(limit = 200): Promise<BlogPostView[]> {
+export async function getPublishedPosts(limit?: number): Promise<BlogPostView[]> {
   const cms = await getCms();
   if (!cms) return [];
 
@@ -172,8 +161,9 @@ export async function getPublishedPosts(limit = 200): Promise<BlogPostView[]> {
     const result = await cms.find({
       collection: "blog-posts",
       depth: 1,
-      limit,
-      sort: ["-publishedAt", "-createdAt"],
+      pagination: false,
+      ...(limit === undefined ? {} : { limit }),
+      sort: ["-publishedAt", "-createdAt", "-id"],
       where: { _status: { equals: "published" } },
     });
 
