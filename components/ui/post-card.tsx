@@ -28,7 +28,7 @@ export function PostCard({
               alt={post.cover.alt}
               fill
               sizes="(max-width: 767px) 92vw, (max-width: 1023px) 46vw, 360px"
-              className="object-cover"
+              className="object-contain"
             />
           </div>
         ) : (

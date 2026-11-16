@@ -32,7 +32,7 @@ export function BlogFeatured({ featured, secondary }: Props) {
                   alt={featured.cover.alt}
                   fill
                   sizes="(max-width: 1023px) 100vw, 718px"
-                  className="object-cover"
+                  className="object-contain"
                 />
               </div>
             ) : (
