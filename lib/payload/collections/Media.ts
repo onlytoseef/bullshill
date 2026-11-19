@@ -3,6 +3,8 @@ import { fileURLToPath } from "node:url";
 
 import type { CollectionConfig } from "payload";
 
+import { revalidateMedia, revalidateMediaDelete } from "@/lib/payload/revalidate";
+
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
@@ -31,6 +33,12 @@ export const Media: CollectionConfig = {
       { name: "card", width: 768, height: 512, position: "centre" },
       { name: "og", width: 1200, height: 630, position: "centre" },
     ],
+  },
+  hooks: {
+    // An edited image gets a new `?v=`; these clear the HTML that points at
+    // the previous one. See `lib/cms/media.ts`.
+    afterChange: [revalidateMedia],
+    afterDelete: [revalidateMediaDelete],
   },
   fields: [
     {

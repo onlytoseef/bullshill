@@ -191,6 +191,11 @@ export function ParticleBackground() {
     const host = hostRef.current;
     if (!host) return;
 
+    // Keep the server-rendered host; defer only GPU allocation and setup.
+    let dispose: (() => void) | undefined;
+    let initialized = false;
+    let disposed = false;
+    const initialize = () => {
     /**
      * Phones get a cheaper context on purpose. `antialias` asks for MSAA and
      * `high-performance` asks for a discrete GPU; on a mobile driver either can
@@ -453,10 +458,9 @@ export function ParticleBackground() {
       size.w = w;
       size.h = h;
 
-      renderer.setSize(w, h);
-      uniforms.uPixelRatio.value = renderer.getPixelRatio();
-
       if (changed) {
+        renderer.setSize(w, h);
+        uniforms.uPixelRatio.value = renderer.getPixelRatio();
         build();
         draw();
       }
@@ -538,9 +542,11 @@ export function ParticleBackground() {
       frame = 0;
     };
 
+    let nearScreen = false;
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) start();
+        nearScreen = entry.isIntersecting;
+        if (nearScreen && !document.hidden) start();
         else stop();
       },
       { rootMargin: "20% 0px" },
@@ -549,6 +555,7 @@ export function ParticleBackground() {
 
     const onVisibility = () => {
       if (document.hidden) stop();
+      else if (nearScreen) start();
     };
     document.addEventListener("visibilitychange", onVisibility);
 
@@ -565,6 +572,21 @@ export function ParticleBackground() {
       material.dispose();
       renderer.dispose();
       renderer.domElement.remove();
+    };
+    };
+
+    const proximity = new IntersectionObserver(([entry]) => {
+      if (disposed || initialized || !entry.isIntersecting) return;
+      initialized = true;
+      proximity.disconnect();
+      dispose = initialize();
+    }, { rootMargin: "100% 0px" });
+    proximity.observe(host);
+
+    return () => {
+      disposed = true;
+      proximity.disconnect();
+      dispose?.();
     };
   }, []);
 

@@ -68,7 +68,7 @@ export function Awards() {
                         src={teamImages[person.name]}
                         alt={person.name}
                         fill
-                        sizes="(max-width: 767px) 86vw, (max-width: 1023px) 46vw, 30vw"
+                        sizes="(max-width: 479px) 76vw, (max-width: 767px) 81vw, (max-width: 1023px) 46vw, 30vw"
                         className="object-contain object-bottom"
                       />
                     </div>

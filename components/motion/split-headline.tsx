@@ -3,7 +3,8 @@
 import { useRef } from "react";
 
 import type { HeadlineSegment } from "@/lib/content";
-import { gsap, SplitText, useGSAP } from "@/lib/gsap";
+import { gsap, useGSAP } from "@/lib/gsap";
+import { SplitText } from "@/lib/gsap-split-text";
 import { replayOnScroll } from "@/lib/scroll-replay";
 import { cn } from "@/lib/utils";
 

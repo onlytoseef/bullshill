@@ -2,7 +2,8 @@
 
 import { useRef, type ReactNode } from "react";
 
-import { Draggable, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { Draggable } from "@/lib/gsap-draggable";
 import { EASE_OUT_GSAP } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 

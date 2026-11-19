@@ -3,7 +3,8 @@
 import { useRef, type ReactNode } from "react";
 
 import { createCountUp } from "@/lib/count-up";
-import { gsap, SplitText, useGSAP } from "@/lib/gsap";
+import { gsap, useGSAP } from "@/lib/gsap";
+import { SplitText } from "@/lib/gsap-split-text";
 import { EASE_OUT_GSAP } from "@/lib/motion";
 import { replayOnScroll } from "@/lib/scroll-replay";
 

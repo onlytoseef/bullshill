@@ -9,7 +9,7 @@ import findMoreIcon from "../../app/assets/images/find-more-icon.svg";
 import tickIcon from "../../app/assets/images/tick-icon.png";
 import aiProductLaunchImage from "../../app/assets/services-section/ai-product-launch.webp";
 import communityGrowthImage from "../../app/assets/services-section/community-growth.webp";
-import memecoinMarketingImage from "../../app/assets/services-section/meme-coin-marketing.png";
+import memecoinMarketingImage from "../../app/assets/services-section/meme-coin-marketing.webp";
 import nftPromotionImage from "../../app/assets/services-section/nft-promotion.webp";
 import redditGrowthImage from "../../app/assets/services-section/reddit-growth.webp";
 import tokenMarketingImage from "../../app/assets/services-section/token-marketing.webp";

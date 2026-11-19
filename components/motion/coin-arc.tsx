@@ -282,12 +282,14 @@ export function CoinArc() {
                   draggable={false}
                 />
                 {/* A separately facing reverse avoids mirrored logos during
-                    the turn; both faces reuse the original cached artwork. */}
+                    the turn; both faces reuse the original cached artwork.
+                    Only the immediate face loads eagerly — the reverse is
+                    hidden behind it until a face turns toward the viewer. */}
                 <Image
                   src={coin.image}
                   alt=""
                   aria-hidden
-                  loading="eager"
+                  loading="lazy"
                   sizes="(max-width: 767px) 22vw, (max-width: 1535px) 190px, 225px"
                   className="coin-image coin-image--reverse"
                   draggable={false}

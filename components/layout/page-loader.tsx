@@ -1,30 +1,56 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useId, useLayoutEffect, useRef, useTransition } from "react";
+import { useLayoutEffect, useId, useRef } from "react";
 
 import bullLogo from "../../app/assets/images/logo.webp";
 import { gsap } from "@/lib/gsap";
+import { INTRO_SESSION_KEY } from "@/lib/intro-session";
 import { holdIntro, releaseIntro } from "@/lib/intro-gate";
 
-type Controller = { begin: () => void; ready: () => void };
-
-/** One persistent overlay. React owns navigation; GSAP owns the motion. */
+/**
+ * One persistent overlay. React owns navigation; GSAP owns the motion.
+ *
+ * The full sequence plays once per tab. `sessionStorage` survives both client
+ * navigations and refreshes, so a returning visitor gets the page immediately
+ * instead of the cover again. Route changes are left entirely to Next's own
+ * routing — there is no interception here and therefore nothing between the
+ * click and the new page.
+ */
 export function PageLoader() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [pending, navigate] = useTransition();
   const maskId = useId().replace(/:/g, "");
   const root = useRef<HTMLDivElement>(null);
-  const controller = useRef<Controller | null>(null);
-  const target = useRef("");
-  const ownedNavigation = useRef(false);
-  const committedPath = useRef(pathname);
 
   useLayoutEffect(() => {
     const el = root.current;
     if (!el) return;
+
+    // Already watched in this tab: keep the overlay down and open the intro
+    // gate straight away, so nothing is left waiting on a loader that will
+    // never run. `html[data-intro="skip"]` hides the overlay before this
+    // effect anyway — this is the part that lets gated content in.
+    let seen = false;
+    try {
+      seen = window.sessionStorage.getItem(INTRO_SESSION_KEY) === "1";
+    } catch {
+      // Private mode or a blocked storage partition: behave like a first load.
+      seen = false;
+    }
+
+    if (seen) {
+      el.hidden = true;
+      el.setAttribute("aria-hidden", "true");
+      el.dataset.state = "idle";
+      releaseIntro();
+      return;
+    }
+
+    try {
+      window.sessionStorage.setItem(INTRO_SESSION_KEY, "1");
+    } catch {
+      // Nothing to do: the sequence still runs, it just is not remembered.
+    }
+
     const stage = el.querySelector<HTMLElement>(".charge__stage")!;
     const logo = el.querySelector<HTMLElement>(".charge__logo")!;
     const content = el.querySelector<HTMLElement>(".charge__identity")!;
@@ -170,11 +196,10 @@ export function PageLoader() {
       if (wasReady) markReady();
     };
     preference.addEventListener("change", onPreference);
-    controller.current = { begin, ready: markReady };
     begin();
     const image = el.querySelector("img");
     void (image?.decode().catch(() => {}) ?? Promise.resolve()).then(() => {
-      if (!disposed && !target.current) markReady();
+      if (!disposed) markReady();
     });
 
     return () => {
@@ -182,7 +207,6 @@ export function PageLoader() {
       clearTimeout(finishTimer);
       clearTimeout(recoveryTimer);
       context?.revert();
-      controller.current = null;
       unlock();
       releaseIntro();
       preference.removeEventListener("change", onPreference);
@@ -190,51 +214,6 @@ export function PageLoader() {
       window.removeEventListener("touchmove", preventScroll);
     };
   }, []);
-
-  useEffect(() => {
-    if (ownedNavigation.current && !pending) {
-      ownedNavigation.current = false;
-      controller.current?.ready();
-    }
-  }, [pending, pathname]);
-
-  useEffect(() => {
-    if (committedPath.current !== pathname) {
-      committedPath.current = pathname;
-      if (!ownedNavigation.current) controller.current?.ready();
-    }
-  }, [pathname]);
-
-  useEffect(() => {
-    const click = (event: MouseEvent) => {
-      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      const anchor = (event.target as Element | null)?.closest?.("a[href]");
-      if (!(anchor instanceof HTMLAnchorElement) || anchor.hasAttribute("download") || (anchor.target && anchor.target !== "_self")) return;
-      const url = new URL(anchor.href, location.href);
-      if (url.origin !== location.origin || !/^https?:$/.test(url.protocol)) return;
-      if (/^\/(admin|api)(\/|$)/.test(url.pathname)) return;
-      if (url.pathname === location.pathname && url.search === location.search) return;
-      event.preventDefault();
-      target.current = url.href;
-      ownedNavigation.current = true;
-      controller.current?.begin();
-      // This site's internal links use push navigation. Next's concurrent
-      // transition settles with the committed route (including redirect/error UI).
-      navigate(() => router.push(url.pathname + url.search + url.hash));
-    };
-    const pop = () => {
-      if (location.pathname === committedPath.current) return;
-      target.current = location.href;
-      ownedNavigation.current = false;
-      controller.current?.begin();
-    };
-    document.addEventListener("click", click, true);
-    window.addEventListener("popstate", pop);
-    return () => {
-      document.removeEventListener("click", click, true);
-      window.removeEventListener("popstate", pop);
-    };
-  }, [router, navigate]);
 
   return (
     <div ref={root} className="charge" data-state="waiting" data-lenis-prevent>
@@ -260,7 +239,7 @@ export function PageLoader() {
         <div className="charge__brand">BULL<span>SHILL</span></div>
         <p className="charge__label" role="status" aria-live="polite">Preparing your experience</p>
         <div className="charge__indicator" aria-hidden="true"><span className="charge__segment" /></div>
-        <button type="button" className="charge__recovery" hidden onClick={() => location.assign(target.current || location.href)}>
+        <button type="button" className="charge__recovery" hidden onClick={() => location.reload()}>
           Taking longer than expected. Retry navigation
         </button>
       </div>

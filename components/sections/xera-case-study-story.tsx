@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Container } from "@/components/ui/section";
 
 type CaseStudyStoryData = {
@@ -77,7 +79,7 @@ export function CaseStudyStoryCta({ story }: { story: CaseStudyStoryData }) {
         <div className="xera-story-cta" aria-labelledby="case-study-cta-title">
           <h2 id="case-study-cta-title">{story.ctaTitle}</h2>
           <p>{story.ctaBody}</p>
-          <a href="/contact">Contact our team</a>
+          <Link href="/contact">Contact our team</Link>
         </div>
       </Container>
     </section>

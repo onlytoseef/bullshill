@@ -7,6 +7,7 @@ import { PageLoader } from "@/components/layout/page-loader";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MotionProviders } from "@/components/motion/providers";
+import { INTRO_SESSION_KEY } from "@/lib/intro-session";
 import { SITE_NAME } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
@@ -76,6 +77,21 @@ export default function FrontendLayout({
       data-scroll-behavior="smooth"
     >
       <body className="min-h-dvh font-sans">
+        {/*
+          Runs before the body paints. On a refresh inside a session the loader
+          is already spent, and without this the overlay would flash until
+          React hydrated and hid it. `data-intro="skip"` makes it
+          `display: none` from the first frame; the PageLoader effect then
+          opens the intro gate. Kept inline and tiny so it cannot itself delay
+          the paint.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(sessionStorage.getItem(${JSON.stringify(
+              INTRO_SESSION_KEY,
+            )})==="1")document.documentElement.dataset.intro="skip"}catch(e){}`,
+          }}
+        />
         <MotionProviders>
           <PageLoader />
           <SiteHeader />

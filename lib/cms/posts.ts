@@ -1,4 +1,7 @@
+import { unstable_cache } from "next/cache";
+
 import { getCms } from "./client";
+import { mediaUrl } from "./media";
 import { countWords, lexicalHeadings, lexicalToPlainText } from "./text";
 import type { BlogArticleView, BlogCover, BlogPostView } from "./types";
 
@@ -41,7 +44,11 @@ function formatDate(value?: string | null): string {
   });
 }
 
-type MediaDoc = { url?: string | null; alt?: string | null } | number | null;
+type MediaDoc = {
+  url?: string | null;
+  alt?: string | null;
+  updatedAt?: string | null;
+} | number | null;
 
 type PostDoc = {
   slug?: string | null;
@@ -66,35 +73,12 @@ type PostDoc = {
   } | null;
 };
 
-/** Payload serves uploads from here, on this same origin. */
-const UPLOAD_PATH = "/api/media/";
-
-/**
- * Payload prefixes upload URLs with `serverURL`, so a cover arrives as
- * `http://localhost:3000/api/media/file/….png`. `next/image` only optimises
- * same-origin paths — or hosts listed in `images.remotePatterns` — so an
- * absolute URL pointing at this very server is rejected at render time.
- *
- * Our own uploads are returned relative, which sidesteps that entirely and
- * keeps working whichever host `NEXT_PUBLIC_SERVER_URL` happens to hold.
- * Anything else (a future external CDN, say) is passed through untouched.
- */
-function mediaUrl(url: string): string {
-  if (url.startsWith(UPLOAD_PATH)) return url;
-
-  try {
-    const parsed = new URL(url);
-    return parsed.pathname.startsWith(UPLOAD_PATH)
-      ? `${parsed.pathname}${parsed.search}`
-      : url;
-  } catch {
-    return url;
-  }
-}
-
 function coverFrom(value?: MediaDoc): BlogCover | null {
   if (!value || typeof value !== "object" || !value.url) return null;
-  return { url: mediaUrl(value.url), alt: value.alt ?? "" };
+  return {
+    url: mediaUrl(value.url, value.updatedAt),
+    alt: value.alt ?? "",
+  };
 }
 
 function labelsOf(items?: { label?: string | null }[] | null): string[] {
@@ -148,12 +132,32 @@ function toArticleView(doc: PostDoc): BlogArticleView {
 }
 
 /**
- * Every published article, newest first.
- *
- * `_status` is filtered here *and* enforced by the collection's `access.read`,
- * so a draft cannot reach the site even if this query is ever changed.
+ * The only fields the cards and the listing read. `content` (a Lexical tree of
+ * ~10 KB per post), `author`, `seo` and `tags` are deliberately absent: they
+ * are article-page data, and pulling them here was the bulk of the homepage's
+ * Payload work. `updatedAt` rides along because the cover URL is versioned
+ * from it.
  */
-export async function getPublishedPosts(limit?: number): Promise<BlogPostView[]> {
+const LISTING_SELECT = {
+  slug: true,
+  title: true,
+  excerpt: true,
+  publishedAt: true,
+  createdAt: true,
+  updatedAt: true,
+  featured: true,
+  categories: { label: true },
+  coverImage: { url: true, alt: true, updatedAt: true },
+} as const;
+
+/**
+ * How long a cached listing may be served before Payload is asked again.
+ * Kept in step with `revalidate` in the blog routes; publishing invalidates
+ * immediately through `revalidateBlogPost`, so this is only the backstop.
+ */
+export const REVALIDATE = 60;
+
+async function readPublishedPosts(limit?: number): Promise<BlogPostView[]> {
   const cms = await getCms();
   if (!cms) return [];
 
@@ -162,6 +166,7 @@ export async function getPublishedPosts(limit?: number): Promise<BlogPostView[]>
       collection: "blog-posts",
       depth: 1,
       pagination: false,
+      select: LISTING_SELECT,
       ...(limit === undefined ? {} : { limit }),
       sort: ["-publishedAt", "-createdAt", "-id"],
       where: { _status: { equals: "published" } },
@@ -172,6 +177,27 @@ export async function getPublishedPosts(limit?: number): Promise<BlogPostView[]>
     console.warn("[cms] could not read blog posts", error);
     return [];
   }
+}
+
+/**
+ * Every published article, newest first.
+ *
+ * `_status` is filtered here *and* enforced by the collection's `access.read`,
+ * so a draft cannot reach the site even if this query is ever changed.
+ *
+ * Cached for `REVALIDATE` seconds. The homepage is `force-dynamic`, so without
+ * this every visit re-queried Payload — the single largest share of its TTFB.
+ * Publishing, unpublishing and deleting a post all call `revalidatePath("/")`
+ * from the collection's hooks, so a change shows up on the next request rather
+ * than waiting for the window to lapse. The limit is part of the cache key, so
+ * the homepage's six and the listing's "all" are cached separately.
+ */
+export function getPublishedPosts(limit?: number): Promise<BlogPostView[]> {
+  return unstable_cache(
+    () => readPublishedPosts(limit),
+    ["blog-posts", "published", limit === undefined ? "all" : String(limit)],
+    { revalidate: REVALIDATE, tags: ["blog-posts"] },
+  )();
 }
 
 /** One published article, or `null` — never a draft, never a 500. */

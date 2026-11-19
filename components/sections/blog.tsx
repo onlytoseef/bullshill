@@ -43,7 +43,7 @@ export async function Blog() {
                         src={post.cover.url}
                         alt={post.cover.alt || post.title}
                         fill
-                        sizes="(max-width: 767px) 92vw, (max-width: 1023px) 46vw, 33vw"
+                        sizes="(max-width: 639px) calc(100vw - 86px), (max-width: 767px) 41vw, (max-width: 1023px) 32vw, 33vw"
                         className={styles.image}
                       />
                   ) : <PlaceholderVisual

@@ -1190,6 +1190,10 @@
   touch-action: none;
 }
 .charge[hidden] { display: none; }
+/* Set by the inline script in the frontend layout when this tab has already
+   seen the intro. Hides the overlay from the first paint of a refresh, before
+   React has hydrated and could hide it itself. */
+html[data-intro="skip"] .charge { display: none; }
 .charge__veil { position: absolute; inset: 0; pointer-events: none; }
 .charge__identity {
   position: relative;
@@ -1313,10 +1317,22 @@
   height: 100%;
   transform: translateX(-50%);
   pointer-events: none;
+  background-image: var(--about-shine-wide);
   background-position: center top;
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 0.42;
+}
+
+/* The same artwork at 800px for phones. `background-size: cover` means the
+   narrow viewport crops into the same central region either way, so the
+   composition is unchanged — only the bytes downloaded differ (71 KiB vs
+   281 KiB). Both URLs reach this element as custom properties, so the browser
+   resolves just the one this query selects and never fetches the other. */
+@media (max-width: 767px) {
+  .about-shine {
+    background-image: var(--about-shine-mobile);
+  }
 }
 
 .about-eyebrow {
