@@ -12,8 +12,13 @@ import { getPublishedPosts } from "@/lib/cms/posts";
 import { blogPage } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
-// Do not serve a stale list while regenerating it in the background.
-export const dynamic = "force-dynamic";
+/**
+ * Cached, regenerated in the background — same reasoning as the home page.
+ * The listing comes from `getPublishedPosts`, which is already cached and
+ * tagged `blog-posts`; publishing or unpublishing calls `revalidatePath` and
+ * `revalidateTag`, so the list is never stale beyond the moment of the write.
+ */
+export const revalidate = 60;
 
 export const metadata: Metadata = pageMetadata({
   title: "Blog",

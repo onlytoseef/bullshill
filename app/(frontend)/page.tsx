@@ -15,8 +15,18 @@ import { Testimonials } from "@/components/sections/testimonials";
 import { Worried } from "@/components/sections/worried";
 import { pageMetadata } from "@/lib/seo";
 
-// Always read published posts for this request instead of serving an ISR snapshot.
-export const dynamic = "force-dynamic";
+/**
+ * Served as a cached static page, refreshed in the background.
+ *
+ * This was `force-dynamic`, which rebuilt the whole document on every single
+ * request — the largest single contributor to TTFB and therefore to LCP. The
+ * page has no per-visitor data, so there is nothing dynamic to preserve. The
+ * blog listing inside it is already cached and tagged, and the CMS hooks call
+ * `revalidatePath("/")`, so a published or unpublished post appears on the next
+ * request rather than waiting for this window. Kept in step with `REVALIDATE`
+ * in `lib/cms/posts.ts`.
+ */
+export const revalidate = 60;
 
 /**
  * The home page sets its own metadata rather than inheriting the layout's, so

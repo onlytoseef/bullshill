@@ -9,6 +9,20 @@ import { INTRO_SESSION_KEY } from "@/lib/intro-session";
 import { holdIntro, releaseIntro } from "@/lib/intro-gate";
 
 /**
+ * Shortest the cover may stay after the page is ready. Long enough that the
+ * intro reads as an animation rather than a flicker; short enough that it is
+ * not a loading delay. Everything below is scaled against this number.
+ */
+const MIN_HOLD_MS = 160;
+
+/**
+ * Exit playback speed. The exit is ~1.15s of choreography at 1x; playing it
+ * faster keeps every beat and order while nearly halving the time the cover
+ * spends on top of already-painted content.
+ */
+const EXIT_TIME_SCALE = 1.9;
+
+/**
  * One persistent overlay. React owns navigation; GSAP owns the motion.
  *
  * The full sequence plays once per tab. `sessionStorage` survives both client
@@ -16,6 +30,10 @@ import { holdIntro, releaseIntro } from "@/lib/intro-gate";
  * instead of the cover again. Route changes are left entirely to Next's own
  * routing — there is no interception here and therefore nothing between the
  * click and the new page.
+ *
+ * Timings are deliberately short: the cover sits on top of content that is
+ * already painted, so every millisecond it stays is a millisecond the visitor
+ * is not reading the page — and, on a first load, LCP measured through it.
  */
 export function PageLoader() {
   const maskId = useId().replace(/:/g, "");
@@ -112,7 +130,11 @@ export function PageLoader() {
         const radius = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) + 24;
         gsap.set([hole, edge], { attr: { cx, cy, r: 0 } });
         gsap.set(edge, { opacity: 0.45 });
-        const completion = gsap.timeline({ onComplete: done });
+        // `timeScale` compresses the whole choreography proportionally: every
+        // beat keeps its order and relative spacing, it just plays faster.
+        // Set via the method, not the vars object, so it is unambiguously
+        // applied before the first tick.
+        const completion = gsap.timeline({ onComplete: done }).timeScale(EXIT_TIME_SCALE);
         if (running) completion.to(running, { timeScale: 1.9, duration: 0.2, ease: "power2.in" }, 0);
         completion
           .call(() => { running?.pause(); }, [], 0.22)
@@ -132,8 +154,8 @@ export function PageLoader() {
       ready = true;
       clearTimeout(finishTimer);
       clearTimeout(recoveryTimer);
-      // Enough time to finish the introduction, without a fixed loading delay.
-      finishTimer = setTimeout(finish, preference.matches ? 0 : Math.max(0, 380 - (performance.now() - started)));
+      // Just enough for the intro to register, not a loading delay. Was 380.
+      finishTimer = setTimeout(finish, preference.matches ? 0 : Math.max(0, MIN_HOLD_MS - (performance.now() - started)));
     };
 
     const begin = () => {
