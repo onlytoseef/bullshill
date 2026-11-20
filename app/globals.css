@@ -1178,6 +1178,9 @@
 }
 
 /* THE CHARGE: centered identity, indeterminate activity, circular aperture. */
+/* Intro cover. A still logo, the wordmark, the status line, and one moving
+   indicator bar - nothing else. Timings live in the component: 400ms hold
+   then a 150ms fade. */
 .charge {
   position: fixed;
   inset: 0;
@@ -1188,13 +1191,29 @@
   isolation: isolate;
   color: #e8ebee;
   touch-action: none;
+  /* The entire intro is this one animation: hold, then fade, finishing in
+     0.55s. It runs from the first frame, so it does not wait for hydration —
+     which, measured on this site, lands 0.4-1.0s later and would otherwise be
+     added on top of the sequence. JS only records that the intro has been
+     shown and releases the gates. */
+  animation: charge-intro 0.55s linear forwards;
+}
+
+@keyframes charge-intro {
+  0%, 72.7% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
 }
 .charge[hidden] { display: none; }
 /* Set by the inline script in the frontend layout when this tab has already
    seen the intro. Hides the overlay from the first paint of a refresh, before
    React has hydrated and could hide it itself. */
 html[data-intro="skip"] .charge { display: none; }
-.charge__veil { position: absolute; inset: 0; pointer-events: none; }
+.charge__veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #06111f;
+}
 .charge__identity {
   position: relative;
   display: flex;
@@ -1202,62 +1221,16 @@ html[data-intro="skip"] .charge { display: none; }
   align-items: center;
   width: min(90vw, 24rem);
   text-align: center;
-  will-change: opacity, transform;
 }
-.charge__stage {
+.charge__logo {
   position: relative;
   display: grid;
+  width: clamp(4.5rem, 10vw, 5.5rem);
   place-items: center;
-  width: clamp(10rem, 22vw, 12rem);
-  aspect-ratio: 1;
-  margin-bottom: 2rem;
-  perspective: 650px;
-  perspective-origin: 50% 50%;
 }
-.charge__ring {
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(255, 125, 42, 0.45);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 114, 30, 0.035), transparent 68%);
-  opacity: 0.4;
-  will-change: transform, opacity;
-}
-.charge__ring::before, .charge__ring::after {
-  content: "";
-  position: absolute;
-  top: 49%;
-  width: 5px;
-  height: 2px;
-  background: #f77c2b;
-}
-.charge__ring::before { left: -2px; }
-.charge__ring::after { right: -2px; }
-.charge__logo { position: relative; width: 78%; transform-origin: 50% 75%; will-change: transform; }
 .charge__logo img { display: block; width: 100%; height: auto; user-select: none; }
-.charge__ground {
-  position: absolute;
-  width: 4.5rem;
-  height: 2px;
-  left: 28%;
-  bottom: 15%;
-  background: linear-gradient(90deg, transparent, #ff9a45 35%, #f56c22 70%, transparent);
-  opacity: 0;
-  will-change: transform, opacity;
-}
-.charge__wake { position: absolute; left: 66%; top: 43%; width: 2.5rem; height: 2rem; }
-.charge__wake i {
-  position: absolute;
-  display: block;
-  width: 1.1rem;
-  height: 1px;
-  background: linear-gradient(90deg, #f78b39, transparent);
-  opacity: 0;
-  will-change: transform, opacity;
-}
-.charge__wake i:nth-child(2) { top: 0.6rem; width: 1.5rem; }
-.charge__wake i:nth-child(3) { top: 1.2rem; width: 0.8rem; }
 .charge__brand {
+  margin-top: 1.5rem;
   font-family: var(--font-geist), sans-serif;
   font-size: clamp(1.125rem, 3vw, 1.375rem);
   font-weight: 600;
@@ -1286,23 +1259,21 @@ html[data-intro="skip"] .charge { display: none; }
   width: 30%;
   height: 100%;
   background: linear-gradient(90deg, transparent, #ff9a4c 35%, #f58a46 70%, transparent);
-  transform: translateX(-110%);
+  /* CSS, not GSAP: the bar has to move from the very first paint, which is
+     before React has hydrated. A JS-driven tween would start up to a second
+     late and then race the exit. */
+  animation: charge-sweep 1.05s linear infinite;
   will-change: transform;
 }
-.charge__recovery {
-  margin-top: 1.5rem;
-  border: 1px solid #344356;
-  border-radius: 0.5rem;
-  padding: 0.6rem 0.8rem;
-  color: #b1bfce;
-  font-size: 0.75rem;
-  cursor: pointer;
+
+@keyframes charge-sweep {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(350%); }
 }
-.charge__recovery[hidden] { display: none; }
-.charge__recovery:focus-visible { outline: 2px solid #f58a46; outline-offset: 4px; }
+
 @media (prefers-reduced-motion: reduce) {
-  .charge__indicator, .charge__ground, .charge__wake { display: none; }
-  .charge__identity, .charge__logo, .charge__ring { will-change: auto; }
+  .charge__indicator { display: none; }
+  .charge__segment { animation: none; }
 }
 
 .about-section {
