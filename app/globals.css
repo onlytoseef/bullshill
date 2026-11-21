@@ -89,8 +89,12 @@
     font-size: clamp(16px, 0.26vw + 12.7px, 19px);
   }
 
-  body {
+  html {
     background-color: var(--color-surface);
+  }
+
+  body {
+    background-color: transparent;
     color: var(--color-blue-light);
     /* Clip any element that sits a hair past the viewport (decorative glows,
        animated transforms) so there is no horizontal scroll / empty band on
@@ -7564,6 +7568,11 @@ html[data-intro="skip"] .charge { display: none; }
    to one with them has no visible seam.
 --------------------------------------------------------------------------- */
 
+/* Particle fields.
+   One WebGL canvas is created per page, fixed to the viewport, and every
+   section's field is drawn into it (see lib/particle-field.ts). The section
+   keeps this element only as a measuring stick, so it must stay in the layout
+   at the exact size the field should cover — nothing may paint inside it. */
 .has-particles {
   position: relative;
   overflow: hidden;
@@ -7573,30 +7582,36 @@ html[data-intro="skip"] .charge { display: none; }
   overflow: clip;
 }
 
-.has-particles > .particle-background {
+.particle-background {
   position: absolute;
   inset: 0;
   z-index: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    #000 12%,
-    #000 88%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    #000 12%,
-    #000 88%,
-    transparent 100%
-  );
+}
+
+/* Sits behind all page content, above the body background. position: fixed
+   rather than absolute so it never scrolls with the document — the fields are
+   positioned by their own rectangles each frame. */
+.particle-field-canvas {
+  position: fixed;
+  inset: 0;
+  /* A sibling of <body>, inserted before it. z-index: 0 (not negative):
+     a negative index would paint it *behind* the root element's own
+     background, and the page would show a plain colour instead of the field.
+     At 0 it sits above the page background and below every content section,
+     which is exactly what a background should do. */
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .has-particles > :not(.particle-background) {
   position: relative;
   z-index: 1;
 }
+
+
