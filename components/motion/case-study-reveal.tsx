@@ -16,8 +16,8 @@ import { useIntroReady } from "./use-intro-ready";
  * components.
  *
  * Built for reading rather than for show:
- * - Nothing pins or holds the scroll, and every entrance is done within about
- *   a second, so the copy never waits on an animation.
+ * - Nothing pins or holds the scroll, and every entrance is over well inside a
+ *   second, so the copy never waits on an animation.
  * - Only transform, opacity and clip-path move, so layout never shifts under
  *   the reader.
  * - Entrances replay every time a block comes back into view, but only reset
@@ -28,6 +28,21 @@ import { useIntroReady } from "./use-intro-ready";
  */
 
 const MOTION_OK = "(prefers-reduced-motion: no-preference)";
+
+/**
+ * Playback speed for the hero's entrance.
+ *
+ * The choreography runs ~2.5s at 1x — the cover's clip-path alone is 1.2s — and
+ * the page is interactive long before it finishes, so almost all of that is
+ * time the reader spends looking at a half-open cover. Scaling the whole
+ * timeline keeps every beat, its order and its relative spacing, and simply
+ * plays them faster.
+ *
+ * Measured from the route committing: the cover reads as open at ~200ms (was
+ * ~500ms) and the metric chips are in at ~610ms. `expo.out` front-loads the
+ * clip-path, so the cover looks open well before its tween technically ends.
+ */
+const ENTRANCE_TIME_SCALE = 2.2;
 
 type Props = {
   children: ReactNode;
@@ -90,7 +105,9 @@ export function CaseHeroReveal({ children, className }: Props) {
             // the chip itself.
             createCountUp(
               metric.querySelector("[data-case-figure]") ?? metric,
-              { duration: 1.4 },
+              // The counter is a tween of its own, placed on the timeline, so
+              // the timeline's timeScale does not reach it. Shortened to match.
+              { duration: 1.4 / ENTRANCE_TIME_SCALE },
             ),
           );
           counters.forEach((counter) => counter?.reset());
@@ -98,7 +115,7 @@ export function CaseHeroReveal({ children, className }: Props) {
           const intro = gsap.timeline({
             paused: true,
             defaults: { ease: EASE_OUT_GSAP },
-          });
+          }).timeScale(ENTRANCE_TIME_SCALE);
 
           if (cover) {
             // Rounded to the frame's own corners, which change by breakpoint,

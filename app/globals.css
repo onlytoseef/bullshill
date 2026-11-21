@@ -1191,17 +1191,18 @@
   isolation: isolate;
   color: #e8ebee;
   touch-action: none;
-  /* The entire intro is this one animation: hold, then fade, finishing in
-     0.55s. It runs from the first frame, so it does not wait for hydration —
-     which, measured on this site, lands 0.4-1.0s later and would otherwise be
-     added on top of the sequence. JS only records that the intro has been
-     shown and releases the gates. */
-  animation: charge-intro 0.55s linear forwards;
+  /* No self-dismissing animation: the cover stays up until the page it is
+     covering has loaded (see PageLoader). The only motion while it waits is
+     the indicator bar looping underneath. */
+  opacity: 1;
 }
 
-@keyframes charge-intro {
-  0%, 72.7% { opacity: 1; }
-  100% { opacity: 0; visibility: hidden; }
+/* Fade out once the route is ready. A transition on a state class rather than
+   an animation, so the browser composites it and nothing has to be undone. */
+.charge[data-state="revealing"] {
+  opacity: 0;
+  transition: opacity 0.2s linear;
+  pointer-events: none;
 }
 .charge[hidden] { display: none; }
 /* Set by the inline script in the frontend layout when this tab has already
@@ -1261,8 +1262,9 @@ html[data-intro="skip"] .charge { display: none; }
   background: linear-gradient(90deg, transparent, #ff9a4c 35%, #f58a46 70%, transparent);
   /* CSS, not GSAP: the bar has to move from the very first paint, which is
      before React has hydrated. A JS-driven tween would start up to a second
-     late and then race the exit. */
-  animation: charge-sweep 1.05s linear infinite;
+     late and then race the exit. One cycle is 0.55s and it loops for as long
+     as the cover is up. */
+  animation: charge-sweep 0.55s linear infinite;
   will-change: transform;
 }
 

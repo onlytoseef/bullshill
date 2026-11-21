@@ -8,17 +8,24 @@ import { INTRO_SESSION_KEY } from "@/lib/intro-session";
 import { holdIntro, releaseIntro } from "@/lib/intro-gate";
 
 /**
- * The cover's whole sequence — hold, then fade — is a CSS animation on
- * `.charge` (see `charge-intro` in `globals.css`). It starts on the first
- * frame, which is the only way to keep it inside 0.4-0.6s: measured on this
- * site, hydration lands 0.4-1.0s after the cover is already visible, so a
- * JS-driven exit would have to add that on top of it.
+ * The loading cover.
  *
- * That leaves this component two jobs: record that the tab has seen the intro,
- * and keep the page still while the cover is up. Both are plain DOM work, done
- * from an effect that simply runs as soon as the browser gets to it.
+ * It stays up for as long as the page is loading and leaves once the page is
+ * ready — it is not on a fixed dismiss timer. The indicator bar underneath
+ * loops on a 0.55s CSS cycle for the whole time, and that cycle is the
+ * "animation timing": the motion repeats rather than playing once.
+ *
+ * Ready means the document has finished loading and one frame has been painted
+ * since, so the cover never lifts onto a blank screen. A single full cycle is
+ * always allowed to play, and a hard cap stops a hung asset from trapping the
+ * page.
  */
-const SEQUENCE_MS = 550;
+/** One loop of the bar. Mirrors `charge-sweep` in globals.css. */
+const CYCLE_MS = 550;
+/** Never hold the page longer than this, whatever the network does. */
+const MAX_WAIT_MS = 8000;
+/** Length of the fade-out; the overlay is hidden just after it. */
+const FADE_MS = 200;
 
 export function PageLoader() {
   const root = useRef<HTMLDivElement>(null);
@@ -51,56 +58,109 @@ export function PageLoader() {
       // Nothing to do: the sequence still runs, it just is not remembered.
     }
 
-    // The cover is already animating. Take over the page's scroll for exactly
-    // as long as it is visible.
+    // Content entrances wait behind the cover, so nothing plays unseen.
     holdIntro();
     el.hidden = false;
     el.setAttribute("aria-hidden", "false");
     el.dataset.state = "waiting";
+
+    // Hold the page still while the cover is up.
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const preventScroll = (event: Event) => event.preventDefault();
     window.addEventListener("wheel", preventScroll, { passive: false });
     window.addEventListener("touchmove", preventScroll, { passive: false });
 
+    const startedAt = performance.now();
     let finished = false;
+    let lifted = false;
+    let quietTimer: ReturnType<typeof setTimeout> | undefined;
+    const timers = new Set<ReturnType<typeof setTimeout>>();
+    const later = (fn: () => void, ms: number) => {
+      const id = setTimeout(() => {
+        timers.delete(id);
+        fn();
+      }, ms);
+      timers.add(id);
+      return id;
+    };
+
+    const teardown = () => {
+      timers.forEach(clearTimeout);
+      timers.clear();
+      clearTimeout(quietTimer);
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("wheel", preventScroll);
+      window.removeEventListener("touchmove", preventScroll);
+      window.removeEventListener("load", onLoaded);
+      releaseIntro();
+    };
+
     const done = () => {
       if (finished) return;
       finished = true;
       el.hidden = true;
       el.setAttribute("aria-hidden", "true");
       el.dataset.state = "idle";
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("wheel", preventScroll);
-      window.removeEventListener("touchmove", preventScroll);
-      releaseIntro();
+      teardown();
     };
 
-    // Matches the CSS animation, with a small margin so the fade has finished.
-    const timer = setTimeout(done, SEQUENCE_MS + 60);
+    /** Fade out, then remove the overlay from the layout. */
+    const lift = () => {
+      if (lifted || finished) return;
+      lifted = true;
+      el.dataset.state = "revealing";
+      later(done, FADE_MS + 20);
+    };
 
-    // Reduced motion: the animation is already suppressed by its media query,
-    // so there is nothing left to wait for.
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduce.matches) {
-      clearTimeout(timer);
-      done();
+    /**
+     * Leave only once the page is loaded *and* at least one full bar cycle has
+     * played, so the visitor never sees a cover that flickers for 40ms.
+     * `skipCycle` is for reduced motion, where there is no bar to watch.
+     */
+    const maybeLift = (skipCycle = false) => {
+      if (lifted || finished) return;
+      const played = performance.now() - startedAt;
+      if (!skipCycle && played < CYCLE_MS) {
+        later(maybeLift, CYCLE_MS - played);
+        return;
+      }
+      // Two frames: the first paints the finished page, the second confirms it
+      // before the cover starts to fade.
+      requestAnimationFrame(() => requestAnimationFrame(lift));
+    };
+
+    function onLoaded() {
+      // A short settle after `load` lets late layout/paint work finish first.
+      clearTimeout(quietTimer);
+      quietTimer = later(() => maybeLift(), 100);
     }
 
+    if (document.readyState === "complete") {
+      onLoaded();
+    } else {
+      window.addEventListener("load", onLoaded, { once: true });
+    }
+
+    // Backstop: a stalled request must not keep the cover up indefinitely.
+    later(() => {
+      if (!lifted) lift();
+    }, MAX_WAIT_MS);
+
+    // Reduced motion: the bar is already suppressed by its media query, so
+    // there is no cycle to watch.
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onPreference = () => {
-      if (reduce.matches) done();
+      if (reduce.matches) maybeLift(true);
     };
     reduce.addEventListener("change", onPreference);
 
+    if (reduce.matches) maybeLift(true);
+
     return () => {
-      clearTimeout(timer);
       reduce.removeEventListener("change", onPreference);
-      if (!finished) {
-        document.body.style.overflow = previousOverflow;
-        window.removeEventListener("wheel", preventScroll);
-        window.removeEventListener("touchmove", preventScroll);
-      }
-      releaseIntro();
+      if (finished) releaseIntro();
+      else teardown();
     };
   }, []);
 
