@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-import { registerField } from "@/lib/particle-field";
+import { useNearViewport } from "./use-near-viewport";
 
 /**
  * A structured data-grain field behind a section.
@@ -25,12 +25,21 @@ import { registerField } from "@/lib/particle-field";
  */
 export function ParticleBackground() {
   const hostRef = useRef<HTMLDivElement>(null);
+  const near = useNearViewport(hostRef);
 
   useEffect(() => {
     const host = hostRef.current;
-    if (!host) return;
-    return registerField(host);
-  }, []);
+    if (!host || !near) return;
+    let cancelled = false;
+    let dispose: (() => void) | undefined;
+    void import("@/lib/particle-field").then(({ registerField }) => {
+      if (!cancelled) dispose = registerField(host);
+    }).catch((error: unknown) => console.warn("[particles] could not load field", error));
+    return () => {
+      cancelled = true;
+      dispose?.();
+    };
+  }, [near]);
 
   return <div ref={hostRef} className="particle-background" aria-hidden="true" />;
 }

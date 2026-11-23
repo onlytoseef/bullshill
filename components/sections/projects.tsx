@@ -7,6 +7,7 @@ import { flushSync } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { caseStudyImages } from "@/components/ui/case-study-row";
 import { ParticleBackground } from "@/components/motion/particle-background";
+import { useNearViewport } from "@/components/motion/use-near-viewport";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Container, Section } from "@/components/ui/section";
 import { caseStudiesPage, projects } from "@/lib/content";
@@ -40,6 +41,7 @@ const LANDING_CASE_STUDIES = new Map<string, string>([
  */
 export function Projects() {
   const root = useRef<HTMLDivElement>(null);
+  const near = useNearViewport(root);
   const [selected, setSelected] = useState(0);
   const [shown, setShown] = useState(0);
   // Refs, not state, for anything read from timeline callbacks: those run
@@ -58,7 +60,7 @@ export function Projects() {
   const { contextSafe } = useGSAP(
     () => {
       const el = root.current;
-      if (!el) return;
+      if (!el || !near) return;
 
       const mm = gsap.matchMedia();
 
@@ -87,7 +89,7 @@ export function Projects() {
 
       return () => mm.revert();
     },
-    { scope: root },
+    { scope: root, dependencies: [near], revertOnUpdate: true },
   );
 
   /**

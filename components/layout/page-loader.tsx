@@ -15,7 +15,7 @@ import { holdIntro, releaseIntro } from "@/lib/intro-gate";
  * loops on a 0.55s CSS cycle for the whole time, and that cycle is the
  * "animation timing": the motion repeats rather than playing once.
  *
- * Ready means the document has finished loading and one frame has been painted
+ * Ready means the document markup is ready and one frame has been painted
  * since, so the cover never lifts onto a blank screen. A single full cycle is
  * always allowed to play, and a hard cap stops a hung asset from trapping the
  * page.
@@ -92,7 +92,7 @@ export function PageLoader() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("wheel", preventScroll);
       window.removeEventListener("touchmove", preventScroll);
-      window.removeEventListener("load", onLoaded);
+      document.removeEventListener("DOMContentLoaded", onLoaded);
       releaseIntro();
     };
 
@@ -131,15 +131,15 @@ export function PageLoader() {
     };
 
     function onLoaded() {
-      // A short settle after `load` lets late layout/paint work finish first.
+      // Reveal the hero without waiting for unrelated images or other assets.
       clearTimeout(quietTimer);
       quietTimer = later(() => maybeLift(), 100);
     }
 
-    if (document.readyState === "complete") {
+    if (document.readyState !== "loading") {
       onLoaded();
     } else {
-      window.addEventListener("load", onLoaded, { once: true });
+      document.addEventListener("DOMContentLoaded", onLoaded, { once: true });
     }
 
     // Backstop: a stalled request must not keep the cover up indefinitely.

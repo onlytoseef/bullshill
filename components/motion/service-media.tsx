@@ -4,13 +4,15 @@ import { useRef, type ReactNode } from "react";
 
 import { gsap, useGSAP } from "@/lib/gsap";
 import { replayOnScroll } from "@/lib/scroll-replay";
+import { useNearViewport } from "./use-near-viewport";
 
 export function ServiceMedia({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+  const near = useNearViewport(ref);
 
   useGSAP(() => {
     const root = ref.current;
-    if (!root) return;
+    if (!root || !near) return;
     const media = gsap.matchMedia();
     media.add({
       mobile: "(max-width: 767px)",
@@ -38,7 +40,7 @@ export function ServiceMedia({ children }: { children: ReactNode }) {
       });
     });
     return () => media.revert();
-  }, { scope: ref });
+  }, { scope: ref, dependencies: [near], revertOnUpdate: true });
 
   return <div ref={ref} className="services-media">{children}</div>;
 }

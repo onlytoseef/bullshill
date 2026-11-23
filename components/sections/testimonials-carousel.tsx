@@ -2,13 +2,16 @@
 
 import { useLenis } from "lenis/react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AutoplayCarousel } from "@/components/ui/autoplay-carousel";
 import { Button } from "@/components/ui/button";
 import { CarouselItem } from "@/components/ui/carousel";
-import { ReviewLightbox } from "@/components/ui/review-lightbox";
+import { useNearViewport } from "@/components/motion/use-near-viewport";
 import { reviews } from "@/lib/reviews";
+
+const ReviewLightbox = dynamic(() => import("@/components/ui/review-lightbox").then((mod) => mod.ReviewLightbox), { ssr: false });
 
 /** Keep the original three first, then include every remaining screenshot. */
 const featuredIds = ["6251", "6258", "6253"];
@@ -27,11 +30,12 @@ function ReviewExcerpt({
   onRead: (button: HTMLButtonElement) => void;
 }) {
   const ref = useRef<HTMLQuoteElement>(null);
+  const near = useNearViewport(ref);
   const [truncated, setTruncated] = useState(false);
 
   useEffect(() => {
     const element = ref.current;
-    if (!element) return;
+    if (!element || !near) return;
     let active = true;
     const measure = () => {
       if (active) setTruncated(element.scrollHeight > element.clientHeight + 1);
@@ -45,7 +49,7 @@ function ReviewExcerpt({
       active = false;
       observer.disconnect();
     };
-  }, [quote]);
+  }, [quote, near]);
 
   return (
     <>
@@ -95,6 +99,7 @@ function ReviewStars({ rating }: { rating: number }) {
 
 export function TestimonialsCarousel() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [viewerLoaded, setViewerLoaded] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const lenis = useLenis();
   const open = openIndex !== null;
@@ -114,6 +119,7 @@ export function TestimonialsCarousel() {
   }, []);
 
   const showReview = (index: number, button: HTMLButtonElement) => {
+    setViewerLoaded(true);
     trigger.current = button;
     setOpenIndex(index);
   };
@@ -201,12 +207,12 @@ export function TestimonialsCarousel() {
           );
         })}
       </AutoplayCarousel>
-      <ReviewLightbox
+      {viewerLoaded ? <ReviewLightbox
         reviews={carouselReviews}
         index={openIndex}
         onClose={close}
         onNavigate={setOpenIndex}
-      />
+      /> : null}
     </>
   );
 }

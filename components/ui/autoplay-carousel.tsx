@@ -1,6 +1,7 @@
 "use client";
 
 import Autoplay from "embla-carousel-autoplay";
+import { useNearViewport } from "@/components/motion/use-near-viewport";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import {
@@ -41,10 +42,11 @@ export function AutoplayCarousel({
     }),
   );
   const host = useRef<HTMLDivElement>(null);
+  const near = useNearViewport(host);
   const onScreen = useRef(false);
 
   useEffect(() => {
-    if (!api) return;
+    if (!api || !near) return;
     const mobileViewport = window.matchMedia("(max-width: 767px)");
     const updateDots = () => {
       setCurrent(api.selectedScrollSnap());
@@ -60,10 +62,10 @@ export function AutoplayCarousel({
       api.off("reInit", updateDots);
       mobileViewport.removeEventListener("change", updateDots);
     };
-  }, [api]);
+  }, [api, near]);
 
   useEffect(() => {
-    if (!api) return;
+    if (!api || !near) return;
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const hoverPreference = window.matchMedia("(hover: hover)");
     const node = host.current;
@@ -104,7 +106,7 @@ export function AutoplayCarousel({
       api.off("pointerUp", afterInteraction);
       api.off("reInit", sync);
     };
-  }, [api, autoplay, paused]);
+  }, [api, autoplay, paused, near]);
 
   // Show the current page and its neighbours on phones. The window follows
   // swipes and autoplay, so later slides still get their own clickable dots.
@@ -117,7 +119,7 @@ export function AutoplayCarousel({
     <div ref={host}>
       <Carousel
         className={className}
-        opts={{ align: "start", loop: true, slidesToScroll: "auto" }}
+        opts={{ align: "start", loop: true, slidesToScroll: "auto", active: near }}
         plugins={[autoplay]}
         setApi={setApi}
         aria-label={label}

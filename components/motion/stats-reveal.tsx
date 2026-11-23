@@ -9,6 +9,7 @@ import { EASE_OUT_GSAP } from "@/lib/motion";
 import { replayOnScroll } from "@/lib/scroll-replay";
 
 import { useIntroReady } from "./use-intro-ready";
+import { useNearViewport } from "./use-near-viewport";
 
 /** Delay between tiles that enter the viewport together. */
 const CARD_STAGGER = 0.15;
@@ -44,11 +45,12 @@ type Props = {
 export function StatsReveal({ children, className }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const ready = useIntroReady();
+  const near = useNearViewport(ref);
 
   useGSAP(
     () => {
       const root = ref.current;
-      if (!root) return;
+      if (!root || !near) return;
 
       const mm = gsap.matchMedia();
 
@@ -158,7 +160,7 @@ export function StatsReveal({ children, className }: Props) {
 
       return () => mm.revert();
     },
-    { scope: ref, dependencies: [ready], revertOnUpdate: true },
+    { scope: ref, dependencies: [ready, near], revertOnUpdate: true },
   );
 
   return (

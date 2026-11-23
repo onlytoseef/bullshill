@@ -3,6 +3,7 @@
 import { useRef, type ReactNode } from "react";
 
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { useNearViewport } from "./use-near-viewport";
 
 /** Clears the sticky header (20px top padding + 68px nav) with a little air. */
 const HEADER_CLEARANCE = 112;
@@ -43,11 +44,12 @@ type Props = {
  */
 export function StackingCards({ children, className }: Props) {
   const ref = useRef<HTMLUListElement>(null);
+  const near = useNearViewport(ref);
 
   useGSAP(
     () => {
       const el = ref.current;
-      if (!el) return;
+      if (!el || !near) return;
 
       const mm = gsap.matchMedia();
 
@@ -162,7 +164,7 @@ export function StackingCards({ children, className }: Props) {
 
       return () => mm.revert();
     },
-    { scope: ref },
+    { scope: ref, dependencies: [near], revertOnUpdate: true },
   );
 
   return (

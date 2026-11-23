@@ -5,6 +5,7 @@ import { useRef, type ReactNode } from "react";
 import { process } from "@/lib/content";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { replayOnScroll } from "@/lib/scroll-replay";
+import { useNearViewport } from "./use-near-viewport";
 
 /**
  * Card tilts, in degrees.
@@ -92,13 +93,14 @@ function connector(first: Box, second: Box, w: number, h: number) {
  */
 export function ProcessFlow({ children }: { children: ReactNode }) {
   const stage = useRef<HTMLDivElement>(null);
+  const near = useNearViewport(stage);
   const svgRef = useRef<SVGSVGElement>(null);
 
   useGSAP(
     () => {
       const stageEl = stage.current;
       const svgEl = svgRef.current;
-      if (!stageEl || !svgEl) return;
+      if (!stageEl || !svgEl || !near) return;
 
       const paths = gsap.utils.toArray<SVGPathElement>(
         "[data-connector]",
@@ -386,7 +388,7 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
         mm.revert();
       };
     },
-    { scope: stage },
+    { scope: stage, dependencies: [near], revertOnUpdate: true },
   );
 
   return (

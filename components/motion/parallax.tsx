@@ -3,6 +3,7 @@
 import { useRef, type ReactNode } from "react";
 
 import { gsap, useGSAP } from "@/lib/gsap";
+import { useNearViewport } from "./use-near-viewport";
 
 type Props = {
   children: ReactNode;
@@ -12,9 +13,11 @@ type Props = {
 
 export function Parallax({ children, amount = 12, className }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const near = useNearViewport(ref);
 
   useGSAP(
     () => {
+      if (!near) return;
       const mm = gsap.matchMedia();
 
       mm.add(
@@ -35,7 +38,7 @@ export function Parallax({ children, amount = 12, className }: Props) {
 
       return () => mm.revert();
     },
-    { scope: ref },
+    { scope: ref, dependencies: [near], revertOnUpdate: true },
   );
 
   return (
