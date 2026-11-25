@@ -1183,7 +1183,7 @@ export const teamSocials: Record<
       label: "LinkedIn",
       href: "https://www.linkedin.com/in/muhammad-jawad-nawaz/",
     },
-    { label: "X", href: "" },
+    { label: "X", href: "https://x.com/btcordinalsgod" },
   ],
 };
 
