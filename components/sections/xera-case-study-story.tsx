@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 import { Container } from "@/components/ui/section";
 
@@ -54,7 +55,14 @@ export function CaseStudyStory({ story }: { story: CaseStudyStoryData }) {
           <ul className="xera-results-grid">
             {story.resultCards.map((result) => (
               <li key={result.label}>
-                <strong className="about-stat-value">{result.value}</strong>
+                <strong
+                  className="about-stat-value"
+                  style={{
+                    "--result-word-length": Math.max(1, ...result.value.split(/\s+/).map((word) => word.length)),
+                  } as CSSProperties}
+                >
+                  {result.value}
+                </strong>
                 <span>{result.label}</span>
               </li>
             ))}
