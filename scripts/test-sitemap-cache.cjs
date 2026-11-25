@@ -1,5 +1,6 @@
 /* Isolated real Next.js production cache test. Synthetic CMS only; never deploys.
    node scripts/test-sitemap-cache.cjs
+   Builds with an unavailable synthetic CMS and requires zero build-time queries.
    Fixture uses the actual sitemap, query and hook source with a2s test-only TTL.
 */
 (async () => {
@@ -13,12 +14,12 @@
   const write = (name, value) => { const file = path.join(dir, name); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, value); };
   const copy = name => write(name, fs.readFileSync(path.join(root, name)));
   const posts = Array.from({ length: 10 }, (_, i) => ({ id: i + 1, slug: `post-${i + 1}`, _status: i < 8 ? 'published' : 'draft', updatedAt: '2026-11-24T00:00:00.000Z' }));
-  const state = { available: true, fail: false, queries: 0, failures: 0 };
+  const state = { available: false, fail: true, queries: 0, failures: 0, initializations: 0 };
   const cms = http.createServer(async (req, res) => {
     let text = ''; for await (const chunk of req) text += chunk;
     const data = text ? JSON.parse(text) : {};
     res.setHeader('Content-Type', 'application/json');
-    if (req.url === '/state') return res.end(JSON.stringify({ available: state.available }));
+    if (req.url === '/state') { state.initializations++; return res.end(JSON.stringify({ available: state.available })); }
     if (req.url === '/commit') {
       await new Promise(resolve => setTimeout(resolve, data.holdMs || 0));
       const index = posts.findIndex(p => p.id === data.doc.id);
@@ -43,8 +44,12 @@ export async function getCms(){const state=await request('/state');return state.
   write('lib/cms/media.ts', 'export const mediaUrl = (value:string) => value;');
   write('lib/cms/text.ts', 'export const countWords = (_:unknown) => 1; export const lexicalHeadings = (_:unknown) => []; export const lexicalToPlainText = (_:unknown) => "";');
   write('lib/content.ts', 'export const servicesPage={items:Array.from({length:7},(_,i)=>({slug:`service-${i}`}))};export const caseStudiesPage={items:Array.from({length:7},(_,i)=>({slug:`case-${i}`}))};');
-  const sitemapSource = fs.readFileSync('app/sitemap.ts', 'utf8').replace('export const revalidate = 300;', 'export const revalidate = 2;');
-  write('app/sitemap.ts', sitemapSource); write('app/cold/[id]/sitemap.ts', sitemapSource);
+  const sitemapSource = fs.readFileSync('app/sitemap.ts', 'utf8');
+  const cacheRun = Date.now();
+  const cacheSource = fs.readFileSync('lib/sitemap.ts', 'utf8').replace('revalidate: 300,', 'revalidate: 2,');
+  write('lib/sitemap.ts', cacheSource.replace('["sitemap-v2"]', JSON.stringify(['sitemap-test-' + cacheRun])));
+  write('lib/cold-sitemap.ts', cacheSource.replace('["sitemap-v2"]', JSON.stringify(['sitemap-cold-test-' + cacheRun])));
+  write('app/sitemap.ts', sitemapSource); write('app/cold/[id]/sitemap.ts', sitemapSource.replace('@/lib/sitemap', '../../../lib/cold-sitemap'));
   write('app/layout.tsx', 'export default function Layout({children}:{children:React.ReactNode}){return <html><body>{children}</body></html>}');
   write('app/api/mutate/route.ts', `import { revalidateBlogPost,revalidateBlogPostDelete } from '../../../lib/payload/revalidate';import {request} from '../../../lib/cms/client';
 export async function POST(req:Request){const data=await req.json();if(data.operation==='delete')revalidateBlogPostDelete({doc:data.doc} as never);else revalidateBlogPost({doc:data.doc,previousDoc:data.previousDoc||{}} as never);await request('/commit',data);return Response.json({ok:true})}`);
@@ -64,6 +69,10 @@ export async function POST(req:Request){const data=await req.json();if(data.oper
     const build = launch(['build', dir]);
     const code = await new Promise((resolve, reject) => { build.on('error', reject); build.on('exit', resolve); });
     if (code !== 0) throw new Error(`Fixture build failed. See ${logFile}`);
+    assert.equal(state.initializations, 0, 'Image build must not initialize the sitemap CMS');
+    assert.equal(state.queries, 0, 'Image build must not query the sitemap database');
+    console.log('PASS: image builds with CMS unavailable; zero CMS initialization/query attempts.');
+    state.available = true; state.fail = false;
     const locator = http.createServer(); await new Promise(resolve => locator.listen(0, '127.0.0.1', resolve)); const port = locator.address().port; await new Promise(resolve => locator.close(resolve));
     server = launch(['start', dir, '--hostname', '127.0.0.1', '--port', String(port)]);
     const base = `http://127.0.0.1:${port}`, records = [];
@@ -82,6 +91,10 @@ export async function POST(req:Request){const data=await req.json();if(data.oper
     }
     const mutate = data => fetch(base + '/api/mutate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(async r => { assert.equal(r.status, 200, await r.text()); });
     assert.equal((await read('baseline')).count, 30);
+    assert.ok(state.queries > 0, 'First runtime request must fetch published posts');
+    const warmQueries = state.queries;
+    assert.equal((await read('warm runtime cache')).count, 30);
+    assert.equal(state.queries, warmQueries, 'Warm requests must reuse successful data');
     state.fail = true; const failures = state.failures; await sleep(2300);
     assert.equal((await read('TTL query failure serves stale')).count, 30);
     for (let i = 0; i < 60 && state.failures === failures; i++) { await sleep(100); await read('awaiting actual failed regeneration'); }
@@ -103,15 +116,16 @@ export async function POST(req:Request){const data=await req.json();if(data.oper
     await mutate({ operation: 'delete', doc: published }); await untilCount('delete', 30);
     state.fail = true;
     await mutate({ operation: 'update', previousDoc: posts[0], doc: { ...posts[0], updatedAt: '2026-11-27T00:00:00.000Z' } });
-    await sleep(200); await read('hard invalidation failure first'); await sleep(200); await read('hard invalidation failure second');
+    await sleep(200); assert.equal((await read('soft publish invalidation failure first')).status, 200);
+    await sleep(200); assert.equal((await read('soft publish invalidation failure second')).count, 30);
     state.fail = false; state.available = false;
     assert.equal((await read('CMS initialization failure with no prior cache', '/cold/init-failure/sitemap.xml')).status, 500);
     state.available = true;
     assert.ok(records.every(r => !r.urls.some(u => u.endsWith('/post-10'))));
     const log = fs.readFileSync(logFile, 'utf8');
     assert.ok(log.includes('sitemap.generation_failed')); assert.ok(log.includes('sitemap.invalidated'));
-    fs.writeFileSync(path.join(dir, 'passed.json'), JSON.stringify({ passed: true, timestamp: new Date().toISOString(), records: records.length, testOnlyRevalidateSeconds: 2, productionRevalidateSeconds: 300 }, null, 2));
-    console.log('PASS: production ISR retains last success on TTL failure; no-cache failure is500; mutations, lastmod and draft exclusion verified.');
+    fs.writeFileSync(path.join(dir, 'passed.json'), JSON.stringify({ passed: true, timestamp: new Date().toISOString(), records: records.length, buildWithUnavailableCms: true, buildTimeCmsCalls: 0, testOnlyRevalidateSeconds: 2, productionRevalidateSeconds: 300 }, null, 2));
+    console.log('PASS: runtime data cache retains last success on TTL and publish-refresh failure; cold failure is500; mutations, lastmod and drafts verified.');
     console.log(JSON.stringify(records.map(({ label, status, cache, count }) => ({ label, status, cache, count })), null, 2));
   } finally { server?.kill(); await new Promise(resolve => cms.close(resolve)); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

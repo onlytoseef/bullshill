@@ -31,11 +31,14 @@ function invalidateBlogAfterResponse(paths: Iterable<string>) {
   const affectedPaths = [...new Set(paths)];
   after(() => {
     try {
-      affectedPaths.forEach((path) => revalidatePath(path));
+      // Preserve the sitemap's last good Data Cache value during outages.
+      // Hard path invalidation would also expire its implicit cache tags.
+      affectedPaths.filter((path) => path !== "/sitemap.xml").forEach((path) => revalidatePath(path));
       revalidateTag("blog-posts", { expire: 0 });
+      revalidateTag("sitemap", "max");
       console.info(JSON.stringify({
         event: "sitemap.invalidated", timestamp: new Date().toISOString(),
-        paths: affectedPaths,
+        paths: affectedPaths, sitemapTag: "sitemap", profile: "max",
       }));
     } catch (error) {
       console.error(JSON.stringify({
