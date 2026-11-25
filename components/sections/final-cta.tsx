@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { Reveal } from "@/components/motion/reveal";
+import { EssentialReveal } from "@/components/motion/essential-reveal";
 import { Button } from "@/components/ui/button";
 import { Container, Section } from "@/components/ui/section";
 import { finalCta } from "@/lib/content";
@@ -16,7 +16,7 @@ export function FinalCta({ variant = "home" }: Props) {
   return (
     <Section id="contact" className="bg-blue-light pb-12 sm:pb-16">
       <Container>
-        <Reveal>
+        <EssentialReveal replayFirstEntry>
           <div
             className={cn(
               "final-cta-card relative isolate overflow-hidden text-center",
@@ -42,7 +42,7 @@ export function FinalCta({ variant = "home" }: Props) {
               <Image src={findMoreIcon} alt="" width={24} height={24} />
             </Button>
           </div>
-        </Reveal>
+        </EssentialReveal>
       </Container>
     </Section>
   );

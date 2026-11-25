@@ -116,7 +116,7 @@ export function CarouselItem({
   className,
   ...props
 }: React.ComponentProps<"li">) {
-  return <li role="group" aria-roledescription="slide" className={cn("min-w-0 shrink-0 grow-0", className)} {...props} />;
+  return <li aria-roledescription="slide" className={cn("min-w-0 shrink-0 grow-0", className)} {...props} />;
 }
 
 function CarouselArrow({ direction }: { direction: "previous" | "next" }) {

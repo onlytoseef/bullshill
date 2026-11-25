@@ -240,25 +240,55 @@ export async function getPublishedPostEntries(): Promise<
   { slug: string; updatedAt: string | null }[]
 > {
   const cms = await getCms();
-  if (!cms) return [];
+  if (!cms) throw new Error("Sitemap CMS initialization failed");
 
-  try {
-    const result = await cms.find({
-      collection: "blog-posts",
-      depth: 0,
-      limit: 200,
-      sort: "-publishedAt",
-      where: { _status: { equals: "published" } },
-    });
-
-    return (result.docs as (PostDoc & { updatedAt?: string | null })[])
-      .filter((doc) => Boolean(doc.slug))
-      .map((doc) => ({
-        slug: doc.slug as string,
-        updatedAt: doc.updatedAt ?? null,
+  const entries: { slug: string; updatedAt: string | null }[] = [];
+  let cursor: number | string | undefined;
+  let batch = 0;
+  while (true) {
+    batch++;
+    // Keyset pagination avoids offset skips when an earlier row is deleted.
+    // Only the fields used by the sitemap are loaded; no rich text or media.
+    let result;
+    try {
+      result = await cms.find({
+        collection: "blog-posts",
+        depth: 0,
+        draft: false,
+        overrideAccess: false,
+        limit: 200,
+        pagination: true,
+        page: 1,
+        select: { id: true, slug: true, updatedAt: true },
+        sort: "id",
+        where: {
+          and: [
+            { _status: { equals: "published" } },
+            ...(cursor === undefined ? [] : [{ id: { greater_than: cursor } }]),
+          ],
+        },
+      });
+    } catch (error) {
+      console.error(JSON.stringify({
+        event: "sitemap.query_failed", timestamp: new Date().toISOString(),
+        batch, blogCountRead: entries.length,
+        errorName: error instanceof Error ? error.name : "UnknownError",
       }));
-  } catch (error) {
-    console.warn("[cms] could not read blog entries for the sitemap", error);
-    return [];
+      // A partial traversal must never become a successful cached sitemap.
+      throw new Error("Sitemap published-post query failed", { cause: error });
+    }
+
+    const docs = result.docs as (PostDoc & { id: string | number; updatedAt?: string | null })[];
+    for (const doc of docs) {
+      if (!doc.slug) throw new Error("Published sitemap post has no slug");
+      entries.push({ slug: doc.slug, updatedAt: doc.updatedAt ?? null });
+    }
+    if (!result.hasNextPage) break;
+    const nextCursor = docs.at(-1)?.id;
+    if (nextCursor === undefined || nextCursor === cursor) {
+      throw new Error("Sitemap pagination did not advance");
+    }
+    cursor = nextCursor;
   }
+  return entries;
 }

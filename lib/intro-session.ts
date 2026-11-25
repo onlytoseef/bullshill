@@ -1,8 +1,6 @@
 /**
- * Shared between the loader (client) and the frontend layout's inline script
- * (server). It lives in its own module because `lib/intro-gate.ts` is
- * `"use client"`, and a constant imported from there resolves to `undefined`
- * when the server component renders.
+ * Shared by server markup and its parser bootstrap. Keep this constant outside
+ * the client-only decorative animation gate.
  *
  * `sessionStorage` is per tab and survives reloads, which is the lifetime we
  * want: the intro plays once, then neither a client navigation nor a refresh

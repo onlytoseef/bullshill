@@ -1,6 +1,6 @@
 import { CoinArc } from "@/components/motion/coin-arc";
 import { HeroParticles } from "@/components/motion/hero-particles";
-import { Reveal } from "@/components/motion/reveal";
+import { EssentialReveal } from "@/components/motion/essential-reveal";
 import { SplitHeadline } from "@/components/motion/split-headline";
 import { Button } from "@/components/ui/button";
 import { ArrowIcon } from "@/components/ui/icons";
@@ -33,13 +33,13 @@ export function Hero() {
             className="hero-heading-gradient"
           />
 
-          <Reveal trigger="mount" delay={0.55} className="mt-6">
+          <EssentialReveal className="mt-6">
             <p className="mx-auto max-w-2xl text-balance text-base text-[#F1FBE8] sm:text-lg">
               {hero.subcopy}
             </p>
-          </Reveal>
+          </EssentialReveal>
 
-          <Reveal trigger="mount" delay={0.7} className="mt-10">
+          <EssentialReveal className="mt-10">
             <Button
               href={hero.cta.href}
               variant="primary"
@@ -48,10 +48,11 @@ export function Hero() {
               <span>{hero.cta.label}</span>
               <ArrowIcon />
             </Button>
-          </Reveal>
+          </EssentialReveal>
         </div>
       </div>
 
+      <span hidden data-essential-ready />
       <div className="hero-coin-stage relative z-10 px-6 pb-20 sm:pb-28">
         <CoinArc />
       </div>

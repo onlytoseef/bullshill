@@ -8,7 +8,8 @@ import {
 } from "motion/react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore, type CSSProperties } from "react";
+import styles from "./native-navigation.module.css";
 
 import { Button } from "@/components/ui/button";
 import { ChatIcon } from "@/components/ui/icons";
@@ -17,6 +18,9 @@ import { nav, site } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 const loadMobileMenu = () => import("./mobile-menu");
+const subscribeHydration = () => () => {};
+const clientHydrated = () => true;
+const serverHydrated = () => false;
 
 const MobileMenu = dynamic(
   () => loadMobileMenu().then((module) => module.MobileMenu),
@@ -61,6 +65,7 @@ function NavLink({
 }
 
 export function SiteHeader() {
+  const enhanced = useSyncExternalStore(subscribeHydration, clientHydrated, serverHydrated);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
@@ -79,7 +84,7 @@ export function SiteHeader() {
   }, [close]);
 
   return (
-    <header className="site-header sticky top-0 z-50 mx-auto w-[calc(100%-2rem)] max-w-[71.25rem] pt-5 md:w-[calc(100%-3.5rem)]">
+    <header data-enhanced={enhanced ? "" : undefined} className={`${styles.header} site-header sticky top-0 z-50 mx-auto w-[calc(100%-2rem)] max-w-[71.25rem] pt-5 md:w-[calc(100%-3.5rem)]`}>
       <nav
         aria-label="Main"
         className={cn(
@@ -131,6 +136,16 @@ export function SiteHeader() {
           </Button>
         </div>
 
+        <details className={styles.fallback}>
+          <summary className={styles.summary} aria-label="Navigation menu">
+            <svg aria-hidden width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M0 3h20M0 13h20" /></svg>
+          </summary>
+          <ul className={styles.panel}>
+            {[...nav.left, ...nav.right, nav.cta].map((link) => (
+              <li key={link.href}><a href={link.href}>{link.label}</a></li>
+            ))}
+          </ul>
+        </details>
         <button
           type="button"
           onPointerEnter={preloadMobileMenu}
@@ -140,7 +155,7 @@ export function SiteHeader() {
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="ml-auto -mr-2 grid size-10 shrink-0 place-items-center rounded-full text-blue-darker lg:hidden"
+          className={`${styles.trigger} ml-auto -mr-2 size-10 shrink-0 place-items-center rounded-full text-blue-darker lg:hidden`}
         >
           <span className="relative block h-4 w-5">
             <motion.span

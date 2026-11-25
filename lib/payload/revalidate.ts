@@ -1,4 +1,5 @@
 import { revalidatePath, revalidateTag } from "next/cache";
+import { after } from "next/server";
 
 import type {
   CollectionAfterChangeHook,
@@ -15,7 +16,9 @@ import type {
  * The listing query itself is wrapped in `unstable_cache` with the
  * `blog-posts` tag (`lib/cms/posts.ts`), so that tag is cleared as well —
  * otherwise a published post would appear only when the 60-second window
- * lapsed.
+ * lapsed. Payload's change/delete hooks run before transaction commit, so
+ * register invalidation after the HTTP response rather than timestamping it
+ * while concurrent readers can still see the previous committed document.
  */
 const blogPaths = (slug?: string | null): string[] => [
   "/",
@@ -23,6 +26,26 @@ const blogPaths = (slug?: string | null): string[] => [
   "/sitemap.xml",
   ...(slug ? [`/blog/${slug}`] : []),
 ];
+
+function invalidateBlogAfterResponse(paths: Iterable<string>) {
+  const affectedPaths = [...new Set(paths)];
+  after(() => {
+    try {
+      affectedPaths.forEach((path) => revalidatePath(path));
+      revalidateTag("blog-posts", { expire: 0 });
+      console.info(JSON.stringify({
+        event: "sitemap.invalidated", timestamp: new Date().toISOString(),
+        paths: affectedPaths,
+      }));
+    } catch (error) {
+      console.error(JSON.stringify({
+        event: "sitemap.invalidation_failed", timestamp: new Date().toISOString(),
+        paths: affectedPaths, errorName: error instanceof Error ? error.name : "UnknownError",
+      }));
+      throw error;
+    }
+  });
+}
 
 export const revalidateBlogPost: CollectionAfterChangeHook = ({
   doc,
@@ -33,17 +56,13 @@ export const revalidateBlogPost: CollectionAfterChangeHook = ({
     ...blogPaths(previousDoc?.slug as string | undefined),
   ]);
 
-  paths.forEach((path) => revalidatePath(path));
-  revalidateTag("blog-posts", { expire: 0 });
+  invalidateBlogAfterResponse(paths);
 
   return doc;
 };
 
 export const revalidateBlogPostDelete: CollectionAfterDeleteHook = ({ doc }) => {
-  blogPaths(doc?.slug as string | undefined).forEach((path) =>
-    revalidatePath(path),
-  );
-  revalidateTag("blog-posts", { expire: 0 });
+  invalidateBlogAfterResponse(blogPaths(doc?.slug as string | undefined));
 
   return doc;
 };

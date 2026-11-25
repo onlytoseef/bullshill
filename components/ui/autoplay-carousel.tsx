@@ -126,7 +126,7 @@ export function AutoplayCarousel({
         tabIndex={0}
       >
         <CarouselContent className={trackClassName}>{children}</CarouselContent>
-        <div className="carousel-dots" aria-label={`${label} carousel pages`}>
+        <div className="carousel-dots" role="group" aria-label={`${label} carousel pages`}>
           {Array.from({ length: dotCount }, (_, offset) => {
             const index = firstDot + offset;
             return (

@@ -7,7 +7,7 @@ import { PageLoader } from "@/components/layout/page-loader";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MotionProviders } from "@/components/motion/providers";
-import { INTRO_SESSION_KEY } from "@/lib/intro-session";
+import { INTRO_BOOTSTRAP } from "@/lib/intro-bootstrap";
 import { SITE_NAME } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
@@ -75,31 +75,19 @@ export default function FrontendLayout({
       lang="en"
       className={`${inter.variable} ${geist.variable} antialiased`}
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
     >
       <body className="min-h-dvh font-sans">
-        {/*
-          Runs before the body paints.
-
-          Two things, both of which have to happen earlier than React can:
-          1. On a refresh inside a session the loader is already spent, and
-             without this the overlay would flash until hydration hid it.
-             `data-intro="skip"` makes it `display: none` from the first frame.
-          2. Stamp when the cover became visible. `PageLoader` measures its hold
-             budget from this, so hydration time is not added on top of it.
-
-          Kept inline and tiny so it cannot itself delay the paint.
-        */}
+        {/* The parser releases the cover once essential markup arrives. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(sessionStorage.getItem(${JSON.stringify(
-              INTRO_SESSION_KEY,
-            )})==="1")document.documentElement.dataset.intro="skip"}catch(e){}window.__introAt=performance.now()`,
+            __html: INTRO_BOOTSTRAP,
           }}
         />
         <MotionProviders>
           <PageLoader />
           <SiteHeader />
-          <main>{children}</main>
+          <main>{children}<span hidden data-page-ready /></main>
           <SiteFooter />
           <ContactBubble />
         </MotionProviders>

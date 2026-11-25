@@ -192,7 +192,7 @@ export function Projects() {
                   id={`${baseId}-tab-${index}`}
                   aria-selected={isSelected}
                   aria-controls={panelId}
-                  aria-label={study.client}
+                  aria-label={`${LANDING_CASE_STUDIES.get(study.slug)}: ${study.client}`}
                   onClick={() => contextSafe(select)(index)}
                   className={cn(
                     "project-tab relative text-sm font-medium transition-colors",

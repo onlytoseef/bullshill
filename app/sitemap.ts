@@ -4,14 +4,18 @@ import { getPublishedPostEntries } from "@/lib/cms/posts";
 import { caseStudiesPage, servicesPage } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 
+// Keep ISR and its last successful response; retry even if a hook was missed
+// or another application replica did not receive an invalidation.
+export const revalidate = 300;
+
 /**
  * /sitemap.xml, built from the same content the pages render, so a new post or
  * case study cannot be missed here.
  *
  * Blog entries now come from the CMS and cover **published posts only** — a
  * draft is never listed, and unpublishing removes it on the next revalidation.
- * A database that is unreachable yields an empty blog section rather than a
- * failed sitemap.
+ * An unavailable database throws instead of caching an incomplete sitemap.
+ * Next's ISR can retain the previous successful response on regeneration errors.
  *
  * `lastModified` is only given where the content carries a real date. A
  * build-time `new Date()` would mark every URL as changed on every deploy,
@@ -19,6 +23,7 @@ import { SITE_URL } from "@/lib/site";
  * are deliberately absent: Google has said for years that it ignores both.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const startedAt = Date.now();
   const page = (path: string): MetadataRoute.Sitemap[number] => ({
     url: path === "/" ? SITE_URL : `${SITE_URL}${path}`,
   });
@@ -42,7 +47,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page(`/case-studies/${study.slug}`),
   );
 
-  const posts = (await getPublishedPostEntries()).map((post) => {
+  let publishedPosts: Awaited<ReturnType<typeof getPublishedPostEntries>>;
+  try {
+    publishedPosts = await getPublishedPostEntries();
+  } catch (error) {
+    console.error(JSON.stringify({
+      event: "sitemap.generation_failed", timestamp: new Date().toISOString(),
+      staticCount: staticRoutes.length + services.length + caseStudies.length,
+      blogCount: null, totalUrlCount: null, durationMs: Date.now() - startedAt,
+      errorName: error instanceof Error ? error.name : "UnknownError",
+      reason: error instanceof Error ? error.message : "Sitemap read failed",
+    }));
+    throw error;
+  }
+  const posts = publishedPosts.map((post) => {
     const entry: MetadataRoute.Sitemap[number] = page(`/blog/${post.slug}`);
     if (post.updatedAt) {
       const date = new Date(post.updatedAt);
@@ -51,5 +69,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return entry;
   });
 
-  return [...staticRoutes, ...services, ...caseStudies, ...posts];
+  const entries = [...staticRoutes, ...services, ...caseStudies, ...posts];
+  console.info(JSON.stringify({
+    event: "sitemap.generated", timestamp: new Date().toISOString(),
+    staticCount: staticRoutes.length + services.length + caseStudies.length,
+    blogCount: posts.length, totalUrlCount: entries.length,
+    durationMs: Date.now() - startedAt,
+  }));
+  return entries;
 }

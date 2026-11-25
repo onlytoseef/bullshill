@@ -3,6 +3,7 @@ import { Container, Section } from "@/components/ui/section";
 import { intro, stats } from "@/lib/content";
 import bgShine from "../../app/assets/images/bg-shine.webp";
 import bgShineMobile from "../../app/assets/images/bg-shine-mobile.webp";
+import { preload } from "react-dom";
 
 /** The final figure, which the counter counts up to: "500+", "$10M+", … */
 function statText(stat: (typeof stats)[number]) {
@@ -12,6 +13,9 @@ function statText(stat: (typeof stats)[number]) {
 }
 
 export function Intro() {
+  // This decorative image can enter the initial mobile viewport and become
+  // LCP. Discover the exact CSS-selected asset in the HTML, before CSS parses.
+  preload(bgShineMobile.src, { as: "image", media: "(max-width: 767px)", fetchPriority: "high" });
   return (
     <Section
       className="about-section relative overflow-hidden py-20 sm:py-28"

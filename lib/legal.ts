@@ -184,7 +184,7 @@ export const termsOfService: LegalDocument = {
           dl: [
             {
               term: "Who we are",
-              text: "Bullshill is a Web3 marketing agency operated by [Legal business name] (\"we\", \"us\"). \"You\" means the person or business using our site or hiring us.",
+              text: "Bullshill is a Web3 marketing agency operated by Bullshill (\"we\", \"us\"). \"You\" means the person or business using our site or hiring us.",
             },
             {
               term: "Our services",

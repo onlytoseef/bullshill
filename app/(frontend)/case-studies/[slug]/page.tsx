@@ -1,3 +1,4 @@
+import "../../inner-pages.css";
 import type { Metadata } from "next";
 import { PageJsonLd } from "@/components/seo/page-json-ld";
 import { organizationId } from "@/lib/structured-data";

@@ -176,17 +176,19 @@ export function ProcessFlow({ children }: { children: ReactNode }) {
             // draws in and the pixels the cards occupy are the same space.
             const boxes = cards.map((card) => boxWithin(card, stageEl));
 
-            segments = boxes.slice(0, -1).map((box, index) => {
+            const curves = boxes.slice(0, -1).map((box, index) => {
               const d = connector(box, boxes[index + 1], width, height);
               paths[index].setAttribute("d", d);
               // Keep each trail on its own connector's curve.
               trails[index]?.setAttribute("d", d);
 
-              // Measure the path's own length to drive the dash distance.
-              const length = paths[index].getTotalLength() || 1;
-
-              return { d, length };
+              return d;
             });
+            // Finish every geometry write before reading lengths. Interleaving
+            // these operations makes each path measurement flush layout again.
+            segments = curves.map((d, index) => ({
+              d, length: paths[index].getTotalLength() || 1,
+            }));
           };
 
           /**
